@@ -665,7 +665,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         // IMPORTANTE: Aquí cambiamos a signInWithRedirect para evitar bloqueos
-        import { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, query, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ¡ATENCIÓN GONZALO! PEGA TUS LLAVES DE FIREBASE JUSTO AQUÍ ABAJO:
@@ -707,7 +707,7 @@
         const gananciaInput = document.getElementById('ganancia');
 
         // BOTÓN DE ACCESO GOOGLE (MODO REDIRECCIÓN - 100% SEGURO CONTRA BLOQUEOS)
-        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
+        document.getElementById('signInWithPopup').addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             // Esto redirigirá la página en lugar de abrir un popup
             signInWithRedirect(auth, provider).catch((error) => {
