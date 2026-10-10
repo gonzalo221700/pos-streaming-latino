@@ -112,10 +112,10 @@
             
             <!-- CAJA DE ERROR OCULTA -->
             <div id="debugBox" class="hidden mt-6 w-full bg-red-900/90 border-2 border-red-500 text-white p-4 rounded-lg shadow-xl text-left">
-                <h3 class="text-yellow-400 font-black mb-2 uppercase text-[11px] tracking-wider">⚠️ El botón murió por este error:</h3>
+                <h3 class="text-yellow-400 font-black mb-2 uppercase text-[11px] tracking-wider">⚠️ Error al cargar el sistema:</h3>
                 <p id="errorTexto" class="font-mono text-[10px] break-words"></p>
                 <p class="text-[10px] text-gray-300 mt-3 border-t border-red-500/50 pt-2">
-                    <b>Diagnóstico:</b> Al pegar tus llaves borraste una comilla ("), una coma (,) o dejaste palabras raras como "import". Revisa la línea de código indicada.
+                    <b>Diagnóstico:</b> Al pegar tus llaves borraste una comilla ("), una coma (,) o pegaste texto doble. Revisa tus llaves al final del código.
                 </p>
             </div>
 
@@ -481,14 +481,14 @@
         </div>
     </div>
 
-    <!-- 🛑 SCRIPT PRINCIPAL DE FIREBASE (CON PROTECCIÓN CONTRA ERRORES) 🛑 -->
+    <!-- 🛑 SCRIPT PRINCIPAL DE FIREBASE 🛑 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, query, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         // =========================================================================
-        // ⚠️ ZONA DE PELIGRO: PEGA TUS LLAVES AQUÍ ABAJO (Solo cambia los textos)
+        // ⚠️ ZONA DE PELIGRO: PEGA TUS LLAVES AQUÍ ABAJO
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBlZUM7j7kA5mMGL7bKN8D9wIWBJPZ1rog",
@@ -499,8 +499,6 @@
             appId: "1:2673748472:web:b5d16e877ba0d2c2128e0d",
             measurementId: "G-1WFE0HM0FW"
         };
-        // =========================================================================
-        // 🛑 NO TOQUES ABSOLUTAMENTE NADA DE AQUÍ PARA ABAJO 🛑
         // =========================================================================
 
         const app = initializeApp(firebaseConfig);
@@ -530,7 +528,6 @@
         const precioInput = document.getElementById('precio');
         const gananciaInput = document.getElementById('ganancia');
 
-        // BOTÓN DE ACCESO GOOGLE (Con Popup estable)
         const btnLogin = document.getElementById('btnGoogleLogin');
         if (btnLogin) {
             btnLogin.addEventListener('click', () => {
@@ -538,9 +535,9 @@
                 signInWithPopup(auth, provider).catch((error) => {
                     console.error(error);
                     if (error.code === 'auth/popup-blocked') {
-                        mostrarToast("⚠️ VENTANA BLOQUEADA: Busca la cruz roja 🚫 en tu barra de direcciones arriba y dale 'Permitir siempre'.", "error");
+                        mostrarToast("⚠️ VENTANA BLOQUEADA: Busca la cruz roja 🚫 arriba en Chrome y dale 'Permitir siempre'.", "error");
                     } else if (error.message.includes("configuration") || error.message.includes("API key")) {
-                        mostrarToast("❌ ERROR DE LLAVES: Asegúrate de haber pegado TUS llaves de Firebase en el código.", "error");
+                        mostrarToast("❌ ERROR DE LLAVES: Asegúrate de haber pegado tus llaves de Firebase en el código.", "error");
                     } else {
                         mostrarToast("❌ Error al iniciar sesión: " + error.message, "error");
                     }
@@ -556,7 +553,6 @@
                 document.getElementById('cloudStatus').classList.remove('status-dot-yellow', 'status-dot-red');
                 document.getElementById('cloudStatus').classList.add('status-dot-green');
                 mostrarToast(`☁️ Sesión iniciada con éxito`, "success");
-                
                 inicializarNube(user.uid);
             } else {
                 currentUserId = null;
@@ -578,61 +574,30 @@
             });
         }
 
-        async function autoMigrarLocalANube(uid) {
-            const folioLocal = localStorage.getItem('folioSLMX');
-            if(folioLocal) {
-                mostrarToast("Sincronizando datos locales a la nube...", "success");
-                try {
-                    const batch1 = writeBatch(db);
-                    const catLocal = JSON.parse(localStorage.getItem('catalogoSLMX')) || {};
-                    for(let serv in catLocal) { batch1.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo', serv), catLocal[serv]); }
-                    
-                    const fidLocal = JSON.parse(localStorage.getItem('fidelidadSLMX')) || {};
-                    batch1.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global'), {
-                        contadorFolio: parseInt(folioLocal), fidelidadClientes: fidLocal
-                    });
-                    await batch1.commit();
-
-                    const ventLocal = JSON.parse(localStorage.getItem('ventasSLMX')) || [];
-                    let batch2 = writeBatch(db); let count = 0;
-                    for(let v of ventLocal) {
-                        batch2.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'ventas', v.folio), v);
-                        count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); }
-                    }
-                    if(count % 400 !== 0) await batch2.commit();
-
-                    localStorage.removeItem('folioSLMX'); localStorage.removeItem('catalogoSLMX'); localStorage.removeItem('ventasSLMX'); localStorage.removeItem('fidelidadSLMX');
-                    mostrarToast("✅ Migración exitosa.", "success");
-                } catch(e) { console.error("Error en migración:", e); }
-            }
-        }
-
         function inicializarNube(uid) {
-            autoMigrarLocalANube(uid).then(() => {
-                const configRef = doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global');
-                unsubMeta = onSnapshot(configRef, (docSnap) => {
-                    if(docSnap.exists()) {
-                        const d = docSnap.data(); contadorFolio = d.contadorFolio || 1; fidelidadClientes = d.fidelidadClientes || {};
-                    }
-                }, (error) => console.error(error));
+            const configRef = doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global');
+            unsubMeta = onSnapshot(configRef, (docSnap) => {
+                if(docSnap.exists()) {
+                    const d = docSnap.data(); contadorFolio = d.contadorFolio || 1; fidelidadClientes = d.fidelidadClientes || {};
+                }
+            }, (error) => console.error(error));
 
-                const catRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo');
-                unsubCatalogo = onSnapshot(query(catRef), (snap) => {
-                    catalogo = {}; snap.forEach(d => { catalogo[d.id] = d.data(); });
-                    if(Object.keys(catalogo).length === 0) {
-                        const batch = writeBatch(db);
-                        for(let k in catalogoBase) batch.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo', k), catalogoBase[k]);
-                        batch.commit();
-                    } else { renderizarSelectServicios(); renderizarTablaInventario(); actualizarListaProveedores(); }
-                }, (error) => console.error(error));
+            const catRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo');
+            unsubCatalogo = onSnapshot(query(catRef), (snap) => {
+                catalogo = {}; snap.forEach(d => { catalogo[d.id] = d.data(); });
+                if(Object.keys(catalogo).length === 0) {
+                    const batch = writeBatch(db);
+                    for(let k in catalogoBase) batch.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo', k.replace(/\//g, '-')), catalogoBase[k]);
+                    batch.commit();
+                } else { renderizarSelectServicios(); renderizarTablaInventario(); actualizarListaProveedores(); }
+            }, (error) => console.error(error));
 
-                const ventasRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'ventas');
-                unsubVentas = onSnapshot(query(ventasRef), (snap) => {
-                    ventas = []; snap.forEach(d => { ventas.push(d.data()); });
-                    ventas.sort((a,b) => parseInt(b.folio.replace('V-','')) - parseInt(a.folio.replace('V-','')));
-                    renderTablaVentas();
-                }, (error) => console.error(error));
-            });
+            const ventasRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'ventas');
+            unsubVentas = onSnapshot(query(ventasRef), (snap) => {
+                ventas = []; snap.forEach(d => { ventas.push(d.data()); });
+                ventas.sort((a,b) => parseInt(b.folio.replace('V-','')) - parseInt(a.folio.replace('V-','')));
+                renderTablaVentas();
+            }, (error) => console.error(error));
         }
 
         function mostrarToast(mensaje, tipo = "success") {
@@ -822,8 +787,9 @@
         function cerrarModalCatalogo() { document.getElementById('modalCatalogo').classList.add('hidden'); document.getElementById('formNuevoProducto').reset(); }
         document.getElementById('formNuevoProducto').addEventListener('submit', async function(e) {
             e.preventDefault(); if(!currentUserId) return;
-            const cat = document.getElementById('nuevaCategoria').value; const serv = document.getElementById('nuevoServicio').value.trim(); const mod = document.getElementById('nuevaModalidad').value; const prov = document.getElementById('nuevoProveedor').value.trim(); const moneda = document.getElementById('monedaCosto').value; let costo = parseFloat(document.getElementById('nuevoCosto').value); const precio = parseFloat(document.getElementById('nuevoPrecio').value);
+            const cat = document.getElementById('nuevaCategoria').value; const servRaw = document.getElementById('nuevoServicio').value.trim(); const mod = document.getElementById('nuevaModalidad').value; const prov = document.getElementById('nuevoProveedor').value.trim(); const moneda = document.getElementById('monedaCosto').value; let costo = parseFloat(document.getElementById('nuevoCosto').value); const precio = parseFloat(document.getElementById('nuevoPrecio').value);
             if(moneda === 'USDT') costo = costo * currentUsdtRate;
+            const serv = servRaw.replace(/\//g, '-');
             if (!catalogo[serv]) catalogo[serv] = { cat, mods: {} }; catalogo[serv].mods[mod] = { c: costo, p: precio, prov };
             await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', serv), catalogo[serv]); mostrarToast("☁️ Producto guardado", "success"); cerrarModalCatalogo();
         });
@@ -847,13 +813,60 @@
         function calcularGananciaComboManual() { const c = parseFloat(document.getElementById('comboCostoTotal').textContent) || 0; const p = parseFloat(document.getElementById('comboPrecioOferta').value) || 0; const gan = p - c; const el = document.getElementById('comboGanancia'); el.value = `$${gan.toFixed(2)}`; el.className = `w-full p-2.5 mt-1 rounded-md text-sm font-mono font-bold bg-[#0B0C10] cursor-not-allowed ${gan < 0 ? 'text-red-500 border-red-500' : 'text-[#a855f7]'}`; }
         function guardarComboRapido(nombre, c, p) { guardarComboEnBd(nombre, c, p); cerrarModalCombos(); }
         function guardarComboManual() { const checks = document.querySelectorAll('.combo-check:checked'); if(checks.length < 2) { mostrarToast("Selecciona al menos 2", "error"); return; } const oferta = parseFloat(document.getElementById('comboPrecioOferta').value); if(!oferta) return; let nombres = []; checks.forEach(chk => { nombres.push(chk.dataset.id.split('|')[0]); }); guardarComboEnBd("Combo: " + nombres.join(' + '), parseFloat(document.getElementById('comboCostoTotal').textContent), oferta); cerrarModalCombos(); }
-        async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; if (!catalogo[nombre]) catalogo[nombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {} }; catalogo[nombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', nombre), catalogo[nombre]); mostrarToast("☁️ Combo agregado a la nube", "success"); }
+        async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; const safeNombre = nombre.replace(/\//g, '-'); if (!catalogo[safeNombre]) catalogo[safeNombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {} }; catalogo[safeNombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', safeNombre), catalogo[safeNombre]); mostrarToast("☁️ Combo agregado a la nube", "success"); }
 
         function abrirModalRespaldo() { document.getElementById('modalRespaldo').classList.remove('hidden'); }
         function cerrarModalRespaldo() { document.getElementById('modalRespaldo').classList.add('hidden'); document.getElementById('fileImport').value = ''; }
         function exportarRespaldo() { const datosRespaldo = { catalogo: catalogo, ventas: ventas, contadorFolio: contadorFolio, fidelidad: fidelidadClientes }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosRespaldo)); const btnDescarga = document.createElement('a'); btnDescarga.setAttribute("href", dataStr); const hoy = new Date(); btnDescarga.setAttribute("download", `Respaldo_SLMX_Cloud_${hoy.getDate()}-${hoy.getMonth() + 1}-${hoy.getFullYear()}.json`); document.body.appendChild(btnDescarga); btnDescarga.click(); btnDescarga.remove(); cerrarModalRespaldo(); mostrarToast("📥 Respaldo descargado", "success"); }
         function triggerImport() { document.getElementById('fileImport').click(); }
-        function importarRespaldo(event) { if(!currentUserId) return; const archivo = event.target.files[0]; if (!archivo) return; const lector = new FileReader(); lector.onload = async function(e) { try { const d = JSON.parse(e.target.result); if(d.catalogo && d.ventas && d.contadorFolio !== undefined) { mostrarToast("Subiendo archivo a la nube...", "success"); const batch1 = writeBatch(db); batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: d.contadorFolio, fidelidadClientes: d.fidelidad || d.fidelidadClientes || {} }, { merge: true }); for(let serv in d.catalogo) batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', serv), d.catalogo[serv]); await batch1.commit(); let batch2 = writeBatch(db); let count = 0; for(let v of d.ventas) { batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', v.folio), v); count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } } if(count % 400 !== 0) await batch2.commit(); cerrarModalRespaldo(); mostrarToast("✅ Respaldo subido a la nube", "success"); } } catch(error) { mostrarToast("❌ Error al subir archivo", "error"); } }; lector.readAsText(archivo); }
+        
+        // --- 🛑 EL SISTEMA BLINDADO DE IMPORTACIÓN 🛑 ---
+        function importarRespaldo(event) { 
+            if(!currentUserId) return; 
+            const archivo = event.target.files[0]; 
+            if (!archivo) return; 
+            const lector = new FileReader(); 
+            lector.onload = async function(e) { 
+                try { 
+                    const d = JSON.parse(e.target.result); 
+                    if(d.catalogo && d.ventas) { 
+                        mostrarToast("Subiendo archivo a la nube... No cierres.", "success"); 
+                        const batch1 = writeBatch(db); 
+                        batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { 
+                            contadorFolio: d.contadorFolio || 1, 
+                            fidelidadClientes: d.fidelidad || d.fidelidadClientes || {} 
+                        }, { merge: true }); 
+
+                        // Filtro anti-diagonales para el catálogo
+                        for(let serv in d.catalogo) { 
+                            const safeServ = serv.toString().replace(/\//g, '-');
+                            batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', safeServ), d.catalogo[serv]); 
+                        } 
+                        await batch1.commit(); 
+
+                        // Filtro anti-diagonales para las ventas
+                        let batch2 = writeBatch(db); let count = 0; 
+                        for(let v of d.ventas) { 
+                            const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`;
+                            batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); 
+                            count++; 
+                            if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } 
+                        } 
+                        if(count % 400 !== 0) await batch2.commit(); 
+                        
+                        cerrarModalRespaldo(); 
+                        mostrarToast("✅ Respaldo subido a la nube", "success"); 
+                    } else {
+                        mostrarToast("❌ El archivo no parece un respaldo de este sistema.", "error");
+                    }
+                } catch(error) { 
+                    console.error(error);
+                    // Ahora el sistema te dice en pantalla EXACTAMENTE qué salió mal
+                    mostrarToast("❌ Error al subir: " + error.message.substring(0, 60), "error"); 
+                } 
+            }; 
+            lector.readAsText(archivo); 
+        }
 
         function exportarExcelVentas() { if(ventas.length === 0) return; const ws = XLSX.utils.json_to_sheet(ventas); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Ventas"); XLSX.writeFile(wb, "Ventas_SLMX.xlsx"); mostrarToast("Excel Descargado", "success"); }
         function exportarInventarioExcelColor() { const filas = [["Categoría", "Servicio", "Modalidad", "Proveedor", "Costo", "Precio", "Ganancia"]]; Object.keys(catalogo).sort().forEach(n => { for (const [m, p] of Object.entries(catalogo[n].mods)) { filas.push([catalogo[n].cat, n, m, p.prov || '-', p.c, p.p, p.p - p.c]); } }); const ws = XLSX.utils.aoa_to_sheet(filas); for (let R = 1; R < filas.length; ++R) { let color = "FFFFFF"; let serv = filas[R][1].toLowerCase(); if(serv.includes('netflix')) color = "FFCCCC"; else if(serv.includes('spotify')) color = "CCFFCC"; else if(serv.includes('max')) color = "CCE5FF"; for(let C=0; C<7; C++) { let cell = ws[XLSX.utils.encode_cell({r: R, c: C})]; if(cell) cell.s = { fill: { fgColor: { rgb: color } } }; } } const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Inventario"); XLSX.writeFile(wb, "Inventario_SLMX.xlsx"); mostrarToast("Excel Descargado", "success"); }
@@ -867,7 +880,7 @@
         setInterval(fetchBinanceRate, 10000);
 
         // =========================================================================================
-        // 🚀 ENCENDIDO DEL BOTÓN: SI LLEGAMOS AQUÍ SIN ERRORES, EL CÓDIGO FUNCIONA PERFECTO 🚀
+        // 🚀 ENCENDIDO DEL BOTÓN 🚀
         // =========================================================================================
         if(btnLogin) {
             btnLogin.disabled = false;
