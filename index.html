@@ -70,6 +70,13 @@
 
     <!-- STREAMING CHUNK: Catálogo Público (Tienda Web) -->
     <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] p-4 md:p-8 relative">
+        
+        <!-- Nuevo Contador de Visitas -->
+        <div class="absolute top-4 right-4 bg-[#1A222C]/90 px-3 py-1.5 rounded-full border border-[#a855f7] flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.4)] backdrop-blur-md z-40">
+            <span class="text-sm">👁️</span>
+            <span id="visitasContador" class="text-[#a855f7] font-mono font-bold text-xs tracking-wider">0 VISITAS</span>
+        </div>
+
         <div class="max-w-6xl mx-auto">
             <header class="flex flex-col items-center justify-center mb-10 text-center mt-6">
                 <!-- Imagen de Galaxia / Logo -->
@@ -252,7 +259,7 @@
                 </form>
             </div>
 
-            <!-- STREAMING CHUNK: Tabla de Ventas (Limpia) -->
+            <!-- STREAMING CHUNK: Tabla de Ventas (Limpia sin Estado/Costo) -->
             <div class="bg-[#12161c] rounded-lg shadow-xl overflow-hidden neon-border mb-8">
                 <div class="p-4 border-b border-[#1F2833] flex justify-between items-center bg-[#0B0C10]">
                     <h3 class="text-[#66FCF1] font-bold tracking-widest text-sm uppercase">Base de Datos de Ventas</h3>
@@ -348,7 +355,7 @@
                 <div><span class="text-xs text-yellow-500 uppercase font-bold block">Fecha Vencimiento</span> <span id="vpVence" class="text-sm font-bold text-yellow-400"></span></div>
                 <div><span class="text-xs text-gray-500 uppercase font-bold block">Proveedor Interno</span> <span id="vpProv" class="text-sm font-bold text-gray-300"></span></div>
                 
-                <!-- Caja de Garantía (Oculta si no hay) -->
+                <!-- Caja de Garantía -->
                 <div id="vpGarantiaBox" class="hidden border border-[#F50057] bg-[#F50057]/10 p-2 rounded-md mt-2">
                     <span class="text-xs text-[#F50057] uppercase font-bold block">🛡️ Notas de Garantía</span>
                     <span id="vpGarantia" class="text-sm font-mono text-gray-200"></span>
@@ -372,7 +379,6 @@
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Cliente</label><input type="text" id="editVentaCliente" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
                 <div><label class="text-xs text-yellow-400 font-bold uppercase">Número de WhatsApp</label><input type="tel" id="editVentaWhatsApp" class="w-full p-2.5 mt-1 rounded-md text-sm border-yellow-400 focus:border-yellow-400" required></div>
                 
-                <!-- Modificación de Fechas y Fidelidad -->
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="text-xs text-yellow-400 font-bold uppercase">Fidelidad (0 a 5)</label><input type="number" id="editVentaFidelidad" min="0" max="5" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#0B0C10] text-yellow-400 border border-yellow-400 outline-none text-center"></div>
                     <div><label class="text-xs text-yellow-400 font-bold uppercase">Fecha Vence</label><input type="date" id="editVentaVencimiento" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#0B0C10] text-yellow-400 border border-yellow-400 outline-none"></div>
@@ -427,10 +433,17 @@
                     <p class="text-[10px] text-gray-500 mt-1">Si dejas esto en blanco, buscaremos el logo nativo (Netflix, Spotify...) automáticamente.</p>
                 </div>
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label><select id="nuevaCategoria" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold"><option value="🍿 CINE Y SERIES">🍿 CINE Y SERIES</option><option value="🎧 MÚSICA Y AUDIO">🎧 MÚSICA Y AUDIO</option><option value="🤖 INTELIGENCIA ARTIFICIAL">🤖 INTELIGENCIA ARTIFICIAL</option><option value="🎮 GAMING Y RECARGAS">🎮 GAMING Y RECARGAS</option><option value="🎁 COMBOS Y PROMOCIONES">🎁 COMBOS Y PROMOCIONES</option></select></div>
+                
+                <!-- NUEVO: Título y Descripción -->
                 <div>
                     <label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label>
                     <input type="text" id="nuevoServicio" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. Netflix, Spotify, Max...">
                 </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-semibold uppercase">Descripción del Servicio (Opcional)</label>
+                    <textarea id="nuevaDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1] resize-none" placeholder="Ej. Cuentas originales 4K, 4 perfiles sin caídas..."></textarea>
+                </div>
+
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Modalidad</label><input type="text" id="nuevaModalidad" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. 1 Perfil, Cuenta Completa..." required></div>
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Proveedor / Panel</label><input type="text" id="nuevoProveedor" list="listaProveedores" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
                 <div class="grid grid-cols-2 gap-4"><div><label class="text-xs text-gray-400 font-semibold uppercase flex justify-between">Costo <select id="monedaCosto" class="bg-transparent border-none text-[#66FCF1] font-bold outline-none cursor-pointer"><option value="MXN" class="bg-[#12161c]">MXN</option><option value="USDT" class="bg-[#12161c]">USDT</option></select></label><input type="number" id="nuevoCosto" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono" placeholder="0.00"><div id="conversionReal" class="text-xs text-yellow-400 mt-1.5 hidden font-mono tracking-wide font-bold">≈ $0.00 MXN</div></div><div><label class="text-xs text-[#F50057] font-bold uppercase">Precio Final (MXN)</label><input type="number" id="nuevoPrecio" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono border-[#F50057]" placeholder="0.00"></div></div>
@@ -452,18 +465,34 @@
         </div>
     </div>
 
-    <!-- Editar Inventario (Con Imagen) -->
+    <!-- STREAMING CHUNK: Editar Inventario (Con Imagen, Nombre y Desc) -->
     <div id="modalEditar" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
+        <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative max-h-[95vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalEditar()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
-            <h2 class="text-xl font-black neon-text-cyan mb-1">Editar Precios</h2>
+            <h2 class="text-xl font-black neon-text-cyan mb-1">Editar Producto</h2>
             <p id="textoEditando" class="text-xs text-gray-400 mb-4 font-bold uppercase"></p>
-            <input type="hidden" id="editServicio"><input type="hidden" id="editModalidad">
+            
+            <input type="hidden" id="editServicioOriginal">
+            <input type="hidden" id="editModalidad">
+            
             <div class="space-y-4">
                 <div>
                     <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Cambiar Foto (Opcional)</label>
                     <input type="file" id="editImagen" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#a855f7] file:text-white hover:file:bg-[#c084fc] bg-[#1A222C] rounded p-2">
                 </div>
+                
+                <!-- NUEVO: Editar Título y Descripción -->
+                <div>
+                    <label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label>
+                    <input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 font-semibold uppercase">Descripción (Opcional)</label>
+                    <textarea id="editDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1] resize-none"></textarea>
+                </div>
+                
+                <div class="border-t border-gray-700 my-2 pt-2"></div>
+
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Proveedor / Panel</label><input type="text" id="editProveedor" list="listaProveedores" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Costo Proveedor ($)</label><input type="number" id="editCosto" step="0.01" class="w-full p-2.5 mt-1 rounded-md text-sm font-mono bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]"></div>
                 <div><label class="text-xs text-[#F50057] font-bold uppercase">Precio Final ($)</label><input type="number" id="editPrecio" step="0.01" class="w-full p-2.5 mt-1 rounded-md text-sm font-mono border border-[#F50057] bg-[#1F2833] text-white outline-none"></div>
@@ -525,7 +554,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDocs, collection, query, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDocs, getDoc, collection, query, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         // =========================================================================
         // LLAVES DE FIREBASE OFICIALES
@@ -581,7 +610,7 @@
             return null; 
         }
 
-        // COMPRESOR DE IMÁGENES MANUALES (Para evitar Firebase Storage)
+        // COMPRESOR DE IMÁGENES MANUALES (Para evitar Firebase Storage) - ACTUALIZADO A 700PX
         function comprimirImagen(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -589,19 +618,13 @@
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        // AUMENTAMOS LA RESOLUCIÓN A 700px PARA ALTA DEFINICIÓN (HD)
                         const MAX_WIDTH = 700; 
                         const scaleSize = MAX_WIDTH / img.width;
-                        
-                        // Si la imagen ya es más pequeña que 700px, no la agrandamos para no perder calidad
                         if(scaleSize > 1) {
-                            canvas.width = img.width;
-                            canvas.height = img.height;
+                            canvas.width = img.width; canvas.height = img.height;
                         } else {
-                            canvas.width = MAX_WIDTH;
-                            canvas.height = img.height * scaleSize;
+                            canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
                         }
-                        
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         resolve(canvas.toDataURL('image/jpeg', 0.8));
@@ -671,7 +694,31 @@
             });
         };
 
+        // STREAMING CHUNK: Sistema del Contador de Visitas 👁️
+        async function inicializarContadorVisitas() {
+            const visitasRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'visitas');
+            
+            onSnapshot(visitasRef, (snap) => {
+                const el = document.getElementById('visitasContador');
+                if (snap.exists() && el) {
+                    el.textContent = (snap.data().count || 0).toLocaleString() + ' VISITAS';
+                }
+            });
+
+            if (!sessionStorage.getItem('visita_registrada')) {
+                try {
+                    const snap = await getDoc(visitasRef);
+                    let currentCount = 0;
+                    if (snap.exists()) currentCount = snap.data().count || 0;
+                    await setDoc(visitasRef, { count: currentCount + 1 }, { merge: true });
+                    sessionStorage.setItem('visita_registrada', 'true');
+                } catch (e) { console.error("Error contador:", e); }
+            }
+        }
+
         function suscribirCatalogoPublico() {
+            inicializarContadorVisitas(); // Arranca el ojo vigía al entrar
+
             const configRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general');
             if(unsubConfig) unsubConfig();
             unsubConfig = onSnapshot(configRef, snap => {
@@ -713,7 +760,6 @@
                 try { renderTablaVentas(); } catch(e) { console.error(e); }
             }, (error) => console.error(error));
 
-            // Rescate de Catálogo Privado (Por si el respaldo se fue al lugar equivocado)
             const pubCatRef = collection(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo');
             const pubSnap = await getDocs(pubCatRef);
             if(pubSnap.empty) {
@@ -737,35 +783,39 @@
                 const datos = catalogo[servicio];
                 if(!datos || !datos.mods) return; 
                 const modsObj = datos.mods || {}; const mods = Object.entries(modsObj);
-            if(mods.length === 0) return;
+                if(mods.length === 0) return;
             
-            let imagenHtml = '';
-            if(datos.imgBase64) {
-                // OPCIÓN A: Póster de Cine (Sin márgenes, cubre todo el espacio 100%)
-                imagenHtml = `<img src="${datos.imgBase64}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">`;
-            } else {
-                const logoOficial = obtenerLogoNativo(servicio);
-                if(logoOficial) {
-                    imagenHtml = `<img src="${logoOficial}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">`;
+                let imagenHtml = '';
+                if(datos.imgBase64) {
+                    imagenHtml = `<img src="${datos.imgBase64}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">`;
                 } else {
-                    imagenHtml = `<div class="w-full h-full flex items-center justify-center bg-[#0B0C10] text-4xl font-black neon-text-cyan tracking-widest drop-shadow-[0_0_10px_rgba(102,252,241,0.6)]">${servicio.substring(0,3).toUpperCase()}</div>`;
+                    const logoOficial = obtenerLogoNativo(servicio);
+                    if(logoOficial) {
+                        imagenHtml = `<img src="${logoOficial}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">`;
+                    } else {
+                        imagenHtml = `<div class="w-full h-full flex items-center justify-center bg-[#0B0C10] text-4xl font-black neon-text-cyan tracking-widest drop-shadow-[0_0_10px_rgba(102,252,241,0.6)]">${servicio.substring(0,3).toUpperCase()}</div>`;
+                    }
                 }
-            }
 
-            let preciosHtml = '';
-            mods.forEach(([mod, precios]) => {
-                preciosHtml += `<div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2 last:border-0"><span class="text-sm text-gray-300">${mod}</span><span class="text-lg font-mono font-bold text-[#66FCF1]">$${precios.p}</span></div>`;
+                let preciosHtml = '';
+                mods.forEach(([mod, precios]) => {
+                    preciosHtml += `<div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2 last:border-0"><span class="text-sm text-gray-300">${mod}</span><span class="text-lg font-mono font-bold text-[#66FCF1]">$${precios.p}</span></div>`;
+                });
+
+                // STREAMING CHUNK: Inyectar Descripción en la Tarjeta Pública
+                let descHtml = '';
+                if(datos.desc) {
+                    descHtml = `<p class="text-xs text-gray-400 mb-4 leading-snug break-words">${datos.desc}</p>`;
+                }
+
+                const primerMod = mods[0][0]; const primerPrecio = mods[0][1].p;
+                const textoComprar = encodeURIComponent(`👋 ¡Hola! Vi su catálogo web y me interesa contratar:\n📺 *${servicio}* (${primerMod}) por *$${primerPrecio} MXN*\n¿Cuáles son los métodos de pago?`);
+
+                grid.innerHTML += `<div class="bg-[#12161c] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#66FCF1] transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}<div class="mb-6 flex-1">${preciosHtml}</div><a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Contratar</a></div></div>`;
             });
+        }
 
-            const primerMod = mods[0][0]; const primerPrecio = mods[0][1].p;
-            const textoComprar = encodeURIComponent(`👋 ¡Hola! Vi su catálogo web y me interesa contratar:\n📺 *${servicio}* (${primerMod}) por *$${primerPrecio} MXN*\n¿Cuáles son los métodos de pago?`);
-
-            // La caja ahora es más alta (h-48) y no tiene el candado de los márgenes
-            grid.innerHTML += `<div class="bg-[#12161c] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#66FCF1] transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-4 uppercase">${servicio}</h3><div class="mb-6 flex-1">${preciosHtml}</div><a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Contratar</a></div></div>`;
-        });
-    }
-
-    window.abrirModalConfig = () => { document.getElementById('modalConfigTienda').classList.remove('hidden'); };
+        window.abrirModalConfig = () => { document.getElementById('modalConfigTienda').classList.remove('hidden'); };
         window.cerrarModalConfig = () => { document.getElementById('modalConfigTienda').classList.add('hidden'); };
         window.guardarConfigTienda = async () => {
             if(!currentUserId) return;
@@ -852,7 +902,7 @@
             gananciaInput.value = ganancia.toFixed(2); gananciaInput.className = `p-2.5 pl-7 w-full rounded-md text-sm bg-[#0B0C10] font-mono font-black cursor-not-allowed ${ganancia < 0 ? 'text-red-500' : 'text-[#66FCF1]'}`;
         }
 
-        // STREAMING CHUNK: Lógica de Venta Principal y Fechas Exactas
+        // Motor de Fechas Blindado
         const ventaForm = document.getElementById('ventaForm');
         if(ventaForm) {
             ventaForm.addEventListener('submit', function(e) {
@@ -860,7 +910,6 @@
                 const servicio = servicioSelect.value; const modalidad = modalidadSelect.value; if(!servicio || !modalidad) return;
                 const provBase = catalogo[servicio]?.mods?.[modalidad]?.prov || '';
                 
-                // Motor de Fechas Blindado
                 const meses = parseInt(document.getElementById('tiempoContratado').value) || 1;
                 const d = new Date();
                 d.setMonth(d.getMonth() + meses);
@@ -965,13 +1014,23 @@
             e.preventDefault(); if(!currentUserId) return;
             const btnGuardar = document.getElementById('btnGuardarCat');
             const originalText = btnGuardar.textContent;
-            btnGuardar.textContent = 'PROCESANDO IMAGEN...'; btnGuardar.disabled = true;
+            btnGuardar.textContent = 'PROCESANDO...'; btnGuardar.disabled = true;
 
-            const cat = document.getElementById('nuevaCategoria').value; const servRaw = document.getElementById('nuevoServicio').value.trim(); const mod = document.getElementById('nuevaModalidad').value; const prov = document.getElementById('nuevoProveedor').value.trim(); const moneda = document.getElementById('monedaCosto').value; let costo = parseFloat(document.getElementById('nuevoCosto').value) || 0; const precio = parseFloat(document.getElementById('nuevoPrecio').value) || 0;
+            const cat = document.getElementById('nuevaCategoria').value; 
+            const servRaw = document.getElementById('nuevoServicio').value.trim(); 
+            const mod = document.getElementById('nuevaModalidad').value; 
+            const prov = document.getElementById('nuevoProveedor').value.trim(); 
+            const moneda = document.getElementById('monedaCosto').value; 
+            const desc = document.getElementById('nuevaDescripcion').value.trim();
+            let costo = parseFloat(document.getElementById('nuevoCosto').value) || 0; 
+            const precio = parseFloat(document.getElementById('nuevoPrecio').value) || 0;
+            
             if(moneda === 'USDT') costo = costo * currentUsdtRate;
             const serv = servRaw.replace(/\//g, '-');
-            if (!catalogo[serv]) catalogo[serv] = { cat, mods: {} }; 
+            
+            if (!catalogo[serv]) catalogo[serv] = { cat, mods: {}, desc: desc }; 
             catalogo[serv].mods[mod] = { c: costo, p: precio, prov };
+            catalogo[serv].desc = desc;
 
             const fileInput = document.getElementById('nuevaImagen');
             if (fileInput.files && fileInput.files[0]) {
@@ -984,22 +1043,67 @@
             cerrarModalCatalogo();
         });
 
-        window.abrirModalEditar = (serv, mod) => { const datos = catalogo[serv]?.mods?.[mod] || {}; document.getElementById('editServicio').value = serv; document.getElementById('editModalidad').value = mod; document.getElementById('editProveedor').value = datos.prov || ''; document.getElementById('editCosto').value = (datos.c || 0).toFixed(2); document.getElementById('editPrecio').value = (datos.p || 0).toFixed(2); document.getElementById('textoEditando').textContent = `${serv} - ${mod}`; document.getElementById('editImagen').value = ''; document.getElementById('modalEditar').classList.remove('hidden'); };
+        // STREAMING CHUNK: Edición y Clonación Inteligente
+        window.abrirModalEditar = (serv, mod) => { 
+            const datosServ = catalogo[serv] || {};
+            const datosMod = datosServ.mods?.[mod] || {};
+            
+            document.getElementById('editServicioOriginal').value = serv;
+            document.getElementById('editServicioNombre').value = serv; 
+            document.getElementById('editModalidad').value = mod; 
+            document.getElementById('editDescripcion').value = datosServ.desc || '';
+            document.getElementById('editProveedor').value = datosMod.prov || ''; 
+            document.getElementById('editCosto').value = (datosMod.c || 0).toFixed(2); 
+            document.getElementById('editPrecio').value = (datosMod.p || 0).toFixed(2); 
+            document.getElementById('textoEditando').textContent = `${serv} - ${mod}`; 
+            document.getElementById('editImagen').value = ''; 
+            document.getElementById('modalEditar').classList.remove('hidden'); 
+        };
         window.cerrarModalEditar = () => { document.getElementById('modalEditar').classList.add('hidden'); };
+        
         window.guardarEdicion = async () => { 
             if(!currentUserId) return; 
-            const serv = document.getElementById('editServicio').value; const mod = document.getElementById('editModalidad').value; 
-            if(!catalogo[serv]) catalogo[serv] = { mods: {} }; 
-            catalogo[serv].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
+            const servOrig = document.getElementById('editServicioOriginal').value; 
+            let servNuevo = document.getElementById('editServicioNombre').value.trim().replace(/\//g, '-'); 
+            const mod = document.getElementById('editModalidad').value; 
+            const desc = document.getElementById('editDescripcion').value.trim();
             
-            const fileInput = document.getElementById('editImagen');
-            if (fileInput.files && fileInput.files[0]) {
-                catalogo[serv].imgBase64 = await comprimirImagen(fileInput.files[0]);
-            }
+            if (!servNuevo) { mostrarToast("El nombre no puede estar vacío", "error"); return; }
 
-            await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); 
-            mostrarToast("☁️ Precios actualizados", "success"); cerrarModalEditar(); 
+            // Truco de Clonación (Si el nombre cambió)
+            if (servOrig !== servNuevo) {
+                if (!catalogo[servNuevo]) {
+                    catalogo[servNuevo] = { ...catalogo[servOrig] };
+                } else {
+                    catalogo[servNuevo].mods = { ...catalogo[servNuevo].mods, ...catalogo[servOrig].mods };
+                    if(!catalogo[servNuevo].imgBase64) catalogo[servNuevo].imgBase64 = catalogo[servOrig].imgBase64;
+                }
+                delete catalogo[servOrig]; // Borramos el viejo localmente
+                
+                catalogo[servNuevo].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
+                catalogo[servNuevo].desc = desc;
+
+                const fileInput = document.getElementById('editImagen');
+                if (fileInput.files && fileInput.files[0]) catalogo[servNuevo].imgBase64 = await comprimirImagen(fileInput.files[0]);
+
+                // Borramos el viejo de Firebase y subimos el nuevo
+                await deleteDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig));
+                await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servNuevo), catalogo[servNuevo]); 
+
+            } else {
+                // Edición Normal (Mismo nombre)
+                catalogo[servOrig].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
+                catalogo[servOrig].desc = desc;
+
+                const fileInput = document.getElementById('editImagen');
+                if (fileInput.files && fileInput.files[0]) catalogo[servOrig].imgBase64 = await comprimirImagen(fileInput.files[0]);
+
+                await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig), catalogo[servOrig]); 
+            }
+            
+            mostrarToast("☁️ Cambios guardados exitosamente", "success"); cerrarModalEditar(); 
         };
+
         window.eliminarProducto = async (serv, mod) => { if(!currentUserId) return; if(catalogo[serv] && catalogo[serv].mods) { delete catalogo[serv].mods[mod]; if (Object.keys(catalogo[serv].mods).length === 0) { delete catalogo[serv]; await deleteDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv)); } else { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); } mostrarToast("🗑️ Producto eliminado", "success"); } };
 
         // STREAMING CHUNK: Edición y Resucitación de Cuentas (Calendario y Notas)
@@ -1009,7 +1113,6 @@
             document.getElementById('vpCorreo').textContent = venta.correo || 'Ninguno asignado'; document.getElementById('vpPass').textContent = venta.password || 'Ninguna asignada'; document.getElementById('vpPerfil').textContent = venta.perfil || 'N/A'; document.getElementById('vpPin').textContent = venta.pin || 'N/A'; document.getElementById('vpProv').textContent = venta.proveedor || 'N/A'; document.getElementById('vpVence').textContent = venta.fechaVencimiento || 'No calculada';
             const enlaceEl = document.getElementById('vpEnlace'); if(venta.enlace) { enlaceEl.textContent = venta.enlace; enlaceEl.onclick = () => window.open(venta.enlace, '_blank'); } else { enlaceEl.textContent = 'N/A'; enlaceEl.onclick = null; }
             
-            // Mostrar u ocultar la caja de Garantías
             if(venta.notasGarantia) { document.getElementById('vpGarantiaBox').classList.remove('hidden'); document.getElementById('vpGarantia').textContent = venta.notasGarantia; } else { document.getElementById('vpGarantiaBox').classList.add('hidden'); }
             
             document.getElementById('modalVistaPrevia').classList.remove('hidden');
@@ -1022,7 +1125,6 @@
             document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente || ''; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || ''; document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || ''; document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); 
             document.getElementById('editVentaGarantia').value = venta.notasGarantia || '';
             
-            // Traductor Universal de Fechas (Solución a ceros faltantes)
             if(venta.fechaVencimiento) { 
                 const p = venta.fechaVencimiento.split('/'); 
                 if(p.length === 3) {
@@ -1045,7 +1147,6 @@
             
             let nuevosDatos = { cliente: document.getElementById('editVentaCliente').value.trim(), whatsapp: nuevoWhatsApp, correo: document.getElementById('editVentaCorreo').value.trim(), password: document.getElementById('editVentaPass').value.trim(), perfil: document.getElementById('editVentaPerfil').value.trim(), pin: document.getElementById('editVentaPin').value.trim(), enlace: document.getElementById('editVentaEnlace').value.trim(), notasGarantia: document.getElementById('editVentaGarantia').value.trim() };
             
-            // Calculador de Fecha Manual Blindado
             const nuevaFechaIn = document.getElementById('editVentaVencimiento').value;
             if(nuevaFechaIn) {
                 const partes = nuevaFechaIn.split('-');
@@ -1055,7 +1156,6 @@
                     nuevosDatos.fechaVencimiento = `${partes[2].padStart(2, '0')}/${partes[1].padStart(2, '0')}/${partes[0]}`;
                 }
             } else {
-                // Permite borrar la fecha y apagar el neón
                 nuevosDatos.vencimientoTimestamp = null;
                 nuevosDatos.fechaVencimiento = null;
             }
@@ -1105,7 +1205,6 @@
                     const batch1 = writeBatch(db); 
                     batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: resContador, fidelidadClientes: resFidelidad }, { merge: true }); 
                     
-                    // ESCRIBIR CATÁLOGO A LA RUTA PÚBLICA DIRECTAMENTE
                     for(let serv in resCatalogo) { 
                         if(resCatalogo[serv]) {
                             const safeServ = serv.toString().replace(/\//g, '-'); 
