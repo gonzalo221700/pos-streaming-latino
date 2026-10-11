@@ -887,6 +887,7 @@
             let accesos = '';
             if (v.correo) accesos += `📧 Correo: ${v.correo}\n`; if (v.password) accesos += `🔑 Pass: ${v.password}\n`; if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`; if (v.pin) accesos += `📍 PIN: ${v.pin}\n`; if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
             if(accesos !== '') { msg += `🔐 *DATOS DE ACCESO*\n${accesos}━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
+            if(v.notasGarantia) { msg += `🛡️ *GARANTÍA APLICADA*\n${v.notasGarantia}\n━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
             msg += `⭐ *PROGRAMA DE FIDELIDAD*\nProgreso: [ ${'★ '.repeat(puntos)}${'☆ '.repeat(faltan)}] (${puntos} de 5)\n${msjPremio}\n\nCualquier duda con tu servicio, envíanos un mensaje por aquí.\n¡Disfruta tu contenido! 🚀`;
             document.getElementById('ticketWhatsAppNum').value = v.whatsapp.replace(/\D/g,''); document.getElementById('textoPreviewTicket').value = msg; document.getElementById('modalPreviewTicket').classList.remove('hidden');
         };
