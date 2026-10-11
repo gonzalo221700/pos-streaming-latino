@@ -1011,8 +1011,18 @@
             document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente || ''; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || ''; document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || ''; document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); 
             document.getElementById('editVentaGarantia').value = venta.notasGarantia || '';
             
-            // Revertir Fecha (DD/MM/YYYY a YYYY-MM-DD para el calendario visual)
-            if(venta.fechaVencimiento) { const p = venta.fechaVencimiento.split('/'); if(p.length === 3) document.getElementById('editVentaVencimiento').value = `${p[2]}-${p[1]}-${p[0]}`; } else { document.getElementById('editVentaVencimiento').value = ''; }
+            // Traductor Universal de Fechas (Solución a ceros faltantes)
+            if(venta.fechaVencimiento) { 
+                const p = venta.fechaVencimiento.split('/'); 
+                if(p.length === 3) {
+                    const dia = p[0].padStart(2, '0');
+                    const mes = p[1].padStart(2, '0');
+                    const anio = p[2];
+                    document.getElementById('editVentaVencimiento').value = `${anio}-${mes}-${dia}`; 
+                } 
+            } else { 
+                document.getElementById('editVentaVencimiento').value = ''; 
+            }
             
             document.getElementById('modalEditarVenta').classList.remove('hidden');
         };
@@ -1024,13 +1034,19 @@
             
             let nuevosDatos = { cliente: document.getElementById('editVentaCliente').value.trim(), whatsapp: nuevoWhatsApp, correo: document.getElementById('editVentaCorreo').value.trim(), password: document.getElementById('editVentaPass').value.trim(), perfil: document.getElementById('editVentaPerfil').value.trim(), pin: document.getElementById('editVentaPin').value.trim(), enlace: document.getElementById('editVentaEnlace').value.trim(), notasGarantia: document.getElementById('editVentaGarantia').value.trim() };
             
-            // Calculador de Fecha Manual
+            // Calculador de Fecha Manual Blindado
             const nuevaFechaIn = document.getElementById('editVentaVencimiento').value;
             if(nuevaFechaIn) {
                 const partes = nuevaFechaIn.split('-');
-                const d = new Date(partes[0], partes[1] - 1, partes[2]);
-                nuevosDatos.vencimientoTimestamp = d.getTime();
-                nuevosDatos.fechaVencimiento = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                if(partes.length === 3) {
+                    const d = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
+                    nuevosDatos.vencimientoTimestamp = d.getTime();
+                    nuevosDatos.fechaVencimiento = `${partes[2].padStart(2, '0')}/${partes[1].padStart(2, '0')}/${partes[0]}`;
+                }
+            } else {
+                // Permite borrar la fecha y apagar el neón
+                nuevosDatos.vencimientoTimestamp = null;
+                nuevosDatos.fechaVencimiento = null;
             }
 
             try { 
