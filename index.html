@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Streaming Latino MX - Catálogo y POS</title>
-    <!-- STREAMING CHUNK: Importando estilos y librerías -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     
@@ -13,14 +12,12 @@
     <meta name="theme-color" content="#0B0C10">
 
     <style>
-        /* STREAMING CHUNK: Configuración Visual Base y Neón */
         body { background-color: #0B0C10; color: #C5C6C7; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .neon-text-cyan { color: #66FCF1; text-shadow: 0 0 5px rgba(102, 252, 241, 0.5); }
         .neon-text-pink { color: #F50057; text-shadow: 0 0 5px rgba(245, 0, 87, 0.5); }
         .neon-text-purple { color: #a855f7; text-shadow: 0 0 5px rgba(168, 85, 247, 0.5); }
         .neon-border { border-color: #66FCF1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.15); }
         
-        /* Botones Base */
         .pink-btn { background-color: #F50057; color: white; transition: all 0.3s; }
         .pink-btn:hover { background-color: #ff3377; box-shadow: 0 0 15px rgba(245, 0, 87, 0.6); transform: translateY(-1px); }
         .cyan-btn { background-color: #1F2833; border: 1px solid #66FCF1; color: #66FCF1; transition: all 0.3s; }
@@ -28,7 +25,6 @@
         .purple-btn { background-color: #1F2833; border: 1px solid #a855f7; color: #a855f7; transition: all 0.3s; }
         .purple-btn:hover { background-color: #a855f7; color: #0B0C10; box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); }
         
-        /* Inputs y Tablas */
         input, select, textarea { background-color: #1F2833; border: 1px solid #45A29E; color: white; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #66FCF1; box-shadow: 0 0 5px rgba(102, 252, 241, 0.5); }
         table th { background-color: #1F2833; border-bottom: 2px solid #F50057; color: #66FCF1; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
@@ -39,7 +35,6 @@
         ::-webkit-scrollbar-thumb { background: #45A29E; border-radius: 4px; }
         .modal-bg { background-color: rgba(11, 12, 16, 0.85); backdrop-filter: blur(4px); }
         
-        /* STREAMING CHUNK: Animaciones de Respiración CRM */
         @keyframes respiro-verde {
             0% { box-shadow: 0 0 5px #22c55e, inset 0 0 5px #22c55e; border-color: #22c55e; }
             50% { box-shadow: 0 0 15px #22c55e, inset 0 0 10px #22c55e; border-color: #4ade80; text-shadow: 0 0 5px #4ade80; }
@@ -83,19 +78,16 @@
 
     <div id="toast-container"></div>
 
-    <!-- STREAMING CHUNK: Pantalla de Carga Antierrores -->
     <div id="loadingScreen" class="fixed inset-0 bg-[#0B0C10] z-[100000] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-16 h-16 border-4 border-[#66FCF1] border-t-[#F50057] rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(102,252,241,0.5)]"></div>
         <p class="text-[#66FCF1] font-black tracking-widest animate-pulse">CARGANDO SISTEMA...</p>
         <p class="text-gray-500 text-xs mt-2">Conectando a Firebase</p>
     </div>
 
-    <!-- STREAMING CHUNK: Vista 1 - CATÁLOGO PÚBLICO (Para Clientes) -->
     <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] p-4 md:p-8 relative">
         <div class="max-w-6xl mx-auto">
-            <!-- Encabezado Tienda -->
             <header class="flex flex-col items-center justify-center mb-10 text-center mt-6">
-                <!-- Tu Logo Galaxia Oficial -->
+                <!-- Imagen de Galaxia Oficial -->
                 <div class="w-28 h-28 rounded-full border-2 border-[#F50057] flex items-center justify-center shadow-[0_0_30px_rgba(245,0,87,0.6)] bg-[#0B0C10] mb-4 relative overflow-hidden">
                     <img src="logo.jpg" alt="Streaming Latino MX" class="w-full h-full object-cover rounded-full relative z-10" onerror="this.outerHTML='<span class=\\'text-[#F50057] font-black text-4xl tracking-tighter relative z-10\\'>SL</span>'">
                 </div>
@@ -107,23 +99,18 @@
                 <p class="text-gray-400 mt-8 text-sm md:text-base max-w-lg font-medium">Disfruta del mejor entretenimiento al mejor precio. Selecciona tu servicio y contrata de forma segura por WhatsApp.</p>
             </header>
 
-            <!-- Cuadrícula de Servicios -->
-            <div id="publicCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Tarjetas generadas por JS -->
-            </div>
+            <div id="publicCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             
             <div id="emptyStore" class="hidden text-center p-10">
                 <p class="text-gray-500 text-lg animate-pulse">Cargando catálogo oficial...</p>
             </div>
         </div>
         
-        <!-- STREAMING CHUNK: Candado Discreto de Administrador -->
         <button onclick="abrirDobleCandado()" class="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-[#12161c] border border-gray-800 shadow-lg flex items-center justify-center text-gray-600 hover:text-[#66FCF1] hover:border-[#66FCF1] transition-all z-50 group">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
         </button>
     </div>
 
-    <!-- STREAMING CHUNK: Modal Doble Candado (Seguridad Física) -->
     <div id="modalDobleCandado" class="fixed inset-0 modal-bg z-[99999] hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] border border-[#a855f7] p-8 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.2)] w-full max-w-sm relative text-center">
             <button type="button" onclick="cerrarDobleCandado()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
@@ -141,10 +128,8 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Vista 2 - PANEL DE ADMINISTRADOR (CRM) -->
     <div id="adminPanel" class="hidden p-4 md:p-6">
         <div class="max-w-7xl mx-auto">
-            <!-- Barra Superior CRM -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-[#12161c] p-4 rounded-lg neon-border">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full border-2 border-[#F50057] flex items-center justify-center shadow-[0_0_15px_rgba(245,0,87,0.6)] bg-[#0B0C10] overflow-hidden">
@@ -159,25 +144,14 @@
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
-                    <button onclick="abrirModalConfig()" class="bg-red-900/30 border border-red-500 hover:bg-red-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">
-                        📱 Mi WhatsApp
-                    </button>
-                    <button onclick="abrirModalRespaldo()" class="bg-gray-800 border border-gray-500 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">
-                        ⚙️ Respaldo
-                    </button>
-                    <button onclick="abrirModalCombos()" class="purple-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">
-                        🎁 Combo
-                    </button>
-                    <button onclick="abrirModalCatalogo()" class="cyan-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">
-                        + Producto
-                    </button>
-                    <button onclick="cerrarSesionCompleta()" class="bg-[#1A222C] border border-gray-600 text-gray-400 hover:text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all">
-                        Cerrar Sesión
-                    </button>
+                    <button onclick="abrirModalConfig()" class="bg-red-900/30 border border-red-500 hover:bg-red-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">📱 Mi WhatsApp</button>
+                    <button onclick="abrirModalRespaldo()" class="bg-gray-800 border border-gray-500 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">⚙️ Respaldo</button>
+                    <button onclick="abrirModalCombos()" class="purple-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">🎁 Combo</button>
+                    <button onclick="abrirModalCatalogo()" class="cyan-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">+ Producto</button>
+                    <button onclick="cerrarSesionCompleta()" class="bg-[#1A222C] border border-gray-600 text-gray-400 hover:text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all">Cerrar Sesión</button>
                 </div>
             </div>
 
-            <!-- STREAMING CHUNK: Formulario de Venta (Con Tiempo Contratado) -->
             <div class="bg-[#12161c] p-6 rounded-lg neon-border mb-6 shadow-xl border-t-4 border-t-[#F50057]">
                 <h2 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#F50057]" viewBox="0 0 20 20" fill="currentColor"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg>
@@ -191,7 +165,7 @@
                     </div>
                     
                     <div class="flex flex-col md:col-span-2">
-                        <label class="text-xs text-yellow-400 mb-1 font-bold uppercase">WhatsApp (Para enviar ticket)</label>
+                        <label class="text-xs text-yellow-400 mb-1 font-bold uppercase">WhatsApp (Para Ticket y Puntos)</label>
                         <input type="tel" id="whatsapp" required class="p-2.5 rounded-md text-sm border-yellow-400 focus:border-yellow-400" placeholder="Ej. 9991234567">
                     </div>
 
@@ -265,7 +239,6 @@
                         <div class="relative"><span class="absolute left-3 top-2.5 text-[#66FCF1] font-bold">$</span><input type="text" id="ganancia" readonly class="p-2.5 pl-7 w-full rounded-md text-sm bg-[#0B0C10] font-mono font-black text-[#66FCF1] cursor-not-allowed" value="0.00"></div>
                     </div>
 
-                    <!-- STREAMING CHUNK: Campo de Tiempo Contratado -->
                     <div class="flex flex-col">
                         <label class="text-xs text-yellow-400 mb-1 font-bold uppercase">Tiempo Contratado</label>
                         <select id="tiempoContratado" class="p-2.5 rounded-md text-sm font-black border-[#eab308] bg-[#0B0C10]">
@@ -282,14 +255,11 @@
                     </div>
 
                     <div class="flex flex-col justify-end md:col-span-5 lg:col-span-1">
-                        <button type="submit" class="pink-btn py-2.5 px-4 rounded-md font-black uppercase tracking-wider h-[42px] w-full">
-                            + Registrar
-                        </button>
+                        <button type="submit" class="pink-btn py-2.5 px-4 rounded-md font-black uppercase tracking-wider h-[42px] w-full">+ Registrar</button>
                     </div>
                 </form>
             </div>
 
-            <!-- STREAMING CHUNK: Tabla de Ventas (Cuenta Regresiva Neón) -->
             <div class="bg-[#12161c] rounded-lg shadow-xl overflow-hidden neon-border mb-8">
                 <div class="p-4 border-b border-[#1F2833] flex justify-between items-center bg-[#0B0C10]">
                     <h3 class="text-[#66FCF1] font-bold tracking-widest text-sm uppercase">Panel CRM: Control de Cuentas</h3>
@@ -353,8 +323,6 @@
 
     <datalist id="listaProveedores"></datalist>
 
-    <!-- STREAMING CHUNK: Modales Administrativos -->
-    <!-- Modal PREMIO FIDELIDAD -->
     <div id="modalPremio" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg border-4 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.6)] p-8 w-full max-w-sm text-center relative animate-pulse">
             <div class="text-7xl mb-2">🎉🎁🎉</div>
@@ -364,7 +332,6 @@
         </div>
     </div>
 
-    <!-- Modal VISTA PREVIA CUENTA -->
     <div id="modalVistaPrevia" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <button type="button" onclick="cerrarModalVistaPrevia()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -392,7 +359,6 @@
         </div>
     </div>
 
-    <!-- Modal EDITAR VENTA -->
     <div id="modalEditarVenta" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <button type="button" onclick="cerrarModalEditarVenta()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -415,7 +381,6 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Modal TICKET WHATSAPP NUEVO DISEÑO -->
     <div id="modalPreviewTicket" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-md shadow-2xl relative">
             <button type="button" onclick="cerrarModalPreviewTicket()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -430,7 +395,6 @@
         </div>
     </div>
 
-    <!-- Modal Catálogo / Agregar Producto -->
     <div id="modalCatalogo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-lg shadow-2xl relative">
             <button type="button" onclick="cerrarModalCatalogo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -446,7 +410,7 @@
                     <input type="text" id="nuevoServicio" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. Netflix, Spotify, Max...">
                     <p class="text-[10px] text-gray-500 mt-1">Escribe el nombre oficial para que el sistema busque su logo automáticamente en la tienda web.</p>
                 </div>
-                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Modalidad</label><select id="nuevaModalidad" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold"><option value="1 Perfil">1 Perfil</option><option value="Cuenta Completa">Cuenta Completa</option><option value="1 Dispositivo">1 Dispositivo</option><option value="Individual">Individual</option><option value="Anual">Anual</option></select></div>
+                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Modalidad</label><input type="text" id="nuevaModalidad" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. 1 Perfil, Cuenta Completa..." required></div>
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Proveedor / Panel</label><input type="text" id="nuevoProveedor" list="listaProveedores" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
                 <div class="grid grid-cols-2 gap-4"><div><label class="text-xs text-gray-400 font-semibold uppercase flex justify-between">Costo <select id="monedaCosto" class="bg-transparent border-none text-[#66FCF1] font-bold outline-none cursor-pointer"><option value="MXN" class="bg-[#12161c]">MXN</option><option value="USDT" class="bg-[#12161c]">USDT</option></select></label><input type="number" id="nuevoCosto" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono" placeholder="0.00"><div id="conversionReal" class="text-xs text-yellow-400 mt-1.5 hidden font-mono tracking-wide font-bold">≈ $0.00 MXN</div></div><div><label class="text-xs text-[#F50057] font-bold uppercase">Precio Final (MXN)</label><input type="number" id="nuevoPrecio" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono border-[#F50057]" placeholder="0.00"></div></div>
                 <div class="pt-4 flex gap-3"><button type="button" onclick="cerrarModalCatalogo()" class="flex-1 bg-transparent border border-gray-600 text-gray-400 py-2.5 rounded-md font-bold transition hover:bg-gray-800">Cancelar</button><button type="submit" class="flex-1 cyan-btn py-2.5 rounded-md font-black uppercase tracking-wider">Guardar Público</button></div>
@@ -454,7 +418,6 @@
         </div>
     </div>
 
-    <!-- Modales adicionales (Confirmar Venta, Editar Precio, Combos) -->
     <div id="modalConfirmarVenta" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <h2 class="text-xl font-black neon-text-cyan mb-2">Verificar Proveedor</h2>
@@ -504,7 +467,6 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Modal Configuración Tienda y Respaldo -->
     <div id="modalConfigTienda" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <button type="button" onclick="cerrarModalConfig()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -529,7 +491,6 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Motor Principal y Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -541,10 +502,11 @@
         const firebaseConfig = {
             apiKey: "AIzaSyBlZUM7j7kA5mMGL7bKN8D9wIWBJPZ1rog",
             authDomain: "streaming-latino-mx.firebaseapp.com",
-            projectId: "treaming-latino-mx",
+            projectId: "streaming-latino-mx",
             storageBucket: "streaming-latino-mx.firebasestorage.app",
             messagingSenderId: "2673748472",
-            appId: "1:2673748472:web:b5d16e877ba0d2c2128e0d"
+            appId: "1:2673748472:web:b5d16e877ba0d2c2128e0d",
+            measurementId: "G-1WFE0HM0FW"
         };
         // =========================================================================
 
@@ -571,84 +533,57 @@
         const precioInput = document.getElementById('precio');
         const gananciaInput = document.getElementById('ganancia');
 
-        // STREAMING CHUNK: Sistema de Doble Candado (Seguridad Física + Nube)
-        window.abrirDobleCandado = () => {
-            document.getElementById('modalDobleCandado').classList.remove('hidden');
-        };
-        window.cerrarDobleCandado = () => {
-            document.getElementById('modalDobleCandado').classList.add('hidden');
-            document.getElementById('candadoUser').value = '';
-            document.getElementById('candadoPass').value = '';
-        };
+        window.abrirDobleCandado = () => { document.getElementById('modalDobleCandado').classList.remove('hidden'); };
+        window.cerrarDobleCandado = () => { document.getElementById('modalDobleCandado').classList.add('hidden'); document.getElementById('candadoUser').value = ''; document.getElementById('candadoPass').value = ''; };
 
         window.verificarDobleCandado = () => {
-            const u = document.getElementById('candadoUser').value;
-            const p = document.getElementById('candadoPass').value;
-            
+            const u = document.getElementById('candadoUser').value; const p = document.getElementById('candadoPass').value;
             if(u === 'Gonzalo cab' && p === 'Aliencab1172200') {
                 cerrarDobleCandado();
-                document.getElementById('loadingScreen').style.display = 'flex';
-                document.getElementById('loadingScreen').style.opacity = '1';
-                
+                document.getElementById('loadingScreen').style.display = 'flex'; document.getElementById('loadingScreen').style.opacity = '1';
                 const provider = new GoogleAuthProvider();
                 signInWithPopup(auth, provider).catch((error) => {
-                    document.getElementById('loadingScreen').style.opacity = '0';
-                    setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
-                    console.error(error);
+                    document.getElementById('loadingScreen').style.opacity = '0'; setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
                     mostrarToast("⚠️ Ventana bloqueada o cancelada. Intenta de nuevo.", "error");
                 });
             } else {
                 const modal = document.getElementById('modalDobleCandado').firstElementChild;
-                modal.classList.add('border-red-500');
-                setTimeout(() => modal.classList.remove('border-red-500'), 500);
+                modal.classList.add('border-red-500'); setTimeout(() => modal.classList.remove('border-red-500'), 500);
                 mostrarToast("Credenciales de sistema incorrectas", "error");
             }
         };
 
-        // STREAMING CHUNK: Controlador de Vistas (Pública vs Admin)
         onAuthStateChanged(auth, async (user) => {
-            document.getElementById('loadingScreen').style.opacity = '0';
-            setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
+            const ls = document.getElementById('loadingScreen');
+            if(ls) { ls.style.opacity = '0'; setTimeout(() => ls.style.display = 'none', 500); }
 
             if (user) {
                 if (user.isAnonymous) {
-                    // MODO CLIENTE (TIENDA PÚBLICA)
                     document.getElementById('publicStore').classList.remove('hidden');
                     document.getElementById('adminPanel').classList.add('hidden');
                     suscribirCatalogoPublico();
                 } else {
-                    // MODO ADMIN (CRM)
                     document.getElementById('publicStore').classList.add('hidden');
                     document.getElementById('adminPanel').classList.remove('hidden');
                     currentUserId = user.uid;
                     mostrarToast(`☁️ Bóveda CRM Desbloqueada`, "success");
-                    
                     suscribirCatalogoPublico();
                     inicializarNubeAdmin(user.uid);
                 }
             } else {
-                try { 
-                    await signInAnonymously(auth); 
-                } catch (e) { 
-                    console.error(e); 
-                    mostrarToast("Error de conexión a la nube", "error");
-                }
+                try { await signInAnonymously(auth); } catch (e) { mostrarToast("Error de conexión a la nube", "error"); }
             }
         });
 
         window.cerrarSesionCompleta = () => {
             if(unsubVentas) unsubVentas(); if(unsubMeta) unsubMeta();
-            document.getElementById('loadingScreen').style.display = 'flex';
-            document.getElementById('loadingScreen').style.opacity = '1';
-            signOut(auth).then(() => { 
-                ventas = []; document.getElementById('tablaCuerpo').innerHTML = '';
-            }).catch(() => {
-                document.getElementById('loadingScreen').style.opacity = '0';
-                setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
+            const ls = document.getElementById('loadingScreen');
+            ls.style.display = 'flex'; ls.style.opacity = '1';
+            signOut(auth).then(() => { ventas = []; document.getElementById('tablaCuerpo').innerHTML = ''; }).catch(() => {
+                ls.style.opacity = '0'; setTimeout(() => ls.style.display = 'none', 500);
             });
         };
 
-        // STREAMING CHUNK: Sincronización Tienda Pública
         function suscribirCatalogoPublico() {
             const configRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general');
             if(unsubConfig) unsubConfig();
@@ -668,12 +603,11 @@
                 
                 if(Object.keys(catalogo).length > 0) {
                     document.getElementById('emptyStore').classList.add('hidden');
-                    renderizarTiendaPublica();
-                    renderizarSelectServicios();
-                    renderizarTablaInventario();
-                    actualizarListaProveedores();
+                    try { renderizarTiendaPublica(); renderizarSelectServicios(); renderizarTablaInventario(); actualizarListaProveedores(); } catch(e) { console.error("Error al renderizar catálogo:", e); }
                 } else {
                     document.getElementById('emptyStore').classList.remove('hidden');
+                    document.getElementById('publicCatalogGrid').innerHTML = '';
+                    document.getElementById('tablaInventarioCuerpo').innerHTML = '';
                 }
             }, (error) => console.error("Error catálogo:", error));
         }
@@ -681,46 +615,34 @@
         async function inicializarNubeAdmin(uid) {
             const configRef = doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global');
             unsubMeta = onSnapshot(configRef, (docSnap) => {
-                if(docSnap.exists()) { 
-                    const d = docSnap.data(); contadorFolio = d.contadorFolio || 1; fidelidadClientes = d.fidelidadClientes || {}; 
-                }
+                if(docSnap.exists()) { const d = docSnap.data(); contadorFolio = d.contadorFolio || 1; fidelidadClientes = d.fidelidadClientes || {}; }
             }, (error) => console.error(error));
 
             const ventasRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'ventas');
             unsubVentas = onSnapshot(query(ventasRef), (snap) => {
                 ventas = [];
                 snap.forEach(d => { ventas.push(d.data()); });
-                ventas.sort((a,b) => parseInt(b.folio.replace('V-','')) - parseInt(a.folio.replace('V-','')));
-                renderTablaVentas();
+                ventas.sort((a,b) => parseInt((b.folio || '0').replace('V-','')) - parseInt((a.folio || '0').replace('V-','')));
+                try { renderTablaVentas(); } catch(e) { console.error("Error render ventas:", e); }
             }, (error) => console.error(error));
 
+            // SCRIPT DE RESCATE: Si la tienda pública está vacía pero hay datos atrapados en la carpeta privada (por el error viejo), rescátalos.
             const pubCatRef = collection(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo');
             const pubSnap = await getDocs(pubCatRef);
             if(pubSnap.empty) {
                 const privCatRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo');
                 const privSnap = await getDocs(privCatRef);
                 if(!privSnap.empty) {
-                    mostrarToast("Sincronizando catálogo a la nube pública...", "success");
+                    mostrarToast("Rescatando tu catálogo atrapado...", "success");
                     const batch = writeBatch(db);
-                    privSnap.forEach(d => {
-                        batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', d.id), d.data());
-                    });
-                    await batch.commit();
-                } else {
-                    const catalogoBaseDef = {
-                        "Netflix": { cat: "🍿 CINE Y SERIES", mods: {"1 Perfil": {c: 50, p: 95, prov: "Panel A"}} },
-                        "Spotify": { cat: "🎧 MÚSICA Y AUDIO", mods: {"Individual": {c: 30, p: 65, prov: "Panel M"}} }
-                    };
-                    const batch = writeBatch(db);
-                    for(let k in catalogoBaseDef) batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', k.replace(/\//g, '-')), catalogoBaseDef[k]);
+                    privSnap.forEach(d => { batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', d.id), d.data()); });
                     await batch.commit();
                 }
             }
         }
 
-        // STREAMING CHUNK: La Bóveda de Logos Nativos (Antibloqueos)
         function obtenerLogoUrl(nombre) {
-            const n = nombre.toLowerCase();
+            const n = (nombre || '').toLowerCase();
             if(n.includes('netflix')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg';
             if(n.includes('spotify')) return 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg';
             if(n.includes('max') || n.includes('hbo')) return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg';
@@ -739,19 +661,18 @@
             if(n.includes('star')) return 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Star%2B_logo.svg';
             if(n.includes('universal')) return 'https://upload.wikimedia.org/wikipedia/commons/0/06/Universal_Plus_logo.svg';
             if(n.includes('iptv') || n.includes('magis') || n.includes('tv')) return 'https://cdn-icons-png.flaticon.com/512/3301/3301555.png'; 
-            return null; // Si no hay logo oficial, regresamos null para que ponga las letras neón.
+            return null; 
         }
 
         function renderizarTiendaPublica() {
             const grid = document.getElementById('publicCatalogGrid');
-            if(!grid) return;
-            grid.innerHTML = '';
-            
-            const ordenados = Object.keys(catalogo).sort((a, b) => catalogo[a].cat.localeCompare(catalogo[b].cat));
+            if(!grid) return; grid.innerHTML = '';
+            const ordenados = Object.keys(catalogo).sort((a, b) => { const catA = catalogo[a]?.cat || ''; const catB = catalogo[b]?.cat || ''; return catA.localeCompare(catB); });
             
             ordenados.forEach(servicio => {
                 const datos = catalogo[servicio];
-                const mods = Object.entries(datos.mods);
+                if(!datos || !datos.mods) return; // Evita el choque si el dato está corrupto
+                const modsObj = datos.mods || {}; const mods = Object.entries(modsObj);
                 if(mods.length === 0) return;
                 
                 const logoOficial = obtenerLogoUrl(servicio);
@@ -767,23 +688,10 @@
                     preciosHtml += `<div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2 last:border-0"><span class="text-sm text-gray-300">${mod}</span><span class="text-lg font-mono font-bold text-[#66FCF1]">$${precios.p}</span></div>`;
                 });
 
-                const primerMod = mods[0][0];
-                const primerPrecio = mods[0][1].p;
+                const primerMod = mods[0][0]; const primerPrecio = mods[0][1].p;
                 const textoComprar = encodeURIComponent(`👋 ¡Hola! Vi su catálogo web y me interesa contratar:\n📺 *${servicio}* (${primerMod}) por *$${primerPrecio} MXN*\n¿Cuáles son los métodos de pago?`);
 
-                grid.innerHTML += `
-                    <div class="bg-[#12161c] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#66FCF1] transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1">
-                        <div class="h-32 bg-[#0B0C10] flex items-center justify-center p-4 relative border-b border-gray-800">${imagenHtml}</div>
-                        <div class="p-5 flex-1 flex flex-col">
-                           <span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${datos.cat.replace(/[^\w\s]/gi, '')}</span>
-                           <h3 class="text-xl font-black text-white mb-4 uppercase">${servicio}</h3>
-                           <div class="mb-6 flex-1">${preciosHtml}</div>
-                           <a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all">
-                              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                              Contratar
-                           </a>
-                        </div>
-                    </div>`;
+                grid.innerHTML += `<div class="bg-[#12161c] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#66FCF1] transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-32 bg-[#0B0C10] flex items-center justify-center p-4 relative border-b border-gray-800">${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-4 uppercase">${servicio}</h3><div class="mb-6 flex-1">${preciosHtml}</div><a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Contratar</a></div></div>`;
             });
         }
 
@@ -794,8 +702,7 @@
             const nuevoTel = document.getElementById('inputNumVentas').value.trim();
             if(nuevoTel) {
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { whatsapp: nuevoTel }, { merge: true });
-                mostrarToast("Número Guardado", "success");
-                cerrarModalConfig();
+                mostrarToast("Número Guardado", "success"); cerrarModalConfig();
             }
         };
 
@@ -803,8 +710,7 @@
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
             toast.className = `toast ${tipo === 'success' ? 'toast-success' : 'toast-error'}`;
             toast.innerHTML = `<span>${tipo === 'success' ? '✅' : '❌'}</span> <span>${mensaje}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.classList.add('hiding'); setTimeout(() => toast.remove(), 300); }, 3000);
+            container.appendChild(toast); setTimeout(() => { toast.classList.add('hiding'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
         function obtenerPuntosFidelidad(whatsapp) {
@@ -827,28 +733,24 @@
 
         function actualizarConversionEnVivo() {
             const inputCosto = document.getElementById('nuevoCosto'); const selectMoneda = document.getElementById('monedaCosto'); const divConv = document.getElementById('conversionReal');
-            if(!inputCosto || !selectMoneda) return;
-            const valorCosto = parseFloat(inputCosto.value) || 0;
-            if (selectMoneda.value === 'USDT') {
-                const eq = valorCosto * currentUsdtRate; divConv.textContent = `≈ $${eq.toFixed(2)} MXN`; divConv.classList.remove('hidden');
-            } else { divConv.classList.add('hidden'); }
+            if(!inputCosto || !selectMoneda) return; const valorCosto = parseFloat(inputCosto.value) || 0;
+            if (selectMoneda.value === 'USDT') { const eq = valorCosto * currentUsdtRate; divConv.textContent = `≈ $${eq.toFixed(2)} MXN`; divConv.classList.remove('hidden'); } else { divConv.classList.add('hidden'); }
         }
 
         function actualizarListaProveedores() {
             const proveedores = new Set();
-            for (const s in catalogo) { for (const m in catalogo[s].mods) { if (catalogo[s].mods[m].prov) proveedores.add(catalogo[s].mods[m].prov); } }
+            for (const s in catalogo) { const mods = catalogo[s]?.mods || {}; for (const m in mods) { if (mods[m].prov) proveedores.add(mods[m].prov); } }
             const dataList = document.getElementById('listaProveedores');
             if(dataList) { dataList.innerHTML = ''; proveedores.forEach(prov => { const option = document.createElement('option'); option.value = prov; dataList.appendChild(option); }); }
         }
 
         function renderizarSelectServicios() {
-            if(!servicioSelect) return;
-            servicioSelect.innerHTML = '<option value="">-- Selecciona el servicio --</option>';
-            const categoriasUnicas = [...new Set(Object.values(catalogo).map(s => s.cat))];
+            if(!servicioSelect) return; servicioSelect.innerHTML = '<option value="">-- Selecciona el servicio --</option>';
+            const categoriasUnicas = [...new Set(Object.values(catalogo).map(s => s?.cat || 'Otros'))];
             categoriasUnicas.forEach(catName => {
                 const optGroup = document.createElement('optgroup'); optGroup.label = catName;
                 for(const [nombreServicio, datosServicio] of Object.entries(catalogo)) {
-                    if(datosServicio.cat === catName) { const option = document.createElement('option'); option.value = nombreServicio; option.textContent = nombreServicio; optGroup.appendChild(option); }
+                    if(datosServicio && (datosServicio.cat || 'Otros') === catName) { const option = document.createElement('option'); option.value = nombreServicio; option.textContent = nombreServicio; optGroup.appendChild(option); }
                 }
                 servicioSelect.appendChild(optGroup);
             });
@@ -858,9 +760,10 @@
             servicioSelect.addEventListener('change', function() {
                 const servicio = this.value; modalidadSelect.innerHTML = '<option value="">-- Selecciona modalidad --</option>';
                 if (catalogo[servicio]) {
-                    categoriaInput.value = catalogo[servicio].cat;
-                    for (const mod in catalogo[servicio].mods) { const option = document.createElement('option'); option.value = mod; option.textContent = mod; modalidadSelect.appendChild(option); }
-                    if(Object.keys(catalogo[servicio].mods).length > 0) { modalidadSelect.selectedIndex = 1; modalidadSelect.dispatchEvent(new Event('change')); }
+                    categoriaInput.value = catalogo[servicio].cat || 'Otros';
+                    const mods = catalogo[servicio].mods || {};
+                    for (const mod in mods) { const option = document.createElement('option'); option.value = mod; option.textContent = mod; modalidadSelect.appendChild(option); }
+                    if(Object.keys(mods).length > 0) { modalidadSelect.selectedIndex = 1; modalidadSelect.dispatchEvent(new Event('change')); }
                 } else { categoriaInput.value = ""; costoInput.value = ""; precioInput.value = ""; gananciaInput.value = "0.00"; }
             });
         }
@@ -868,8 +771,8 @@
         if(modalidadSelect) {
             modalidadSelect.addEventListener('change', function() {
                 const servicio = servicioSelect.value; const modalidad = this.value;
-                if (servicio && modalidad && catalogo[servicio].mods[modalidad]) {
-                    costoInput.value = catalogo[servicio].mods[modalidad].c.toFixed(2); precioInput.value = catalogo[servicio].mods[modalidad].p.toFixed(2); calcularGanancia();
+                if (servicio && modalidad && catalogo[servicio]?.mods?.[modalidad]) {
+                    costoInput.value = (catalogo[servicio].mods[modalidad].c || 0).toFixed(2); precioInput.value = (catalogo[servicio].mods[modalidad].p || 0).toFixed(2); calcularGanancia();
                 }
             });
         }
@@ -879,17 +782,14 @@
             gananciaInput.value = ganancia.toFixed(2); gananciaInput.className = `p-2.5 pl-7 w-full rounded-md text-sm bg-[#0B0C10] font-mono font-black cursor-not-allowed ${ganancia < 0 ? 'text-red-500' : 'text-[#66FCF1]'}`;
         }
 
-        // STREAMING CHUNK: Lógica de Venta
         const ventaForm = document.getElementById('ventaForm');
         if(ventaForm) {
             ventaForm.addEventListener('submit', function(e) {
                 e.preventDefault(); if(!currentUserId) return;
                 const servicio = servicioSelect.value; const modalidad = modalidadSelect.value; if(!servicio || !modalidad) return;
-                const provBase = catalogo[servicio].mods[modalidad].prov || '';
-                
+                const provBase = catalogo[servicio]?.mods?.[modalidad]?.prov || '';
                 const meses = parseInt(document.getElementById('tiempoContratado').value) || 1;
-                const d = new Date();
-                d.setMonth(d.getMonth() + meses);
+                const d = new Date(); d.setMonth(d.getMonth() + meses);
                 const timestampVencimiento = d.getTime();
                 const fechaVencimientoTexto = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
 
@@ -928,10 +828,10 @@
         };
         window.cerrarModalPremio = () => { document.getElementById('modalPremio').classList.add('hidden'); };
 
-        // STREAMING CHUNK: Motor CRM
         function renderTablaVentas() {
             const tbody = document.getElementById('tablaCuerpo'); tbody.innerHTML = ''; document.getElementById('emptyState').style.display = ventas.length > 0 ? 'none' : 'block'; document.getElementById('contadorVentas').textContent = `${ventas.length} Ventas`;
             ventas.forEach(v => {
+                if(!v) return;
                 let puntos = obtenerPuntosFidelidad(v.whatsapp); let estrellasHTML = '';
                 if(v.whatsapp) { for(let i=1; i<=5; i++) estrellasHTML += i <= puntos ? '<span class="text-yellow-400 text-lg leading-none drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]">★</span>' : '<span class="text-gray-700 text-lg leading-none">☆</span>'; } else { estrellasHTML = '<span class="text-xs text-gray-500">Sin WA</span>'; }
                 
@@ -942,78 +842,31 @@
                     else if (diasRestantes >= 8) { badgeTiempo = `<div class="px-2 py-1 rounded badge-neon-naranja text-center font-bold text-[10px] tracking-wider uppercase">🟠 ${diasRestantes} Días</div>`; } 
                     else if (diasRestantes >= 0) { badgeTiempo = `<div class="px-2 py-1 rounded badge-neon-rojo text-center font-black text-[10px] tracking-wider uppercase">🔴 ${diasRestantes} Días</div>`; } 
                     else { badgeTiempo = `<div class="px-2 py-1 rounded badge-vencido text-center font-bold text-[10px] tracking-wider uppercase">💀 Vencido</div>`; }
-                } else {
-                    badgeTiempo = `<div class="text-[10px] text-gray-600 uppercase text-center">N/A</div>`;
-                }
+                } else { badgeTiempo = `<div class="text-[10px] text-gray-600 uppercase text-center">N/A</div>`; }
 
-                tbody.innerHTML += `<tr class="hover:bg-[#1A222C]">
-                    <td class="p-3 font-mono text-gray-500 text-xs">${v.folio}</td>
-                    <td class="p-3 text-gray-400 text-xs">${v.fecha}</td>
-                    <td class="p-3"><p class="font-bold text-white leading-tight">${v.cliente}</p><p class="text-[10px] text-gray-500 font-mono">${v.whatsapp || 'Sin WhatsApp'}</p></td>
-                    <td class="p-3 font-bold neon-text-pink whitespace-nowrap">${v.servicio}</td>
-                    <td class="p-3 text-gray-400 text-xs">${v.modalidad}</td>
-                    <td class="p-3 whitespace-nowrap text-center"><div class="flex items-center justify-center gap-1">${estrellasHTML}</div></td>
-                    <td class="p-3 text-gray-500 font-mono">$${v.costo.toFixed(2)}</td>
-                    <td class="p-3 text-white font-mono font-bold">$${v.precio.toFixed(2)}</td>
-                    <td class="p-3 font-bold text-[#66FCF1] font-mono">$${v.ganancia.toFixed(2)}</td>
-                    <td class="p-3">${badgeTiempo}</td>
-                    <td class="p-3"><div class="flex justify-center gap-2"><button onclick="abrirModalVistaPrevia('${v.folio}')" class="bg-[#1F2833] border border-[#a855f7] hover:bg-[#a855f7] hover:text-[#0B0C10] text-[#a855f7] p-1.5 rounded shadow transition-all" title="Ver Cuenta">👁️</button><button onclick="abrirModalEditarVenta('${v.folio}')" class="bg-[#1F2833] border border-[#66FCF1] hover:bg-[#66FCF1] hover:text-[#0B0C10] text-[#66FCF1] p-1.5 rounded shadow transition-all" title="Editar">✏️</button><button onclick="enviarTicket('${v.folio}')" class="bg-green-600 hover:bg-green-500 text-white p-1.5 rounded shadow-[0_0_10px_rgba(22,163,74,0.4)] transition-all" title="Enviar Ticket Nuevo"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></button></div></td>
-                </tr>`;
+                tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 font-mono text-gray-500 text-xs">${v.folio || '-'}</td><td class="p-3 text-gray-400 text-xs">${v.fecha || '-'}</td><td class="p-3"><p class="font-bold text-white leading-tight">${v.cliente || 'Sin nombre'}</p><p class="text-[10px] text-gray-500 font-mono">${v.whatsapp || 'Sin WhatsApp'}</p></td><td class="p-3 font-bold neon-text-pink whitespace-nowrap">${v.servicio || '-'}</td><td class="p-3 text-gray-400 text-xs">${v.modalidad || '-'}</td><td class="p-3 whitespace-nowrap text-center"><div class="flex items-center justify-center gap-1">${estrellasHTML}</div></td><td class="p-3 text-gray-500 font-mono">$${(v.costo || 0).toFixed(2)}</td><td class="p-3 text-white font-mono font-bold">$${(v.precio || 0).toFixed(2)}</td><td class="p-3 font-bold text-[#66FCF1] font-mono">$${(v.ganancia || 0).toFixed(2)}</td><td class="p-3">${badgeTiempo}</td><td class="p-3"><div class="flex justify-center gap-2"><button onclick="abrirModalVistaPrevia('${v.folio}')" class="bg-[#1F2833] border border-[#a855f7] hover:bg-[#a855f7] hover:text-[#0B0C10] text-[#a855f7] p-1.5 rounded shadow transition-all" title="Ver Cuenta">👁️</button><button onclick="abrirModalEditarVenta('${v.folio}')" class="bg-[#1F2833] border border-[#66FCF1] hover:bg-[#66FCF1] hover:text-[#0B0C10] text-[#66FCF1] p-1.5 rounded shadow transition-all" title="Editar">✏️</button><button onclick="enviarTicket('${v.folio}')" class="bg-green-600 hover:bg-green-500 text-white p-1.5 rounded shadow-[0_0_10px_rgba(22,163,74,0.4)] transition-all" title="Enviar Ticket Nuevo"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></button></div></td></tr>`;
             });
         }
 
-        // STREAMING CHUNK: WhatsApp Ticket
         window.enviarTicket = (folio) => {
             const v = ventas.find(x => x.folio === folio); if(!v || !v.whatsapp) { mostrarToast("No hay número de WhatsApp registrado", "error"); return; }
-            
-            let puntos = obtenerPuntosFidelidad(v.whatsapp); 
-            let faltan = 5 - puntos; 
+            let puntos = obtenerPuntosFidelidad(v.whatsapp); let faltan = 5 - puntos; 
             let msjPremio = faltan === 0 ? "🎉 ¡Felicidades! Has completado tus 5 compras.\n¡Tienes un *MES GRATIS* en tu próxima renovación o cuenta nueva! 🎉" : `¡Te faltan ${faltan} compras para tu MES GRATIS! 🎁`;
-
-            let msg = `👋 ¡Hola *${v.cliente}*!\n`;
-            msg += `Gracias por tu preferencia en *STREAMING LATINO MX* 🍿\n\n`;
-            msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-            msg += `📄 *DETALLES DE TU COMPRA*\n`;
-            msg += `🔖 Folio: ${v.folio}\n`;
-            msg += `📅 Fecha de compra: ${v.fecha}\n`;
+            let msg = `👋 ¡Hola *${v.cliente}*!\nGracias por tu preferencia en *STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU COMPRA*\n🔖 Folio: ${v.folio}\n📅 Fecha de compra: ${v.fecha}\n`;
             if (v.fechaVencimiento) msg += `⏳ *Vencimiento:* ${v.fechaVencimiento}\n`;
-            msg += `\n`;
-            msg += `📺 *Servicio:* ${v.servicio}\n`;
-            msg += `🍿 *Modalidad:* ${v.modalidad}\n`;
-            msg += `💰 *Total pagado:* $${v.precio.toFixed(2)} MXN\n`;
-            msg += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
+            msg += `\n📺 *Servicio:* ${v.servicio}\n🍿 *Modalidad:* ${v.modalidad}\n💰 *Total pagado:* $${(v.precio || 0).toFixed(2)} MXN\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
             let accesos = '';
-            if (v.correo) accesos += `📧 Correo: ${v.correo}\n`;
-            if (v.password) accesos += `🔑 Pass: ${v.password}\n`;
-            if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`;
-            if (v.pin) accesos += `📍 PIN: ${v.pin}\n`;
-            if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
-
+            if (v.correo) accesos += `📧 Correo: ${v.correo}\n`; if (v.password) accesos += `🔑 Pass: ${v.password}\n`; if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`; if (v.pin) accesos += `📍 PIN: ${v.pin}\n`; if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
             if(accesos !== '') { msg += `🔐 *DATOS DE ACCESO*\n${accesos}━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
-
-            msg += `⭐ *PROGRAMA DE FIDELIDAD*\n`;
-            msg += `Progreso: [ ${'★ '.repeat(puntos)}${'☆ '.repeat(faltan)}] (${puntos} de 5)\n`;
-            msg += `${msjPremio}\n\n`;
-            msg += `Cualquier duda con tu servicio, envíanos un mensaje por aquí.\n¡Disfruta tu contenido! 🚀`;
-
-            document.getElementById('ticketWhatsAppNum').value = v.whatsapp.replace(/\D/g,''); 
-            document.getElementById('textoPreviewTicket').value = msg; 
-            document.getElementById('modalPreviewTicket').classList.remove('hidden');
+            msg += `⭐ *PROGRAMA DE FIDELIDAD*\nProgreso: [ ${'★ '.repeat(puntos)}${'☆ '.repeat(faltan)}] (${puntos} de 5)\n${msjPremio}\n\nCualquier duda con tu servicio, envíanos un mensaje por aquí.\n¡Disfruta tu contenido! 🚀`;
+            document.getElementById('ticketWhatsAppNum').value = v.whatsapp.replace(/\D/g,''); document.getElementById('textoPreviewTicket').value = msg; document.getElementById('modalPreviewTicket').classList.remove('hidden');
         };
-
         window.cerrarModalPreviewTicket = () => { document.getElementById('modalPreviewTicket').classList.add('hidden'); };
-        window.enviarTicketFinal = () => { 
-            const num = document.getElementById('ticketWhatsAppNum').value;
-            const texto = document.getElementById('textoPreviewTicket').value;
-            window.open(`https://wa.me/52${num}?text=${encodeURIComponent(texto)}`, '_blank'); 
-            cerrarModalPreviewTicket(); 
-        };
+        window.enviarTicketFinal = () => { const num = document.getElementById('ticketWhatsAppNum').value; const texto = document.getElementById('textoPreviewTicket').value; window.open(`https://wa.me/52${num}?text=${encodeURIComponent(texto)}`, '_blank'); cerrarModalPreviewTicket(); };
 
-        // STREAMING CHUNK: Lógica Catálogo Privado
         function renderizarTablaInventario() {
-            const tbody = document.getElementById('tablaInventarioCuerpo'); tbody.innerHTML = ''; const ordenados = Object.keys(catalogo).sort((a, b) => catalogo[a].cat.localeCompare(catalogo[b].cat));
-            ordenados.forEach(servicio => { const datos = catalogo[servicio]; for (const [modalidad, precios] of Object.entries(datos.mods)) { const margen = precios.p - precios.c; tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 text-xs text-gray-400 whitespace-nowrap">${datos.cat}</td><td class="p-3 font-bold ${datos.cat.includes('COMBOS') ? 'neon-text-purple' : 'neon-text-pink'}">${servicio}</td><td class="p-3 text-xs text-gray-300">${modalidad}</td><td class="p-3 text-xs text-[#66FCF1] uppercase font-bold">${precios.prov || 'Sin asignar'}</td><td class="p-3 font-mono text-gray-500">$${precios.c.toFixed(2)}</td><td class="p-3 font-mono font-bold text-white">$${precios.p.toFixed(2)}</td><td class="p-3 font-mono font-bold text-[#66FCF1]">$${margen.toFixed(2)}</td><td class="p-3 flex justify-center gap-3"><button onclick="abrirModalEditar('${servicio}', '${modalidad}')" class="text-[#66FCF1] hover:text-white"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg></button><button onclick="eliminarProducto('${servicio}', '${modalidad}')" class="text-[#F50057] hover:text-red-400"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td></tr>`; } });
+            const tbody = document.getElementById('tablaInventarioCuerpo'); tbody.innerHTML = ''; const ordenados = Object.keys(catalogo).sort((a, b) => { const catA = catalogo[a]?.cat || ''; const catB = catalogo[b]?.cat || ''; return catA.localeCompare(catB); });
+            ordenados.forEach(servicio => { const datos = catalogo[servicio]; if(!datos || !datos.mods) return; for (const [modalidad, precios] of Object.entries(datos.mods)) { const margen = (precios.p || 0) - (precios.c || 0); tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 text-xs text-gray-400 whitespace-nowrap">${datos.cat || 'Otros'}</td><td class="p-3 font-bold ${(datos.cat || '').includes('COMBOS') ? 'neon-text-purple' : 'neon-text-pink'}">${servicio}</td><td class="p-3 text-xs text-gray-300">${modalidad}</td><td class="p-3 text-xs text-[#66FCF1] uppercase font-bold">${precios.prov || 'Sin asignar'}</td><td class="p-3 font-mono text-gray-500">$${(precios.c || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-white">$${(precios.p || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-[#66FCF1]">$${margen.toFixed(2)}</td><td class="p-3 flex justify-center gap-3"><button onclick="abrirModalEditar('${servicio}', '${modalidad}')" class="text-[#66FCF1] hover:text-white"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg></button><button onclick="eliminarProducto('${servicio}', '${modalidad}')" class="text-[#F50057] hover:text-red-400"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td></tr>`; } });
         }
 
         window.abrirModalCatalogo = () => { document.getElementById('modalCatalogo').classList.remove('hidden'); fetchBinanceRate(); };
@@ -1021,87 +874,50 @@
         
         document.getElementById('formNuevoProducto').addEventListener('submit', async function(e) {
             e.preventDefault(); if(!currentUserId) return;
-            const cat = document.getElementById('nuevaCategoria').value; const servRaw = document.getElementById('nuevoServicio').value.trim(); const mod = document.getElementById('nuevaModalidad').value; const prov = document.getElementById('nuevoProveedor').value.trim(); const moneda = document.getElementById('monedaCosto').value; let costo = parseFloat(document.getElementById('nuevoCosto').value); const precio = parseFloat(document.getElementById('nuevoPrecio').value);
+            const cat = document.getElementById('nuevaCategoria').value; const servRaw = document.getElementById('nuevoServicio').value.trim(); const mod = document.getElementById('nuevaModalidad').value; const prov = document.getElementById('nuevoProveedor').value.trim(); const moneda = document.getElementById('monedaCosto').value; let costo = parseFloat(document.getElementById('nuevoCosto').value) || 0; const precio = parseFloat(document.getElementById('nuevoPrecio').value) || 0;
             if(moneda === 'USDT') costo = costo * currentUsdtRate;
             const serv = servRaw.replace(/\//g, '-');
             if (!catalogo[serv]) catalogo[serv] = { cat, mods: {} }; catalogo[serv].mods[mod] = { c: costo, p: precio, prov };
-            await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', serv), catalogo[serv]); 
-            mostrarToast("☁️ Producto Guardado", "success"); cerrarModalCatalogo();
+            await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); 
+            mostrarToast("☁️ Producto Guardado en Público", "success"); cerrarModalCatalogo();
         });
 
-        window.abrirModalEditar = (serv, mod) => { const datos = catalogo[serv].mods[mod]; document.getElementById('editServicio').value = serv; document.getElementById('editModalidad').value = mod; document.getElementById('editProveedor').value = datos.prov || ''; document.getElementById('editCosto').value = datos.c.toFixed(2); document.getElementById('editPrecio').value = datos.p.toFixed(2); document.getElementById('textoEditando').textContent = `${serv} - ${mod}`; document.getElementById('modalEditar').classList.remove('hidden'); };
+        window.abrirModalEditar = (serv, mod) => { const datos = catalogo[serv]?.mods?.[mod] || {}; document.getElementById('editServicio').value = serv; document.getElementById('editModalidad').value = mod; document.getElementById('editProveedor').value = datos.prov || ''; document.getElementById('editCosto').value = (datos.c || 0).toFixed(2); document.getElementById('editPrecio').value = (datos.p || 0).toFixed(2); document.getElementById('textoEditando').textContent = `${serv} - ${mod}`; document.getElementById('modalEditar').classList.remove('hidden'); };
         window.cerrarModalEditar = () => { document.getElementById('modalEditar').classList.add('hidden'); };
-        
-        window.guardarEdicion = async () => { 
-            if(!currentUserId) return; 
-            const serv = document.getElementById('editServicio').value; const mod = document.getElementById('editModalidad').value; 
-            catalogo[serv].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value), p: parseFloat(document.getElementById('editPrecio').value) }; 
-            await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', serv), catalogo[serv]); 
-            mostrarToast("☁️ Precios actualizados", "success"); cerrarModalEditar(); 
-        };
-        
-        window.eliminarProducto = async (serv, mod) => { 
-            if(!currentUserId) return; 
-            delete catalogo[serv].mods[mod]; 
-            if (Object.keys(catalogo[serv].mods).length === 0) { 
-                delete catalogo[serv]; await deleteDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', serv)); 
-            } else { 
-                await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', serv), catalogo[serv]); 
-            } 
-            mostrarToast("🗑️ Producto eliminado", "success"); 
-        };
+        window.guardarEdicion = async () => { if(!currentUserId) return; const serv = document.getElementById('editServicio').value; const mod = document.getElementById('editModalidad').value; if(!catalogo[serv]) catalogo[serv] = { mods: {} }; catalogo[serv].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); mostrarToast("☁️ Precios actualizados", "success"); cerrarModalEditar(); };
+        window.eliminarProducto = async (serv, mod) => { if(!currentUserId) return; if(catalogo[serv] && catalogo[serv].mods) { delete catalogo[serv].mods[mod]; if (Object.keys(catalogo[serv].mods).length === 0) { delete catalogo[serv]; await deleteDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv)); } else { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); } mostrarToast("🗑️ Producto eliminado", "success"); } };
 
         window.abrirModalVistaPrevia = (folio) => {
             const venta = ventas.find(v => v.folio === folio); if(!venta) return;
-            document.getElementById('vpFolio').textContent = venta.folio; document.getElementById('vpCliente').textContent = `${venta.cliente} (${venta.whatsapp || 'Sin número'})`; document.getElementById('vpServicio').textContent = `${venta.servicio} | ${venta.modalidad}`;
-            document.getElementById('vpCorreo').textContent = venta.correo || 'Ninguno asignado'; document.getElementById('vpPass').textContent = venta.password || 'Ninguna asignada'; document.getElementById('vpPerfil').textContent = venta.perfil || 'N/A'; document.getElementById('vpPin').textContent = venta.pin || 'N/A'; document.getElementById('vpProv').textContent = venta.proveedor;
-            document.getElementById('vpVence').textContent = venta.fechaVencimiento || 'No calculada';
-            const enlaceEl = document.getElementById('vpEnlace');
-            if(venta.enlace) { enlaceEl.textContent = venta.enlace; enlaceEl.onclick = () => window.open(venta.enlace, '_blank'); } else { enlaceEl.textContent = 'N/A'; enlaceEl.onclick = null; }
+            document.getElementById('vpFolio').textContent = venta.folio || 'N/A'; document.getElementById('vpCliente').textContent = `${venta.cliente || 'Sin Nombre'} (${venta.whatsapp || 'Sin número'})`; document.getElementById('vpServicio').textContent = `${venta.servicio || 'N/A'} | ${venta.modalidad || 'N/A'}`;
+            document.getElementById('vpCorreo').textContent = venta.correo || 'Ninguno asignado'; document.getElementById('vpPass').textContent = venta.password || 'Ninguna asignada'; document.getElementById('vpPerfil').textContent = venta.perfil || 'N/A'; document.getElementById('vpPin').textContent = venta.pin || 'N/A'; document.getElementById('vpProv').textContent = venta.proveedor || 'N/A'; document.getElementById('vpVence').textContent = venta.fechaVencimiento || 'No calculada';
+            const enlaceEl = document.getElementById('vpEnlace'); if(venta.enlace) { enlaceEl.textContent = venta.enlace; enlaceEl.onclick = () => window.open(venta.enlace, '_blank'); } else { enlaceEl.textContent = 'N/A'; enlaceEl.onclick = null; }
             document.getElementById('modalVistaPrevia').classList.remove('hidden');
         };
         window.cerrarModalVistaPrevia = () => { document.getElementById('modalVistaPrevia').classList.add('hidden'); };
-        
-        window.copiarVistaPrevia = () => {
-            let texto = `📌 *DATOS DE TU CUENTA*\nServicio: ${document.getElementById('vpServicio').textContent}\n📧 Correo: ${document.getElementById('vpCorreo').textContent}\n🔑 Pass: ${document.getElementById('vpPass').textContent}\n👤 Perfil: ${document.getElementById('vpPerfil').textContent}\n🔐 PIN: ${document.getElementById('vpPin').textContent}`;
-            const enlaceTxt = document.getElementById('vpEnlace').textContent; if(enlaceTxt !== 'N/A' && enlaceTxt !== '') { texto += `\n🔗 Enlace: ${enlaceTxt}`; }
-            navigator.clipboard.writeText(texto).then(() => mostrarToast("Datos copiados al portapapeles", "success")); cerrarModalVistaPrevia();
-        };
+        window.copiarVistaPrevia = () => { let texto = `📌 *DATOS DE TU CUENTA*\nServicio: ${document.getElementById('vpServicio').textContent}\n📧 Correo: ${document.getElementById('vpCorreo').textContent}\n🔑 Pass: ${document.getElementById('vpPass').textContent}\n👤 Perfil: ${document.getElementById('vpPerfil').textContent}\n🔐 PIN: ${document.getElementById('vpPin').textContent}`; const enlaceTxt = document.getElementById('vpEnlace').textContent; if(enlaceTxt !== 'N/A' && enlaceTxt !== '') { texto += `\n🔗 Enlace: ${enlaceTxt}`; } navigator.clipboard.writeText(texto).then(() => mostrarToast("Datos copiados al portapapeles", "success")); cerrarModalVistaPrevia(); };
 
         window.abrirModalEditarVenta = (folio) => {
             const venta = ventas.find(v => v.folio === folio); if(!venta) return;
-            document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || '';
-            document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || '';
-            document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); document.getElementById('modalEditarVenta').classList.remove('hidden');
+            document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente || ''; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || ''; document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || ''; document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); document.getElementById('modalEditarVenta').classList.remove('hidden');
         };
         window.cerrarModalEditarVenta = () => { document.getElementById('modalEditarVenta').classList.add('hidden'); };
+        window.guardarEdicionVenta = async () => { if(!currentUserId) return; const folio = document.getElementById('editVentaFolio').value; const nuevoWhatsApp = document.getElementById('editVentaWhatsApp').value.trim(); const nuevaFidelidad = parseInt(document.getElementById('editVentaFidelidad').value) || 0; try { await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', folio), { cliente: document.getElementById('editVentaCliente').value.trim(), whatsapp: nuevoWhatsApp, correo: document.getElementById('editVentaCorreo').value.trim(), password: document.getElementById('editVentaPass').value.trim(), perfil: document.getElementById('editVentaPerfil').value.trim(), pin: document.getElementById('editVentaPin').value.trim(), enlace: document.getElementById('editVentaEnlace').value.trim() }, { merge: true }); fidelidadClientes[nuevoWhatsApp] = Math.min(Math.max(nuevaFidelidad, 0), 5); await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes }, { merge: true }); mostrarToast("☁️ Cambios guardados", "success"); cerrarModalEditarVenta(); } catch(e) { mostrarToast("Error al guardar", "error"); } };
 
-        window.guardarEdicionVenta = async () => {
-            if(!currentUserId) return;
-            const folio = document.getElementById('editVentaFolio').value; const nuevoWhatsApp = document.getElementById('editVentaWhatsApp').value.trim(); const nuevaFidelidad = parseInt(document.getElementById('editVentaFidelidad').value) || 0;
-            try {
-                await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', folio), { cliente: document.getElementById('editVentaCliente').value.trim(), whatsapp: nuevoWhatsApp, correo: document.getElementById('editVentaCorreo').value.trim(), password: document.getElementById('editVentaPass').value.trim(), perfil: document.getElementById('editVentaPerfil').value.trim(), pin: document.getElementById('editVentaPin').value.trim(), enlace: document.getElementById('editVentaEnlace').value.trim() }, { merge: true });
-                fidelidadClientes[nuevoWhatsApp] = Math.min(Math.max(nuevaFidelidad, 0), 5); 
-                await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes }, { merge: true });
-                mostrarToast("☁️ Cambios guardados", "success"); cerrarModalEditarVenta();
-            } catch(e) { mostrarToast("Error al guardar", "error"); }
-        };
-
-        // STREAMING CHUNK: Herramientas Extras
-        window.abrirModalWhatsapp = () => { let msg = `👋 ¡Hola! Somos *STREAMING LATINO MX*\nAquí tienes nuestra lista de precios:\n\n`; const categorias = [...new Set(Object.values(catalogo).map(s => s.cat))]; categorias.forEach(cat => { msg += `🌟🌟 *${cat}* 🌟🌟\n➖➖➖➖➖➖➖➖➖➖\n`; const serviciosEnCategoria = Object.keys(catalogo).filter(nombre => catalogo[nombre].cat === cat).sort(); serviciosEnCategoria.forEach(nombre => { const datos = catalogo[nombre]; msg += `📺 *${nombre.toUpperCase()}*\n`; const modsK = Object.keys(datos.mods); modsK.forEach((m, i) => { const conector = i === modsK.length - 1 ? '└' : '├'; msg += ` ${conector} ${m} ➔ $${datos.mods[m].p}\n`; }); msg += `\n`; }); }); msg += `➖➖➖➖➖➖➖➖➖➖\n💳 *Métodos de pago:* Transferencia, Efectivo y Oxxo.`; document.getElementById('textoWhatsapp').value = msg; document.getElementById('modalWhatsapp').classList.remove('hidden'); };
+        window.abrirModalWhatsapp = () => { let msg = `👋 ¡Hola! Somos *STREAMING LATINO MX*\nAquí tienes nuestra lista de precios:\n\n`; const categorias = [...new Set(Object.values(catalogo).map(s => s?.cat || 'Otros'))]; categorias.forEach(cat => { msg += `🌟🌟 *${cat}* 🌟🌟\n➖➖➖➖➖➖➖➖➖➖\n`; const serviciosEnCategoria = Object.keys(catalogo).filter(nombre => (catalogo[nombre]?.cat || 'Otros') === cat).sort(); serviciosEnCategoria.forEach(nombre => { const datos = catalogo[nombre]; msg += `📺 *${nombre.toUpperCase()}*\n`; const modsObj = datos?.mods || {}; const modsK = Object.keys(modsObj); modsK.forEach((m, i) => { const conector = i === modsK.length - 1 ? '└' : '├'; msg += ` ${conector} ${m} ➔ $${modsObj[m].p || 0}\n`; }); msg += `\n`; }); }); msg += `➖➖➖➖➖➖➖➖➖➖\n💳 *Métodos de pago:* Transferencia, Efectivo y Oxxo.`; document.getElementById('textoWhatsapp').value = msg; document.getElementById('modalWhatsapp').classList.remove('hidden'); };
         window.cerrarModalWhatsapp = () => { document.getElementById('modalWhatsapp').classList.add('hidden'); };
         window.copiarCatalogoWhatsApp = () => { document.getElementById('textoWhatsapp').select(); document.execCommand("copy"); mostrarToast("Copiado al portapapeles", "success"); cerrarModalWhatsapp(); };
 
         window.abrirModalCombos = () => { document.getElementById('modalCombos').classList.remove('hidden'); window.cambiarTabCombo('sugerencias'); };
         window.cerrarModalCombos = () => { document.getElementById('modalCombos').classList.add('hidden'); };
         window.cambiarTabCombo = (tab) => { if(tab === 'sugerencias') { document.getElementById('tabSugerencias').classList.remove('hidden'); document.getElementById('tabManual').classList.add('hidden'); document.getElementById('btnTabSug').className = "px-4 py-2 font-bold text-sm text-[#a855f7] border-b-2 border-[#a855f7]"; document.getElementById('btnTabMan').className = "px-4 py-2 font-bold text-sm text-gray-500 border-b-2 border-transparent hover:text-gray-300"; generarSugerencias(); } else { document.getElementById('tabSugerencias').classList.add('hidden'); document.getElementById('tabManual').classList.remove('hidden'); document.getElementById('btnTabMan').className = "px-4 py-2 font-bold text-sm text-[#a855f7] border-b-2 border-[#a855f7]"; document.getElementById('btnTabSug').className = "px-4 py-2 font-bold text-sm text-gray-500 border-b-2 border-transparent hover:text-gray-300"; renderManualCombos(); } };
-        function generarSugerencias() { const container = document.getElementById('tabSugerencias'); container.innerHTML = ''; let combos = []; const vids = Object.keys(catalogo).filter(k => catalogo[k].cat.includes('CINE')); const mus = Object.keys(catalogo).filter(k => catalogo[k].cat.includes('MÚSICA')); if(vids.length > 0 && mus.length > 0) { let v = vids[0], m = mus[0]; let mv = Object.keys(catalogo[v].mods)[0], mm = Object.keys(catalogo[m].mods)[0]; let cost = catalogo[v].mods[mv].c + catalogo[m].mods[mm].c; let price = catalogo[v].mods[mv].p + catalogo[m].mods[mm].p; if((price * 0.85) - cost > 20) combos.push({ n: `Combo Total: ${v} + ${m}`, c: cost, norm: price, p: Math.floor(price * 0.85) }); } if(combos.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 p-4 text-center">Agrega más productos al inventario para generar sugerencias.</p>`; return; } combos.forEach(cb => { container.innerHTML += `<div class="bg-[#1A222C] border border-[#a855f7] p-4 rounded-lg relative overflow-hidden"><div class="absolute top-0 right-0 bg-[#a855f7] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">RECOMENDADO</div><h4 class="font-bold text-white mb-2">✨ ${cb.n}</h4><div class="flex justify-between text-xs mb-3"><span class="text-gray-400">Costo Base: $${cb.c}</span><span class="text-gray-400 line-through">Normal: $${cb.norm}</span></div><div class="flex justify-between items-end border-t border-[#1F2833] pt-3"><div><p class="text-[10px] text-[#a855f7] font-bold uppercase tracking-wider">Precio Sugerido</p><p class="text-2xl font-black text-white">$${cb.p}</p></div><div class="text-right"><p class="text-[10px] text-[#66FCF1] font-bold uppercase tracking-wider">Ganancia Neta</p><p class="text-lg font-mono text-[#66FCF1]">$${cb.p - cb.c}</p></div></div><button onclick="guardarComboRapido('${cb.n}', ${cb.c}, ${cb.p})" class="w-full mt-3 bg-transparent border border-[#a855f7] hover:bg-[#a855f7] text-[#a855f7] hover:text-white transition py-1.5 rounded font-bold text-sm">Publicar en Tienda Web</button></div>`; }); }
-        function renderManualCombos() { const list = document.getElementById('listaServiciosManual'); list.innerHTML = ''; Object.keys(catalogo).forEach(serv => { if(catalogo[serv].cat.includes('COMBOS')) return; for (const mod in catalogo[serv].mods) { const c = catalogo[serv].mods[mod].c, p = catalogo[serv].mods[mod].p; list.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-[#1A222C] rounded transition cursor-pointer border-b border-[#1F2833]"><input type="checkbox" class="custom-checkbox combo-check" data-id="${serv}|${mod}" data-c="${c}" data-p="${p}" onchange="calcularComboManual()"><div class="flex-1"><p class="text-sm font-bold text-white">${serv} <span class="text-xs text-gray-400 font-normal">(${mod})</span></p></div><div class="text-right text-xs"><p class="text-gray-500">C: $${c}</p><p class="text-[#F50057] font-bold">P: $${p}</p></div></label>`; } }); calcularComboManual(); }
-        window.calcularComboManual = () => { const checks = document.querySelectorAll('.combo-check:checked'); let totalC = 0, totalP = 0; checks.forEach(chk => { totalC += parseFloat(chk.dataset.c); totalP += parseFloat(chk.dataset.p); }); document.getElementById('comboCostoTotal').textContent = totalC.toFixed(2); document.getElementById('comboPrecioNormal').textContent = totalP.toFixed(2); window.calcularGananciaComboManual(); };
+        function generarSugerencias() { const container = document.getElementById('tabSugerencias'); container.innerHTML = ''; let combos = []; const vids = Object.keys(catalogo).filter(k => (catalogo[k]?.cat || '').includes('CINE')); const mus = Object.keys(catalogo).filter(k => (catalogo[k]?.cat || '').includes('MÚSICA')); if(vids.length > 0 && mus.length > 0) { let v = vids[0], m = mus[0]; let mv = Object.keys(catalogo[v]?.mods || {})[0], mm = Object.keys(catalogo[m]?.mods || {})[0]; if(mv && mm) { let cost = (catalogo[v].mods[mv].c || 0) + (catalogo[m].mods[mm].c || 0); let price = (catalogo[v].mods[mv].p || 0) + (catalogo[m].mods[mm].p || 0); if((price * 0.85) - cost > 20) combos.push({ n: `Combo Total: ${v} + ${m}`, c: cost, norm: price, p: Math.floor(price * 0.85) }); } } if(combos.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 p-4 text-center">Agrega más productos de distintas categorías para generar sugerencias.</p>`; return; } combos.forEach(cb => { container.innerHTML += `<div class="bg-[#1A222C] border border-[#a855f7] p-4 rounded-lg relative overflow-hidden"><div class="absolute top-0 right-0 bg-[#a855f7] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">RECOMENDADO</div><h4 class="font-bold text-white mb-2">✨ ${cb.n}</h4><div class="flex justify-between text-xs mb-3"><span class="text-gray-400">Costo Base: $${cb.c}</span><span class="text-gray-400 line-through">Normal: $${cb.norm}</span></div><div class="flex justify-between items-end border-t border-[#1F2833] pt-3"><div><p class="text-[10px] text-[#a855f7] font-bold uppercase tracking-wider">Precio Sugerido</p><p class="text-2xl font-black text-white">$${cb.p}</p></div><div class="text-right"><p class="text-[10px] text-[#66FCF1] font-bold uppercase tracking-wider">Ganancia Neta</p><p class="text-lg font-mono text-[#66FCF1]">$${cb.p - cb.c}</p></div></div><button onclick="guardarComboRapido('${cb.n}', ${cb.c}, ${cb.p})" class="w-full mt-3 bg-transparent border border-[#a855f7] hover:bg-[#a855f7] text-[#a855f7] hover:text-white transition py-1.5 rounded font-bold text-sm">Publicar en Tienda Web</button></div>`; }); }
+        function renderManualCombos() { const list = document.getElementById('listaServiciosManual'); list.innerHTML = ''; Object.keys(catalogo).forEach(serv => { if((catalogo[serv]?.cat || '').includes('COMBOS')) return; const modsObj = catalogo[serv]?.mods || {}; for (const mod in modsObj) { const c = modsObj[mod].c || 0, p = modsObj[mod].p || 0; list.innerHTML += `<label class="flex items-center gap-3 p-2 hover:bg-[#1A222C] rounded transition cursor-pointer border-b border-[#1F2833]"><input type="checkbox" class="custom-checkbox combo-check" data-id="${serv}|${mod}" data-c="${c}" data-p="${p}" onchange="calcularComboManual()"><div class="flex-1"><p class="text-sm font-bold text-white">${serv} <span class="text-xs text-gray-400 font-normal">(${mod})</span></p></div><div class="text-right text-xs"><p class="text-gray-500">C: $${c}</p><p class="text-[#F50057] font-bold">P: $${p}</p></div></label>`; } }); calcularComboManual(); }
+        window.calcularComboManual = () => { const checks = document.querySelectorAll('.combo-check:checked'); let totalC = 0, totalP = 0; checks.forEach(chk => { totalC += parseFloat(chk.dataset.c) || 0; totalP += parseFloat(chk.dataset.p) || 0; }); document.getElementById('comboCostoTotal').textContent = totalC.toFixed(2); document.getElementById('comboPrecioNormal').textContent = totalP.toFixed(2); window.calcularGananciaComboManual(); };
         window.calcularGananciaComboManual = () => { const c = parseFloat(document.getElementById('comboCostoTotal').textContent) || 0; const p = parseFloat(document.getElementById('comboPrecioOferta').value) || 0; const gan = p - c; const el = document.getElementById('comboGanancia'); el.value = `$${gan.toFixed(2)}`; el.className = `w-full p-2.5 mt-1 rounded-md text-sm font-mono font-bold bg-[#0B0C10] cursor-not-allowed ${gan < 0 ? 'text-red-500 border-red-500' : 'text-[#a855f7]'}`; };
         window.guardarComboRapido = (nombre, c, p) => { guardarComboEnBd(nombre, c, p); window.cerrarModalCombos(); };
-        window.guardarComboManual = () => { const checks = document.querySelectorAll('.combo-check:checked'); if(checks.length < 2) { mostrarToast("Selecciona al menos 2", "error"); return; } const oferta = parseFloat(document.getElementById('comboPrecioOferta').value); if(!oferta) return; let nombres = []; checks.forEach(chk => { nombres.push(chk.dataset.id.split('|')[0]); }); guardarComboEnBd("Combo: " + nombres.join(' + '), parseFloat(document.getElementById('comboCostoTotal').textContent), oferta); window.cerrarModalCombos(); };
-        async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; const safeNombre = nombre.replace(/\//g, '-'); if (!catalogo[safeNombre]) catalogo[safeNombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {} }; catalogo[safeNombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', safeNombre), catalogo[safeNombre]); mostrarToast("☁️ Combo Público Creado", "success"); }
+        window.guardarComboManual = () => { const checks = document.querySelectorAll('.combo-check:checked'); if(checks.length < 2) { mostrarToast("Selecciona al menos 2", "error"); return; } const oferta = parseFloat(document.getElementById('comboPrecioOferta').value); if(!oferta) return; let nombres = []; checks.forEach(chk => { nombres.push(chk.dataset.id.split('|')[0]); }); guardarComboEnBd("Combo: " + nombres.join(' + '), parseFloat(document.getElementById('comboCostoTotal').textContent) || 0, oferta); window.cerrarModalCombos(); };
+        async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; const safeNombre = nombre.replace(/\//g, '-'); if (!catalogo[safeNombre]) catalogo[safeNombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {} }; catalogo[safeNombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeNombre), catalogo[safeNombre]); mostrarToast("☁️ Combo Público Creado", "success"); }
 
         window.abrirModalRespaldo = () => { document.getElementById('modalRespaldo').classList.remove('hidden'); };
         window.cerrarModalRespaldo = () => { document.getElementById('modalRespaldo').classList.add('hidden'); document.getElementById('fileImport').value = ''; };
@@ -1114,28 +930,44 @@
             if (!archivo) return; 
             const lector = new FileReader(); 
             lector.onload = async function(e) { 
-                try { 
-                    const d = JSON.parse(e.target.result); 
-                    if(d.catalogo && d.ventas) { 
-                        mostrarToast("Subiendo archivo a la nube... No cierres.", "success"); 
-                        const batch1 = writeBatch(db); 
-                        batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: d.contadorFolio || 1, fidelidadClientes: d.fidelidad || d.fidelidadClientes || {} }, { merge: true }); 
-                        for(let serv in d.catalogo) { const safeServ = serv.toString().replace(/\//g, '-'); batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo', safeServ), d.catalogo[serv]); } 
-                        await batch1.commit(); 
+                let d;
+                try { d = JSON.parse(e.target.result); } catch(err) { mostrarToast("❌ El archivo no es un JSON válido", "error"); return; }
+                if(!d) { mostrarToast("❌ Archivo vacío", "error"); return; }
 
-                        let batch2 = writeBatch(db); let count = 0; 
-                        for(let v of d.ventas) { const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`; batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } } 
-                        if(count % 400 !== 0) await batch2.commit(); 
-                        
-                        window.cerrarModalRespaldo(); mostrarToast("✅ Respaldo subido a la nube", "success"); 
-                    } else { mostrarToast("❌ El archivo no es válido.", "error"); }
-                } catch(error) { mostrarToast("❌ Error al subir: " + error.message.substring(0, 60), "error"); } 
+                const resCatalogo = d.catalogo || {}; const resVentas = d.ventas || []; const resContador = d.contadorFolio || 1; const resFidelidad = d.fidelidad || d.fidelidadClientes || {};
+
+                mostrarToast("Subiendo archivo a la nube... No cierres.", "success"); 
+                try {
+                    const batch1 = writeBatch(db); 
+                    batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: resContador, fidelidadClientes: resFidelidad }, { merge: true }); 
+                    
+                    // ESCRIBIR CATÁLOGO A LA RUTA PÚBLICA DIRECTAMENTE (Esto arregla el error de pantalla negra)
+                    for(let serv in resCatalogo) { 
+                        if(resCatalogo[serv]) {
+                            const safeServ = serv.toString().replace(/\//g, '-'); 
+                            batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeServ), resCatalogo[serv]); 
+                        }
+                    } 
+                    await batch1.commit(); 
+
+                    let batch2 = writeBatch(db); let count = 0; 
+                    for(let v of resVentas) { 
+                        if(v) {
+                            const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`; 
+                            batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); 
+                            count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } 
+                        }
+                    } 
+                    if(count % 400 !== 0) await batch2.commit(); 
+                    
+                    window.cerrarModalRespaldo(); mostrarToast("✅ Respaldo subido a la nube", "success"); 
+                } catch(error) { console.error(error); mostrarToast("❌ Error al subir: Archivo corrupto", "error"); } 
             }; 
             lector.readAsText(archivo); 
         };
 
         window.exportarExcelVentas = () => { if(ventas.length === 0) return; const ws = XLSX.utils.json_to_sheet(ventas); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Ventas"); XLSX.writeFile(wb, "Ventas_SLMX.xlsx"); mostrarToast("Excel Descargado", "success"); };
-        window.exportarInventarioExcelColor = () => { const filas = [["Categoría", "Servicio", "Modalidad", "Proveedor", "Costo", "Precio", "Ganancia"]]; Object.keys(catalogo).sort().forEach(n => { for (const [m, p] of Object.entries(catalogo[n].mods)) { filas.push([catalogo[n].cat, n, m, p.prov || '-', p.c, p.p, p.p - p.c]); } }); const ws = XLSX.utils.aoa_to_sheet(filas); for (let R = 1; R < filas.length; ++R) { let color = "FFFFFF"; let serv = filas[R][1].toLowerCase(); if(serv.includes('netflix')) color = "FFCCCC"; else if(serv.includes('spotify')) color = "CCFFCC"; else if(serv.includes('max')) color = "CCE5FF"; for(let C=0; C<7; C++) { let cell = ws[XLSX.utils.encode_cell({r: R, c: C})]; if(cell) cell.s = { fill: { fgColor: { rgb: color } } }; } } const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Inventario"); XLSX.writeFile(wb, "Inventario_SLMX.xlsx"); mostrarToast("Excel Descargado", "success"); };
+        window.exportarInventarioExcelColor = () => { const filas = [["Categoría", "Servicio", "Modalidad", "Proveedor", "Costo", "Precio", "Ganancia"]]; Object.keys(catalogo).sort().forEach(n => { const datos = catalogo[n]; if(!datos || !datos.mods) return; for (const [m, p] of Object.entries(datos.mods)) { filas.push([datos.cat || 'Otros', n, m, p.prov || '-', p.c || 0, p.p || 0, (p.p || 0) - (p.c || 0)]); } }); const ws = XLSX.utils.aoa_to_sheet(filas); for (let R = 1; R < filas.length; ++R) { let color = "FFFFFF"; let serv = filas[R][1].toLowerCase(); if(serv.includes('netflix')) color = "FFCCCC"; else if(serv.includes('spotify')) color = "CCFFCC"; else if(serv.includes('max')) color = "CCE5FF"; for(let C=0; C<7; C++) { let cell = ws[XLSX.utils.encode_cell({r: R, c: C})]; if(cell) cell.s = { fill: { fgColor: { rgb: color } } }; } } const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Inventario"); XLSX.writeFile(wb, "Inventario_SLMX.xlsx"); mostrarToast("Excel Descargado", "success"); };
 
         const inputNuevoCosto = document.getElementById('nuevoCosto'); if(inputNuevoCosto) inputNuevoCosto.addEventListener('input', actualizarConversionEnVivo);
         const slcMoneda = document.getElementById('monedaCosto'); if(slcMoneda) slcMoneda.addEventListener('change', actualizarConversionEnVivo);
