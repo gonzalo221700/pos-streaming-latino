@@ -127,7 +127,7 @@
     <div id="adminPanel" class="hidden p-4 md:p-6 pb-20">
         <div class="max-w-7xl mx-auto">
             
-            <!-- CRM Header -->
+            <!-- CRM Header con Ojo Vigía Integrado -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-[#12161c] p-4 rounded-lg neon-border">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full border-2 border-[#F50057] flex items-center justify-center shadow-[0_0_15px_rgba(245,0,87,0.6)] bg-[#0B0C10] overflow-hidden">
@@ -135,8 +135,12 @@
                     </div>
                     <div>
                         <img src="titulo.png" alt="Streaming Latino MX" class="h-6 md:h-8 object-contain mb-1" onerror="this.outerHTML='<h1 class=\\'text-xl md:text-2xl font-black neon-text-cyan tracking-wide\\'>STREAMING LATINO MX</h1>'">
-                        <p class="text-xs text-gray-400 font-semibold flex items-center gap-2">
+                        <p class="text-xs text-gray-400 font-semibold flex items-center gap-2 mt-1">
                             <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></span> Panel de Control CRM
+                            <!-- OJO VIGÍA ADMINISTRADOR -->
+                            <span class="ml-3 px-2 py-0.5 rounded-full border border-[#a855f7] text-[#a855f7] bg-[#1A222C] flex items-center gap-1.5 shadow-[0_0_10px_rgba(168,85,247,0.3)]" title="Visitas totales a tu Tienda Web">
+                                👁️ <span id="adminVisitasContador" class="font-mono font-bold tracking-wider">0</span>
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -434,7 +438,6 @@
                 </div>
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label><select id="nuevaCategoria" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold"><option value="🍿 CINE Y SERIES">🍿 CINE Y SERIES</option><option value="🎧 MÚSICA Y AUDIO">🎧 MÚSICA Y AUDIO</option><option value="🤖 INTELIGENCIA ARTIFICIAL">🤖 INTELIGENCIA ARTIFICIAL</option><option value="🎮 GAMING Y RECARGAS">🎮 GAMING Y RECARGAS</option><option value="🎁 COMBOS Y PROMOCIONES">🎁 COMBOS Y PROMOCIONES</option></select></div>
                 
-                <!-- NUEVO: Título y Descripción -->
                 <div>
                     <label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label>
                     <input type="text" id="nuevoServicio" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. Netflix, Spotify, Max...">
@@ -481,7 +484,6 @@
                     <input type="file" id="editImagen" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#a855f7] file:text-white hover:file:bg-[#c084fc] bg-[#1A222C] rounded p-2">
                 </div>
                 
-                <!-- NUEVO: Editar Título y Descripción -->
                 <div>
                     <label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label>
                     <input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required>
@@ -610,7 +612,7 @@
             return null; 
         }
 
-        // COMPRESOR DE IMÁGENES MANUALES (Para evitar Firebase Storage) - ACTUALIZADO A 700PX
+        // COMPRESOR DE IMÁGENES MANUALES (700PX ALTA DEFINICIÓN)
         function comprimirImagen(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -700,9 +702,12 @@
             
             onSnapshot(visitasRef, (snap) => {
                 const el = document.getElementById('visitasContador');
-                if (snap.exists() && el) {
-                    el.textContent = (snap.data().count || 0).toLocaleString() + ' VISITAS';
-                }
+                const elAdmin = document.getElementById('adminVisitasContador');
+                let count = 0;
+                if (snap.exists()) count = snap.data().count || 0;
+                
+                if (el) el.textContent = count.toLocaleString() + ' VISITAS';
+                if (elAdmin) elAdmin.textContent = count.toLocaleString();
             });
 
             if (!sessionStorage.getItem('visita_registrada')) {
@@ -717,7 +722,7 @@
         }
 
         function suscribirCatalogoPublico() {
-            inicializarContadorVisitas(); // Arranca el ojo vigía al entrar
+            inicializarContadorVisitas(); 
 
             const configRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general');
             if(unsubConfig) unsubConfig();
@@ -802,7 +807,6 @@
                     preciosHtml += `<div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2 last:border-0"><span class="text-sm text-gray-300">${mod}</span><span class="text-lg font-mono font-bold text-[#66FCF1]">$${precios.p}</span></div>`;
                 });
 
-                // STREAMING CHUNK: Inyectar Descripción en la Tarjeta Pública
                 let descHtml = '';
                 if(datos.desc) {
                     descHtml = `<p class="text-xs text-gray-400 mb-4 leading-snug break-words">${datos.desc}</p>`;
@@ -912,7 +916,10 @@
                 
                 const meses = parseInt(document.getElementById('tiempoContratado').value) || 1;
                 const d = new Date();
+                const diaInicio = d.getDate();
                 d.setMonth(d.getMonth() + meses);
+                if(d.getDate() !== diaInicio) d.setDate(0); 
+                
                 const timestampVencimiento = d.getTime();
                 const fechaVencimientoTexto = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
 
@@ -1070,7 +1077,13 @@
             
             if (!servNuevo) { mostrarToast("El nombre no puede estar vacío", "error"); return; }
 
-            // Truco de Clonación (Si el nombre cambió)
+            const fileInput = document.getElementById('editImagen');
+            let nuevaImg = null;
+            if (fileInput.files && fileInput.files[0]) {
+                nuevaImg = await comprimirImagen(fileInput.files[0]);
+            }
+
+            // Truco de Clonación (Si el nombre cambió, actualizar atómicamente)
             if (servOrig !== servNuevo) {
                 if (!catalogo[servNuevo]) {
                     catalogo[servNuevo] = { ...catalogo[servOrig] };
@@ -1082,21 +1095,19 @@
                 
                 catalogo[servNuevo].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servNuevo].desc = desc;
+                if (nuevaImg) catalogo[servNuevo].imgBase64 = nuevaImg;
 
-                const fileInput = document.getElementById('editImagen');
-                if (fileInput.files && fileInput.files[0]) catalogo[servNuevo].imgBase64 = await comprimirImagen(fileInput.files[0]);
-
-                // Borramos el viejo de Firebase y subimos el nuevo
-                await deleteDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig));
-                await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servNuevo), catalogo[servNuevo]); 
+                // Borramos el viejo de Firebase y subimos el nuevo (En bloque para que no parpadee)
+                const batch = writeBatch(db);
+                batch.delete(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig));
+                batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servNuevo), catalogo[servNuevo]);
+                await batch.commit();
 
             } else {
                 // Edición Normal (Mismo nombre)
                 catalogo[servOrig].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servOrig].desc = desc;
-
-                const fileInput = document.getElementById('editImagen');
-                if (fileInput.files && fileInput.files[0]) catalogo[servOrig].imgBase64 = await comprimirImagen(fileInput.files[0]);
+                if (nuevaImg) catalogo[servOrig].imgBase64 = nuevaImg;
 
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig), catalogo[servOrig]); 
             }
@@ -1125,6 +1136,7 @@
             document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente || ''; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || ''; document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || ''; document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); 
             document.getElementById('editVentaGarantia').value = venta.notasGarantia || '';
             
+            // Traductor Universal de Fechas (Para reparar cuentas viejas)
             if(venta.fechaVencimiento) { 
                 const p = venta.fechaVencimiento.split('/'); 
                 if(p.length === 3) {
@@ -1132,7 +1144,9 @@
                     const mes = p[1].padStart(2, '0');
                     const anio = p[2];
                     document.getElementById('editVentaVencimiento').value = `${anio}-${mes}-${dia}`; 
-                } 
+                } else if(venta.fechaVencimiento.includes('-')) {
+                    document.getElementById('editVentaVencimiento').value = venta.fechaVencimiento;
+                }
             } else { 
                 document.getElementById('editVentaVencimiento').value = ''; 
             }
@@ -1147,8 +1161,9 @@
             
             let nuevosDatos = { cliente: document.getElementById('editVentaCliente').value.trim(), whatsapp: nuevoWhatsApp, correo: document.getElementById('editVentaCorreo').value.trim(), password: document.getElementById('editVentaPass').value.trim(), perfil: document.getElementById('editVentaPerfil').value.trim(), pin: document.getElementById('editVentaPin').value.trim(), enlace: document.getElementById('editVentaEnlace').value.trim(), notasGarantia: document.getElementById('editVentaGarantia').value.trim() };
             
+            // Traductor y Limpiador de Calendario al Guardar
             const nuevaFechaIn = document.getElementById('editVentaVencimiento').value;
-            if(nuevaFechaIn) {
+            if(nuevaFechaIn && nuevaFechaIn.trim() !== "") {
                 const partes = nuevaFechaIn.split('-');
                 if(partes.length === 3) {
                     const d = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
