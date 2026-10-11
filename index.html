@@ -825,7 +825,7 @@
                 ventaPendiente = {
                     cliente: document.getElementById('cliente').value, whatsapp: document.getElementById('whatsapp').value.trim(), categoria: categoriaInput.value, servicio: servicio, modalidad: modalidad,
                     correo: document.getElementById('correoAsignado').value.trim(), password: document.getElementById('passAsignado').value.trim(), perfil: document.getElementById('perfilAsignado').value.trim(), pin: document.getElementById('pinAsignado').value.trim(), enlace: document.getElementById('enlaceAsignado').value.trim(),
-                    duracionMeses: meses, fechaVencimiento: fechaVencimientoTexto, vencimientoTimestamp: timestampVencimiento, pago: document.getElementById('pago').value, estado: document.getElementById('estado').value
+                    duracionMeses: meses, fechaVencimiento: fechaVencimientoTexto, vencimientoTimestamp: timestampVencimiento, pago: document.getElementById('pago').value
                 };
                 
                 document.getElementById('confServicio').textContent = `${servicio} - ${modalidad}`; document.getElementById('confCliente').textContent = ventaPendiente.cliente; document.getElementById('confProveedor').value = provBase; document.getElementById('confCosto').value = document.getElementById('costo').value; document.getElementById('confPrecio').value = precioInput.value; document.getElementById('modalConfirmarVenta').classList.remove('hidden');
