@@ -80,8 +80,15 @@
         <p class="text-gray-500 text-xs mt-2 text-center max-w-xs">Conectando con servidores de Google Firebase.<br>Sincronizando información...</p>
     </div>
 
+    <!-- TIENDA PÚBLICA -->
     <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] relative pb-20">
         
+        <!-- Ojito Público de Visitas -->
+        <div class="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1A222C]/80 border border-[#a855f7]/50 backdrop-blur-sm z-[60] shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+            <span class="text-sm">👁️</span>
+            <span id="publicVisitasContador" class="text-sm font-mono font-bold text-[#a855f7]">0</span>
+        </div>
+
         <!-- Barra Marquesina Neón 3D -->
         <div id="promoBar" class="hidden w-full py-3 z-50 transition-all duration-500">
             <div class="marquee-container max-w-7xl mx-auto"><span class="marquee-content uppercase text-sm md:text-base" id="promoText"></span></div>
@@ -128,6 +135,7 @@
         </button>
     </div>
 
+    <!-- MODAL DOBLE CANDADO -->
     <div id="modalDobleCandado" class="fixed inset-0 modal-bg z-[99999] hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] border border-[#a855f7] p-8 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.2)] w-full max-w-sm relative text-center">
             <button type="button" onclick="cerrarDobleCandado()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
@@ -141,6 +149,7 @@
         </div>
     </div>
 
+    <!-- MODAL ANUNCIOS Y MENSAJES -->
     <div id="modalPromo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalPromo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -148,14 +157,12 @@
             
             <div class="border-t border-gray-700 my-4 pt-2"></div>
             
-            <!-- Mensaje de Bienvenida -->
             <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase block">Mensaje de Bienvenida (Debajo del Logo)</label>
             <p class="text-[10px] text-gray-500 mb-2">Este texto aparece en la caja de cristal neón. Úsalo para dar instrucciones o tu eslogan.</p>
             <textarea id="inputWelcomeText" rows="3" class="w-full p-3 mb-4 rounded bg-[#1A222C] text-white border border-[#a855f7] text-sm font-medium resize-none focus:border-[#c084fc]" placeholder="Disfruta del mejor entretenimiento al mejor precio..."></textarea>
 
             <div class="border-t border-gray-700 my-4 pt-2"></div>
 
-            <!-- Marquesina -->
             <label class="text-xs text-[#66FCF1] mb-1 font-bold uppercase block">Marquesina Superior (Barra Corrediza)</label>
             <p class="text-[10px] text-gray-500 mb-2">Si dejas el texto en blanco, la barra desaparecerá de la tienda.</p>
             <select id="inputPromoTheme" class="w-full p-3 mb-3 rounded bg-[#0B0C10] text-white border border-[#66FCF1] text-sm font-bold focus:border-[#45A29E]">
@@ -169,6 +176,7 @@
         </div>
     </div>
 
+    <!-- PANEL CRM ADMINISTRADOR -->
     <div id="adminPanel" class="hidden p-4 md:p-6 pb-20">
         <div class="max-w-7xl mx-auto">
             
@@ -182,7 +190,7 @@
                         <img src="titulo.png" alt="Streaming Latino MX" class="h-6 md:h-8 object-contain mb-1" onerror="this.outerHTML='<h1 class=\\'text-xl md:text-2xl font-black neon-text-cyan tracking-wide\\'>STREAMING LATINO MX</h1>'">
                         <p class="text-xs text-gray-400 font-semibold flex items-center gap-2 mt-1">
                             <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></span> Panel CRM 
-                            <!-- Ojo Vigía Admin (Visible siempre) -->
+                            <!-- Ojo Vigía Admin -->
                             <span class="ml-3 px-2 py-0.5 rounded-full border border-[#a855f7] text-[#a855f7] bg-[#1A222C] flex items-center gap-1.5 shadow-[0_0_10px_rgba(168,85,247,0.3)]" title="Visitas totales a tu Tienda Web">
                                 👁️ <span id="adminVisitasContador" class="font-mono font-bold tracking-wider">0</span>
                             </span>
@@ -196,7 +204,7 @@
                     <button onclick="abrirModalRespaldo()" class="bg-gray-800 border border-gray-500 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">⚙️ Respaldo</button>
                     <button onclick="abrirModalCombos()" class="purple-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">🎁 Combo</button>
                     <button onclick="abrirModalCatalogo()" class="cyan-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">+ Producto</button>
-                    <button onclick="cerrarSesionCompleta()" class="bg-[#1A222C] border border-gray-600 text-gray-400 hover:text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all">Salir</button>
+                    <button onclick="cerrarSesionCompleta()" class="bg-[#1A222C] border border-gray-600 text-gray-400 hover:text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all">🔒 Poner Candado</button>
                 </div>
             </div>
 
@@ -689,19 +697,45 @@
         const precioInput = document.getElementById('precio');
         const gananciaInput = document.getElementById('ganancia');
 
+        function mostrarTiendaPublica() {
+            document.getElementById('publicStore').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            suscribirCatalogoPublico();
+        }
+
+        function mostrarPanelAdmin() {
+            document.getElementById('publicStore').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+        }
+
         window.abrirDobleCandado = () => { document.getElementById('modalDobleCandado').classList.remove('hidden'); };
         window.cerrarDobleCandado = () => { document.getElementById('modalDobleCandado').classList.add('hidden'); document.getElementById('candadoUser').value = ''; document.getElementById('candadoPass').value = ''; };
 
-        window.verificarDobleCandado = () => {
+        // MAGIA DEL LOGIN SILENCIOSO: Sin popups si ya estás conectado.
+        window.verificarDobleCandado = async () => {
             const u = document.getElementById('candadoUser').value; const p = document.getElementById('candadoPass').value;
             if(u === 'Gonzalo cab' && p === 'Aliencab1172200') {
                 cerrarDobleCandado();
-                document.getElementById('loadingScreen').style.display = 'flex'; document.getElementById('loadingScreen').style.opacity = '1';
-                const provider = new GoogleAuthProvider();
-                signInWithPopup(auth, provider).catch((error) => {
-                    document.getElementById('loadingScreen').style.opacity = '0'; setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
-                    mostrarToast("⚠️ Ventana bloqueada o cancelada.", "error");
-                });
+                localStorage.setItem('adminUnlocked', 'true');
+                
+                if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                    mostrarPanelAdmin();
+                    inicializarNubeAdmin(auth.currentUser.uid);
+                    mostrarToast(`☁️ Bóveda CRM Desbloqueada de inmediato`, "success");
+                } else {
+                    document.getElementById('loadingScreen').style.display = 'flex'; 
+                    document.getElementById('loadingScreen').style.opacity = '1';
+                    const provider = new GoogleAuthProvider();
+                    try {
+                        await signInWithPopup(auth, provider);
+                        // onAuthStateChanged capturará esto y mostrará el panel
+                    } catch (error) {
+                        document.getElementById('loadingScreen').style.opacity = '0'; 
+                        setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
+                        localStorage.removeItem('adminUnlocked');
+                        mostrarToast("⚠️ Autenticación en la nube cancelada.", "error");
+                    }
+                }
             } else {
                 const modal = document.getElementById('modalDobleCandado').firstElementChild;
                 modal.classList.add('border-red-500'); setTimeout(() => modal.classList.remove('border-red-500'), 500);
@@ -715,38 +749,40 @@
 
             if (user) {
                 if (user.isAnonymous) {
-                    document.getElementById('publicStore').classList.remove('hidden');
-                    document.getElementById('adminPanel').classList.add('hidden');
-                    suscribirCatalogoPublico();
+                    mostrarTiendaPublica();
                 } else {
-                    document.getElementById('publicStore').classList.add('hidden');
-                    document.getElementById('adminPanel').classList.remove('hidden');
                     currentUserId = user.uid;
-                    mostrarToast(`☁️ Bóveda CRM Desbloqueada`, "success");
-                    suscribirCatalogoPublico();
-                    inicializarNubeAdmin(user.uid);
+                    if (localStorage.getItem('adminUnlocked') === 'true') {
+                        mostrarPanelAdmin();
+                        inicializarNubeAdmin(user.uid);
+                        suscribirCatalogoPublico();
+                    } else {
+                        mostrarTiendaPublica();
+                    }
                 }
             } else {
-                try { await signInAnonymously(auth); } catch (e) { mostrarToast("El acceso anónimo está apagado en Firebase", "error"); }
+                try { await signInAnonymously(auth); } catch (e) { mostrarToast("El acceso anónimo está apagado", "error"); }
             }
         });
 
+        // NUEVO: Salir SIN cerrar la sesión de Google, solo pone el candado
         window.cerrarSesionCompleta = () => {
             if(unsubVentas) unsubVentas(); if(unsubMeta) unsubMeta();
-            const ls = document.getElementById('loadingScreen');
-            ls.style.display = 'flex'; ls.style.opacity = '1';
-            signOut(auth).then(() => { ventas = []; document.getElementById('tablaCuerpo').innerHTML = ''; }).catch(() => {
-                ls.style.opacity = '0'; setTimeout(() => ls.style.display = 'none', 500);
-            });
+            localStorage.removeItem('adminUnlocked');
+            ventas = []; document.getElementById('tablaCuerpo').innerHTML = '';
+            mostrarTiendaPublica();
+            mostrarToast("🔒 Panel bloqueado y protegido", "success");
+            window.scrollTo(0,0);
         };
 
         async function inicializarContadorVisitas() {
             const visitasRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'visitas');
             onSnapshot(visitasRef, (snap) => {
                 let count = 0; if (snap.exists()) count = snap.data().count || 0;
-                const el = document.getElementById('visitasContador'); const elAdmin = document.getElementById('adminVisitasContador');
-                if (el) el.textContent = count.toLocaleString() + ' VISITAS';
+                const elAdmin = document.getElementById('adminVisitasContador');
+                const elPublic = document.getElementById('publicVisitasContador');
                 if (elAdmin) elAdmin.textContent = count.toLocaleString();
+                if (elPublic) elPublic.textContent = count.toLocaleString();
             });
 
             if (!sessionStorage.getItem('visita_registrada')) {
@@ -1089,7 +1125,7 @@
                     duracionMeses: meses, 
                     fechaVencimiento: fechaVencimientoTexto, 
                     vencimientoTimestamp: timestampVencimiento,
-                    reembolsado: false // Venta nueva nunca es reembolsada inicialmente
+                    reembolsado: false 
                 };
                 
                 document.getElementById('confServicio').textContent = `${servicio} - ${modalidad}`; document.getElementById('confCliente').textContent = ventaPendiente.cliente; document.getElementById('confProveedor').value = provBase; document.getElementById('confCosto').value = document.getElementById('costo').value; document.getElementById('confPrecio').value = precioInput.value; document.getElementById('modalConfirmarVenta').classList.remove('hidden');
@@ -1110,7 +1146,6 @@
                 contadorFolio++; let wp = ventaPendiente.whatsapp;
                 
                 let premioActivado = false;
-                let refPremio = false;
 
                 if (wp) {
                     if (!codigosReferidos[wp]) { codigosReferidos[wp] = generarCodigoUnico(); }
@@ -1120,7 +1155,6 @@
                         let refWp = Object.keys(codigosReferidos).find(key => codigosReferidos[key] === codigoIngresado);
                         if (refWp && refWp !== wp) {
                             fidelidadClientes[refWp] = Math.min((fidelidadClientes[refWp] || 0) + 1, 5);
-                            refPremio = true;
                             mostrarToast("✨ ¡Referido aplicado! Se regaló 1 estrella al dueño del código.", "success");
                         } else if (refWp === wp) {
                             mostrarToast("⚠️ No puedes usar tu propio código de referido.", "error");
