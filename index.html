@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Latino MX - POS Cloud</title>
+    <title>POS - Streaming Latino MX (Cloud)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería para Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     
     <link rel="manifest" href="manifest.json">
@@ -17,7 +19,6 @@
         .neon-text-pink { color: #F50057; text-shadow: 0 0 5px rgba(245, 0, 87, 0.5); }
         .neon-text-purple { color: #a855f7; text-shadow: 0 0 5px rgba(168, 85, 247, 0.5); }
         .neon-border { border-color: #66FCF1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.15); }
-        
         .pink-btn { background-color: #F50057; color: white; transition: all 0.3s; }
         .pink-btn:hover { background-color: #ff3377; box-shadow: 0 0 15px rgba(245, 0, 87, 0.6); transform: translateY(-1px); }
         .cyan-btn { background-color: #1F2833; border: 1px solid #66FCF1; color: #66FCF1; transition: all 0.3s; }
@@ -27,6 +28,7 @@
         
         input, select, textarea { background-color: #1F2833; border: 1px solid #45A29E; color: white; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #66FCF1; box-shadow: 0 0 5px rgba(102, 252, 241, 0.5); }
+        
         table th { background-color: #1F2833; border-bottom: 2px solid #F50057; color: #66FCF1; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
         table td { border-bottom: 1px solid #1F2833; }
         
@@ -63,6 +65,14 @@
         .theme-cyber { background: linear-gradient(90deg, #083344, #06b6d4, #083344); border-bottom: 2px solid #22d3ee; box-shadow: 0 4px 20px rgba(6, 182, 212, 0.6); }
         .theme-cyber .marquee-content { color: #fff; text-shadow: 0 0 10px #cffafe, 0 0 20px #06b6d4; font-weight: 900; letter-spacing: 0.1em; }
 
+        .status-dot-green { width: 10px; height: 10px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: respiro-verde 2s infinite; }
+        .status-dot-yellow { width: 10px; height: 10px; background-color: #eab308; border-radius: 50%; box-shadow: 0 0 8px #eab308;}
+        .status-dot-red { width: 10px; height: 10px; background-color: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: respiro-rojo 2s infinite; }
+        
+        .custom-checkbox { width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; border: 2px solid #45A29E; appearance: none; cursor: pointer; position: relative; background-color: #1F2833; }
+        .custom-checkbox:checked { background-color: #66FCF1; border-color: #66FCF1; }
+        .custom-checkbox:checked::after { content: "✔"; position: absolute; color: #0B0C10; font-size: 0.8rem; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 999999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 12px 24px; border-radius: 8px; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); animation: slideInDown 0.3s ease-out forwards; display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
         .toast-success { background-color: #166534; border: 1px solid #22c55e; }
@@ -82,19 +92,17 @@
 
     <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] relative pb-20">
         
-        <!-- Barra Marquesina Neón 3D -->
-        <div id="promoBar" class="hidden w-full py-3 z-50 transition-all duration-500">
+        <!-- Barra Marquesina Neón 3D Fija (Sticky Header) -->
+        <div id="promoBar" class="hidden sticky top-0 w-full py-3 z-[100] transition-all duration-500 shadow-xl">
             <div class="marquee-container max-w-7xl mx-auto"><span class="marquee-content uppercase text-sm md:text-base" id="promoText"></span></div>
         </div>
 
-        <!-- Cojín superior eliminado (pt-1) y márgenes en cero -->
         <div class="max-w-6xl mx-auto px-4 pb-4 md:px-8 md:pb-8 pt-1 relative mt-0">
             
+            <!-- Cabecera Compacta (Logo y Mensaje) -->
             <header class="flex flex-col items-center justify-center mb-4 text-center mt-0">
-                <!-- Título Limpio Neón (Sin el Círculo Gigante) -->
                 <img src="titulo.png" alt="Streaming Latino MX" class="max-w-[300px] md:max-w-[450px] drop-shadow-[0_0_20px_rgba(102,252,241,0.6)]" onerror="this.outerHTML='<h1 class=\\'text-4xl md:text-6xl font-black neon-text-cyan tracking-widest uppercase drop-shadow-lg\\'>Streaming Latino <span class=\\'text-white\\'>MX</span></h1>'">
                 
-                <!-- Tarjeta de Bienvenida Editable (Glassmorphism & Neon) -->
                 <div class="mt-4 w-full max-w-2xl mx-auto p-[2px] rounded-2xl bg-gradient-to-r from-[#66FCF1] via-[#a855f7] to-[#F50057] shadow-[0_0_25px_rgba(168,85,247,0.3)]">
                     <div class="bg-[#0B0C10]/95 backdrop-blur-xl rounded-2xl p-4 md:p-5 border border-gray-800/50">
                         <p id="welcomeMessageText" class="text-gray-300 text-sm md:text-[15px] font-medium leading-relaxed tracking-wide">
@@ -104,10 +112,10 @@
                 </div>
             </header>
 
-            <!-- Filtros Inteligentes Dinámicos -->
+            <!-- Filtros Inteligentes -->
             <div id="publicFilters" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-5"></div>
 
-            <!-- Catálogo Grid (Efecto Póster Expandido 100%) -->
+            <!-- Catálogo de Productos -->
             <div id="publicCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             
             <div id="emptyStore" class="hidden text-center p-10 bg-[#12161c] rounded-2xl border border-dashed border-gray-700 mt-10">
@@ -124,14 +132,21 @@
             </div>
         </div>
 
-        <!-- Ojito Público de Visitas / Entrada Secreta al CRM (Isla Flotante Esquina Inferior Derecha) -->
-        <div id="btnOjoSecreto" class="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 rounded-full bg-[#0B0C10]/90 border-2 border-[#a855f7] backdrop-blur-md z-[60] shadow-[0_0_20px_rgba(168,85,247,0.4)] cursor-pointer hover:scale-105 transition-transform select-none" title="Contador de Visitas">
-            <span class="text-xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]">👁️</span>
-            <span id="publicVisitasContador" class="text-sm font-mono font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">0</span>
+        <!-- CÁPSULA FLOTANTE DUAL (WhatsApp + Ojito Secreto) -->
+        <div class="fixed bottom-6 right-6 flex items-center bg-[#0B0C10]/90 rounded-full border-2 border-[#a855f7] backdrop-blur-md z-[60] shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-transform select-none">
+            <!-- Botón WhatsApp Soporte -->
+            <a href="#" id="btnFlotanteWa" target="_blank" class="flex items-center gap-2 px-4 py-2 border-r border-gray-700/50 hover:bg-green-900/30 transition-colors rounded-l-full group" title="Soporte WhatsApp">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.245 3.487 5.236 3.487 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.312 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.888-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.52-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.172-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.695.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            </a>
+            <!-- Entrada Secreta al CRM (Ojito) -->
+            <div id="btnOjoSecreto" class="flex items-center gap-2 px-4 py-2 hover:bg-[#a855f7]/20 transition-colors rounded-r-full cursor-pointer" title="Contador de Visitas">
+                <span class="text-xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]">👁️</span>
+                <span id="publicVisitasContador" class="text-sm font-mono font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">0</span>
+            </div>
         </div>
     </div>
 
-    <!-- MODAL DOBLE CANDADO -->
+    <!-- MODAL DOBLE CANDADO (Bóveda Seguridad) -->
     <div id="modalDobleCandado" class="fixed inset-0 modal-bg z-[99999] hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] border border-[#a855f7] p-8 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.2)] w-full max-w-sm relative text-center">
             <button type="button" onclick="cerrarDobleCandado()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
@@ -145,7 +160,7 @@
         </div>
     </div>
 
-    <!-- MODAL ANUNCIOS Y MENSAJES -->
+    <!-- MODAL ANUNCIOS Y MENSAJES CRM -->
     <div id="modalPromo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalPromo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -154,12 +169,12 @@
             <div class="border-t border-gray-700 my-4 pt-2"></div>
             
             <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase block">Mensaje de Bienvenida (Debajo del Logo)</label>
-            <p class="text-[10px] text-gray-500 mb-2">Este texto aparece en la caja de cristal neón. Úsalo para dar instrucciones o tu eslogan.</p>
+            <p class="text-[10px] text-gray-500 mb-2">Aparece en la caja de cristal neón. Úsalo para instrucciones o eslogan.</p>
             <textarea id="inputWelcomeText" rows="3" class="w-full p-3 mb-4 rounded bg-[#1A222C] text-white border border-[#a855f7] text-sm font-medium resize-none focus:border-[#c084fc]" placeholder="Disfruta del mejor entretenimiento al mejor precio..."></textarea>
 
             <div class="border-t border-gray-700 my-4 pt-2"></div>
 
-            <label class="text-xs text-[#66FCF1] mb-1 font-bold uppercase block">Marquesina Superior (Barra Corrediza)</label>
+            <label class="text-xs text-[#66FCF1] mb-1 font-bold uppercase block">Marquesina Superior (Barra Fija Corrediza)</label>
             <p class="text-[10px] text-gray-500 mb-2">Si dejas el texto en blanco, la barra desaparecerá de la tienda.</p>
             <select id="inputPromoTheme" class="w-full p-3 mb-3 rounded bg-[#0B0C10] text-white border border-[#66FCF1] text-sm font-bold focus:border-[#45A29E]">
                 <option value="fuego">🔴 Alerta Fuego (Ofertas y Remates)</option>
@@ -176,7 +191,6 @@
     <div id="adminPanel" class="hidden p-4 md:p-6 pb-20">
         <div class="max-w-7xl mx-auto">
             
-            <!-- CRM Header -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-[#12161c] p-4 rounded-lg neon-border shadow-lg">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full border-2 border-[#F50057] flex items-center justify-center shadow-[0_0_15px_rgba(245,0,87,0.6)] bg-[#0B0C10] overflow-hidden">
@@ -185,8 +199,7 @@
                     <div>
                         <img src="titulo.png" alt="Streaming Latino MX" class="h-6 md:h-8 object-contain mb-1" onerror="this.outerHTML='<h1 class=\\'text-xl md:text-2xl font-black neon-text-cyan tracking-wide\\'>STREAMING LATINO MX</h1>'">
                         <p class="text-xs text-gray-400 font-semibold flex items-center gap-2 mt-1">
-                            <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></span> Panel CRM 
-                            <!-- Ojo Vigía Admin (Siempre a la vista) -->
+                            <span class="status-dot-green"></span> Panel CRM 
                             <span class="ml-3 px-2 py-0.5 rounded-full border border-[#a855f7] text-[#a855f7] bg-[#1A222C] flex items-center gap-1.5 shadow-[0_0_10px_rgba(168,85,247,0.3)]" title="Visitas totales a tu Tienda Web">
                                 👁️ <span id="adminVisitasContador" class="font-mono font-bold tracking-wider">0</span>
                             </span>
@@ -205,7 +218,7 @@
                 </div>
             </div>
 
-            <!-- Terminal de Venta Rápida -->
+            <!-- Terminal de Venta -->
             <div class="bg-[#12161c] p-6 rounded-lg neon-border mb-6 shadow-xl border-t-4 border-t-[#F50057]">
                 <h2 class="text-lg font-bold mb-4 text-white flex items-center gap-2">Terminal de Venta y Renovación</h2>
                 <form id="ventaForm" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -274,7 +287,7 @@
                     </div>
 
                     <div class="flex flex-col md:col-span-2">
-                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Invitación (Canva, Duolingo, etc.)</label>
+                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Invitación</label>
                         <input type="url" id="enlaceAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="https://...">
                     </div>
 
@@ -312,6 +325,7 @@
                 </form>
             </div>
 
+            <!-- TABLAS -->
             <div class="bg-[#12161c] rounded-lg shadow-xl overflow-hidden neon-border mb-8">
                 <div class="p-4 border-b border-[#1F2833] flex justify-between items-center bg-[#0B0C10]">
                     <h3 class="text-[#66FCF1] font-bold tracking-widest text-sm uppercase">Base de Datos de Ventas</h3>
@@ -446,7 +460,7 @@
                     <textarea id="editVentaGarantia" rows="2" class="w-full p-2 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#F50057] outline-none resize-none" placeholder="Ej. Cayó el 12 Oct, repuesto..."></textarea>
                 </div>
 
-                <!-- SWITCH DE REEMBOLSO (NUEVO) -->
+                <!-- SWITCH DE REEMBOLSO -->
                 <div class="mt-4 p-3 border border-red-500 rounded-lg bg-red-500/10 flex items-center justify-between shadow-[0_0_10px_rgba(239,68,68,0.2)]">
                     <div>
                         <label class="text-xs text-red-400 font-black uppercase tracking-wider block">🛑 Reembolsar Venta</label>
@@ -496,7 +510,7 @@
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label><select id="nuevaCategoria" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold"><option value="🍿 CINE Y SERIES">🍿 CINE Y SERIES</option><option value="🎧 MÚSICA Y AUDIO">🎧 MÚSICA Y AUDIO</option><option value="🤖 INTELIGENCIA ARTIFICIAL">🤖 INTELIGENCIA ARTIFICIAL</option><option value="🎮 GAMING Y RECARGAS">🎮 GAMING Y RECARGAS</option><option value="🎁 COMBOS Y PROMOCIONES">🎁 COMBOS Y PROMOCIONES</option></select></div>
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label><input type="text" id="nuevoServicio" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. Netflix, Spotify, Max..."></div>
                 <div>
-                    <label class="text-xs text-gray-400 font-semibold uppercase">Descripción del Servicio (Persuasiva para Clientes)</label>
+                    <label class="text-xs text-gray-400 font-semibold uppercase">Descripción del Servicio</label>
                     <textarea id="nuevaDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1] resize-none" placeholder="Ej. Cuentas originales 4K UHD, sin caídas..."></textarea>
                 </div>
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Modalidad</label><input type="text" id="nuevaModalidad" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. 1 Perfil..." required></div>
@@ -520,6 +534,7 @@
         </div>
     </div>
 
+    <!-- Editar Producto Catalogo -->
     <div id="modalEditar" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative max-h-[95vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalEditar()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -534,7 +549,7 @@
                     <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Cambiar Foto (HD)</label>
                     <input type="file" id="editImagen" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#a855f7] file:text-white hover:file:bg-[#c084fc] bg-[#1A222C] rounded p-2">
                 </div>
-                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio (Clonado Inteligente)</label><input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
+                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label><input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Descripción Visible</label><textarea id="editDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none resize-none"></textarea></div>
                 
                 <div class="border-t border-gray-700 my-2 pt-2"></div>
@@ -710,6 +725,7 @@
         window.abrirDobleCandado = () => { document.getElementById('modalDobleCandado').classList.remove('hidden'); };
         window.cerrarDobleCandado = () => { document.getElementById('modalDobleCandado').classList.add('hidden'); document.getElementById('candadoUser').value = ''; document.getElementById('candadoPass').value = ''; };
 
+        // SENSOR DE 5 TOQUES EN EL OJITO PARA ABRIR CRM
         let secretClickCount = 0;
         let secretClickTimer = null;
         const btnOjoSecreto = document.getElementById('btnOjoSecreto');
@@ -727,7 +743,7 @@
             });
         }
 
-        // MAGIA DEL LOGIN SILENCIOSO: Sin popups si ya estás conectado.
+        // LOGIN SILENCIOSO DE GOOGLE
         window.verificarDobleCandado = async () => {
             const u = document.getElementById('candadoUser').value; const p = document.getElementById('candadoPass').value;
             if(u === 'Gonzalo cab' && p === 'Aliencab1172200') {
@@ -737,25 +753,24 @@
                 if (auth.currentUser && !auth.currentUser.isAnonymous) {
                     mostrarPanelAdmin();
                     inicializarNubeAdmin(auth.currentUser.uid);
-                    mostrarToast(`☁️ Bóveda CRM Desbloqueada de inmediato`, "success");
+                    mostrarToast(`☁️ Bóveda CRM Desbloqueada`, "success");
                 } else {
                     document.getElementById('loadingScreen').style.display = 'flex'; 
                     document.getElementById('loadingScreen').style.opacity = '1';
                     const provider = new GoogleAuthProvider();
                     try {
                         await signInWithPopup(auth, provider);
-                        // onAuthStateChanged capturará esto y mostrará el panel
                     } catch (error) {
                         document.getElementById('loadingScreen').style.opacity = '0'; 
                         setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
                         localStorage.removeItem('adminUnlocked');
-                        mostrarToast("⚠️ Autenticación en la nube cancelada.", "error");
+                        mostrarToast("⚠️ Autenticación cancelada.", "error");
                     }
                 }
             } else {
                 const modal = document.getElementById('modalDobleCandado').firstElementChild;
                 modal.classList.add('border-red-500'); setTimeout(() => modal.classList.remove('border-red-500'), 500);
-                mostrarToast("Credenciales de sistema incorrectas", "error");
+                mostrarToast("Credenciales incorrectas", "error");
             }
         };
 
@@ -781,7 +796,6 @@
             }
         });
 
-        // NUEVO: Salir SIN cerrar la sesión de Google, solo pone el candado
         window.cerrarSesionCompleta = () => {
             localStorage.removeItem('adminUnlocked');
             mostrarTiendaPublica();
@@ -820,6 +834,12 @@
                         numeroVentasPublico = snap.data().whatsapp;
                         const inputConf = document.getElementById('inputNumVentas');
                         if(inputConf) inputConf.value = numeroVentasPublico;
+                        
+                        // ACTUALIZAR BOTÓN FLOTANTE
+                        const btnFlotanteWa = document.getElementById('btnFlotanteWa');
+                        if(btnFlotanteWa) {
+                            btnFlotanteWa.href = `https://wa.me/${numeroVentasPublico}?text=${encodeURIComponent("👋 ¡Hola! Vengo del catálogo en línea y necesito ayuda o más información.")}`;
+                        }
                     }
                     
                     const welcomeText = snap.data().welcomeMsg;
@@ -836,7 +856,8 @@
                         promoText.innerHTML = snap.data().promo;
                         
                         const theme = snap.data().promoTheme || 'cyber';
-                        promoBar.className = `w-full py-3 z-50 transition-all duration-500 theme-${theme}`;
+                        // AÑADIDO: sticky top-0 y z-[100] para que no se mueva al bajar
+                        promoBar.className = `sticky top-0 w-full py-3 z-[100] transition-all duration-500 shadow-xl theme-${theme}`;
                         promoText.className = `marquee-content uppercase text-sm md:text-base neon-marquee-text`;
 
                         const inputPromo = document.getElementById('inputPromoText');
