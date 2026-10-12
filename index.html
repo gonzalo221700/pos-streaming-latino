@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- STREAMING CHUNK: Configuración inicial y librerías -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Streaming Latino MX - POS Cloud</title>
@@ -12,7 +11,6 @@
     <link rel="apple-touch-icon" href="logo.jpg">
     <meta name="theme-color" content="#0B0C10">
 
-    <!-- STREAMING CHUNK: Estilos principales y Neón -->
     <style>
         body { background-color: #0B0C10; color: #C5C6C7; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; overflow-x: hidden; }
         .neon-text-cyan { color: #66FCF1; text-shadow: 0 0 5px rgba(102, 252, 241, 0.5); }
@@ -37,7 +35,7 @@
         ::-webkit-scrollbar-thumb { background: #45A29E; border-radius: 4px; }
         .modal-bg { background-color: rgba(11, 12, 16, 0.85); backdrop-filter: blur(4px); }
         
-        /* Animaciones Respiración Neón de Cuenta Regresiva */
+        /* Animaciones Neón Tiempo Restante */
         @keyframes respiro-verde { 0% { box-shadow: 0 0 5px #22c55e, inset 0 0 5px #22c55e; border-color: #22c55e; } 50% { box-shadow: 0 0 15px #22c55e, inset 0 0 10px #22c55e; border-color: #4ade80; text-shadow: 0 0 5px #4ade80; } 100% { box-shadow: 0 0 5px #22c55e, inset 0 0 5px #22c55e; border-color: #22c55e; } }
         @keyframes respiro-naranja { 0% { box-shadow: 0 0 5px #f97316, inset 0 0 5px #f97316; border-color: #f97316; } 50% { box-shadow: 0 0 15px #f97316, inset 0 0 10px #f97316; border-color: #fb923c; text-shadow: 0 0 5px #fb923c; } 100% { box-shadow: 0 0 5px #f97316, inset 0 0 5px #f97316; border-color: #f97316; } }
         @keyframes respiro-rojo { 0% { box-shadow: 0 0 5px #ef4444, inset 0 0 5px #ef4444; border-color: #ef4444; } 50% { box-shadow: 0 0 25px #ef4444, inset 0 0 15px #ef4444; border-color: #f87171; text-shadow: 0 0 8px #f87171; } 100% { box-shadow: 0 0 5px #ef4444, inset 0 0 5px #ef4444; border-color: #ef4444; } }
@@ -47,9 +45,19 @@
         .badge-neon-rojo { animation: respiro-rojo 1s infinite ease-in-out; color: #f87171; background-color: rgba(239, 68, 68, 0.1); border: 1px solid; }
         .badge-vencido { border-color: #4b5563; color: #9ca3af; background-color: rgba(75, 85, 99, 0.2); border: 1px solid; }
 
+        /* Animaciones Base */
         @keyframes slideInDown { from { transform: translate(-50%, -100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         @keyframes fadeOutUp { from { transform: translate(-50%, 0); opacity: 1; } to { transform: translate(-50%, -100%); opacity: 0; } }
         
+        /* Marquesina (Promociones) */
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .marquee-container { overflow: hidden; white-space: nowrap; position: relative; width: 100%; display: flex; align-items: center; }
+        .marquee-content { display: inline-block; animation: scroll-left 20s linear infinite; }
+        
+        /* Burbuja Social Proof */
+        @keyframes bubble-up { 0% { transform: translateY(100px); opacity: 0; } 10% { transform: translateY(0); opacity: 1; } 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(20px); opacity: 0; } }
+        .social-proof-bubble { animation: bubble-up 5s forwards; }
+
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 999999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 12px 24px; border-radius: 8px; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); animation: slideInDown 0.3s ease-out forwards; display: flex; align-items: center; gap: 8px; text-sm; }
         .toast-success { background-color: #166534; border: 1px solid #22c55e; }
@@ -61,74 +69,91 @@
 
     <div id="toast-container"></div>
 
-    <!-- STREAMING CHUNK: Pantalla de Carga Inteligente -->
     <div id="loadingScreen" class="fixed inset-0 bg-[#0B0C10] z-[100000] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-16 h-16 border-4 border-[#66FCF1] border-t-[#F50057] rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(102,252,241,0.5)]"></div>
         <p class="text-[#66FCF1] font-black tracking-widest animate-pulse">CARGANDO SISTEMA...</p>
         <p class="text-gray-500 text-xs mt-2 text-center max-w-xs">Conectando con servidores de Google Firebase.<br>Sincronizando información...</p>
     </div>
 
-    <!-- STREAMING CHUNK: Catálogo Público (Tienda Web) -->
-    <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] p-4 md:p-8 relative">
+    <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] relative pb-20">
         
-        <!-- Nuevo Contador de Visitas -->
-        <div class="absolute top-4 right-4 bg-[#1A222C]/90 px-3 py-1.5 rounded-full border border-[#a855f7] flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.4)] backdrop-blur-md z-40">
+        <!-- Barra Marquesina (Promociones) -->
+        <div id="promoBar" class="hidden w-full bg-gradient-to-r from-[#F50057] to-[#a855f7] text-white text-sm font-black py-2 shadow-[0_0_15px_rgba(245,0,87,0.5)] z-50">
+            <div class="marquee-container max-w-7xl mx-auto"><span class="marquee-content tracking-widest uppercase" id="promoText"></span></div>
+        </div>
+
+        <!-- Contador de Visitas Ojo Vigía (Tienda) -->
+        <div class="absolute top-4 right-4 bg-[#1A222C]/90 px-3 py-1.5 rounded-full border border-[#a855f7] flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.4)] backdrop-blur-md z-40" style="margin-top: env(safe-area-inset-top);">
             <span class="text-sm">👁️</span>
             <span id="visitasContador" class="text-[#a855f7] font-mono font-bold text-xs tracking-wider">0 VISITAS</span>
         </div>
 
-        <div class="max-w-6xl mx-auto">
-            <header class="flex flex-col items-center justify-center mb-10 text-center mt-6">
-                <!-- Imagen de Galaxia / Logo -->
+        <div class="max-w-6xl mx-auto p-4 md:p-8">
+            <header class="flex flex-col items-center justify-center mb-6 text-center mt-6">
+                <!-- Logo -->
                 <div class="w-32 h-32 rounded-full border-2 border-[#F50057] flex items-center justify-center shadow-[0_0_30px_rgba(245,0,87,0.6)] bg-[#0B0C10] mb-6 relative overflow-hidden">
                     <img src="logo.jpg" alt="Logo SLMX" class="w-full h-full object-cover rounded-full relative z-10" onerror="this.outerHTML='<span class=\\'text-[#F50057] font-black text-4xl tracking-tighter relative z-10\\'>SL</span>'">
                 </div>
-                
-                <!-- Título Oficial PNG -->
+                <!-- Título -->
                 <img src="titulo.png" alt="Streaming Latino MX" class="max-w-[300px] md:max-w-[450px] drop-shadow-[0_0_15px_rgba(102,252,241,0.4)]" onerror="this.outerHTML='<h1 class=\\'text-3xl md:text-5xl font-black neon-text-cyan tracking-widest uppercase\\'>Streaming Latino <span class=\\'text-white\\'>MX</span></h1>'">
-                
-                <p class="text-gray-400 mt-6 text-sm md:text-base max-w-lg font-medium bg-[#1F2833]/50 p-4 rounded-xl border border-gray-800">
-                    Disfruta del mejor entretenimiento al mejor precio. Selecciona tu servicio y contrata de forma segura por WhatsApp.
-                </p>
+                <p class="text-gray-400 mt-6 text-sm md:text-base max-w-lg font-medium bg-[#1F2833]/50 p-4 rounded-xl border border-gray-800">Disfruta del mejor entretenimiento al mejor precio. Selecciona tu servicio y contrata de forma segura por WhatsApp.</p>
             </header>
 
+            <!-- Filtros de Navegación Rápida -->
+            <div id="publicFilters" class="flex flex-wrap justify-center gap-2 mb-8"></div>
+
+            <!-- Catálogo Grid -->
             <div id="publicCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             
-            <div id="emptyStore" class="hidden text-center p-10 bg-[#12161c] rounded-2xl border border-dashed border-gray-700">
+            <div id="emptyStore" class="hidden text-center p-10 bg-[#12161c] rounded-2xl border border-dashed border-gray-700 mt-10">
                 <p class="text-gray-500 text-lg animate-pulse">Aún no hay productos en la tienda.</p>
             </div>
         </div>
         
-        <!-- Botón de Doble Candado para Administrador -->
+        <!-- Burbuja de Prueba Social (Falsa/Inteligente) -->
+        <div id="socialProofBubble" class="hidden fixed bottom-6 left-4 bg-[#12161c]/95 border border-[#66FCF1] p-3 rounded-xl shadow-[0_0_20px_rgba(102,252,241,0.3)] z-50 flex items-center gap-3 backdrop-blur-sm max-w-[280px]">
+            <div class="text-2xl bg-[#0B0C10] p-2 rounded-full border border-gray-700" id="socialProofIcon">🔥</div>
+            <div>
+                <p class="text-[10px] text-gray-400 font-bold tracking-wider uppercase mb-0.5" id="socialProofTime">Hace unos instantes</p>
+                <p class="text-xs text-white leading-tight" id="socialProofText"></p>
+            </div>
+        </div>
+
+        <!-- Botón Doble Candado para Admin -->
         <button onclick="abrirDobleCandado()" class="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-[#12161c] border border-gray-800 shadow-lg flex items-center justify-center text-gray-600 hover:text-[#66FCF1] hover:border-[#66FCF1] transition-all z-50 group" title="Acceso Administrativo">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
         </button>
     </div>
 
-    <!-- STREAMING CHUNK: Modal Doble Candado -->
     <div id="modalDobleCandado" class="fixed inset-0 modal-bg z-[99999] hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] border border-[#a855f7] p-8 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.2)] w-full max-w-sm relative text-center">
             <button type="button" onclick="cerrarDobleCandado()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
-            
             <div class="w-16 h-16 mx-auto bg-[#0B0C10] rounded-full border-2 border-[#a855f7] flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(168,85,247,0.5)]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#a855f7]" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
             </div>
-            
             <h2 class="text-xl font-black text-white mb-6 uppercase tracking-widest">Bóveda de Seguridad</h2>
-            
             <input type="text" id="candadoUser" class="w-full p-3 mb-4 rounded bg-[#1A222C] text-white border border-gray-600 text-center font-bold focus:border-[#a855f7] transition-colors" placeholder="Usuario">
             <input type="password" id="candadoPass" class="w-full p-3 mb-6 rounded bg-[#1A222C] text-white border border-gray-600 text-center font-bold focus:border-[#a855f7] transition-colors" placeholder="Contraseña">
-            
             <button id="btnVerificarLocal" onclick="verificarDobleCandado()" class="w-full bg-[#a855f7] hover:bg-[#c084fc] text-white font-black py-3 rounded shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all uppercase tracking-widest">Desbloquear Nube</button>
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Panel CRM Privado -->
+    <!-- Modal Config Promo Marquesina -->
+    <div id="modalPromo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
+            <button type="button" onclick="cerrarModalPromo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <h2 class="text-xl font-black text-[#F50057] mb-2 flex items-center gap-2">📢 Anuncio Público</h2>
+            <p class="text-xs text-gray-400 mb-4">Escribe un texto para la barra corrediza de la Tienda. Si lo dejas en blanco, la barra se ocultará.</p>
+            <textarea id="inputPromoText" rows="3" class="w-full p-3 rounded bg-[#1A222C] text-white border border-[#F50057] text-sm font-bold resize-none" placeholder="Ej. 🔥 OFERTA: En la compra de Netflix llevate Spotify a mitad de precio 🔥"></textarea>
+            <button onclick="guardarPromoTienda()" class="w-full mt-4 bg-[#F50057] hover:bg-red-600 text-white font-black py-3 rounded uppercase tracking-wider shadow-[0_0_15px_rgba(245,0,87,0.4)]">Publicar Anuncio</button>
+        </div>
+    </div>
+
     <div id="adminPanel" class="hidden p-4 md:p-6 pb-20">
         <div class="max-w-7xl mx-auto">
             
-            <!-- CRM Header con Ojo Vigía Integrado -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-[#12161c] p-4 rounded-lg neon-border">
+            <!-- CRM Header -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-[#12161c] p-4 rounded-lg neon-border shadow-lg">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full border-2 border-[#F50057] flex items-center justify-center shadow-[0_0_15px_rgba(245,0,87,0.6)] bg-[#0B0C10] overflow-hidden">
                         <img src="logo.jpg" alt="SL" class="w-full h-full object-cover rounded-full" onerror="this.outerHTML='<span class=\\'text-[#F50057] font-black text-2xl tracking-tighter\\'>SL</span>'">
@@ -136,8 +161,8 @@
                     <div>
                         <img src="titulo.png" alt="Streaming Latino MX" class="h-6 md:h-8 object-contain mb-1" onerror="this.outerHTML='<h1 class=\\'text-xl md:text-2xl font-black neon-text-cyan tracking-wide\\'>STREAMING LATINO MX</h1>'">
                         <p class="text-xs text-gray-400 font-semibold flex items-center gap-2 mt-1">
-                            <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></span> Panel de Control CRM
-                            <!-- OJO VIGÍA ADMINISTRADOR -->
+                            <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></span> Panel CRM 
+                            <!-- Ojo Vigía Admin -->
                             <span class="ml-3 px-2 py-0.5 rounded-full border border-[#a855f7] text-[#a855f7] bg-[#1A222C] flex items-center gap-1.5 shadow-[0_0_10px_rgba(168,85,247,0.3)]" title="Visitas totales a tu Tienda Web">
                                 👁️ <span id="adminVisitasContador" class="font-mono font-bold tracking-wider">0</span>
                             </span>
@@ -146,20 +171,18 @@
                 </div>
                 
                 <div class="flex flex-wrap items-center justify-center gap-2 mt-4 md:mt-0">
-                    <button onclick="abrirModalConfig()" class="bg-red-900/30 border border-red-500 hover:bg-red-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">📱 Configurar WhatsApp</button>
+                    <button onclick="abrirModalPromo()" class="bg-red-900/30 border border-[#F50057] hover:bg-[#F50057] text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">📢 Anuncio</button>
+                    <button onclick="abrirModalConfig()" class="bg-red-900/30 border border-red-500 hover:bg-red-500 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">📱 Configurar WA</button>
                     <button onclick="abrirModalRespaldo()" class="bg-gray-800 border border-gray-500 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all shadow-md">⚙️ Respaldo</button>
                     <button onclick="abrirModalCombos()" class="purple-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">🎁 Combo</button>
                     <button onclick="abrirModalCatalogo()" class="cyan-btn px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs">+ Producto</button>
-                    <button onclick="cerrarSesionCompleta()" class="bg-[#1A222C] border border-gray-600 text-gray-400 hover:text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all">Cerrar Sesión</button>
+                    <button onclick="cerrarSesionCompleta()" class="bg-[#1A222C] border border-gray-600 text-gray-400 hover:text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 text-xs transition-all">Salir</button>
                 </div>
             </div>
 
-            <!-- Terminal de Venta Formulario -->
+            <!-- Terminal de Venta -->
             <div class="bg-[#12161c] p-6 rounded-lg neon-border mb-6 shadow-xl border-t-4 border-t-[#F50057]">
-                <h2 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#F50057]" viewBox="0 0 20 20" fill="currentColor"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg>
-                    Terminal de Venta y Renovación
-                </h2>
+                <h2 class="text-lg font-bold mb-4 text-white flex items-center gap-2">Terminal de Venta y Renovación</h2>
                 <form id="ventaForm" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     
                     <div class="flex flex-col md:col-span-2">
@@ -168,7 +191,7 @@
                     </div>
                     
                     <div class="flex flex-col md:col-span-2">
-                        <label class="text-xs text-yellow-400 mb-1 font-bold uppercase">WhatsApp (A 10 dígitos sin +52)</label>
+                        <label class="text-xs text-yellow-400 mb-1 font-bold uppercase">WhatsApp (A 10 dígitos)</label>
                         <input type="tel" id="whatsapp" required class="p-2.5 rounded-md text-sm border-yellow-400 focus:border-yellow-400" placeholder="Ej. 9991234567">
                     </div>
 
@@ -196,11 +219,11 @@
                         <input type="text" id="categoria" readonly class="p-2.5 rounded-md text-sm bg-[#0B0C10] text-gray-400 cursor-not-allowed font-semibold">
                     </div>
 
+                    <!-- Datos Asignados -->
                     <div class="flex flex-col md:col-span-2">
                         <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Correo (Asignado al Cliente)</label>
                         <input type="text" id="correoAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="ejemplo@correo.com">
                     </div>
-
                     <div class="flex flex-col md:col-span-2">
                         <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Contraseña</label>
                         <input type="text" id="passAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Pass123">
@@ -212,7 +235,6 @@
                         <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Nombre del Perfil (Opcional)</label>
                         <input type="text" id="perfilAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Ej. Pantalla 4">
                     </div>
-
                     <div class="flex flex-col md:col-span-2">
                         <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">PIN de Acceso (Opcional)</label>
                         <input type="text" id="pinAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Ej. 1234">
@@ -221,22 +243,20 @@
                     <div class="flex flex-col md:col-span-1 hidden md:block"></div>
 
                     <div class="flex flex-col md:col-span-4">
-                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Invitación (Para Canva, Duolingo, etc.)</label>
+                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Invitación (Canva, Duolingo, etc.)</label>
                         <input type="url" id="enlaceAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="https://...">
                     </div>
 
                     <div class="flex flex-col md:col-span-1 border-b md:border-b-0 border-gray-700 pb-2 md:pb-0"></div>
 
-                    <div class="flex flex-col hidden"> 
-                        <input type="number" id="costo" step="0.01" class="hidden">
-                    </div>
+                    <!-- Input Oculto de Costo para evitar fallos matemáticos -->
+                    <div class="flex flex-col hidden"><input type="number" id="costo" step="0.01" class="hidden"></div>
 
-                    <!-- Precio y Tiempo Contratado -->
+                    <!-- Precios -->
                     <div class="flex flex-col">
                         <label class="text-xs text-[#F50057] mb-1 font-bold uppercase">Precio a Cobrar</label>
                         <div class="relative"><span class="absolute left-3 top-2.5 text-[#F50057] font-bold">$</span><input type="number" id="precio" step="0.01" required class="p-2.5 pl-7 w-full rounded-md text-sm font-mono font-bold text-white border-[#F50057]"></div>
                     </div>
-
                     <div class="flex flex-col">
                         <label class="text-xs text-[#66FCF1] mb-1 font-bold uppercase">Ganancia Neta</label>
                         <div class="relative"><span class="absolute left-3 top-2.5 text-[#66FCF1] font-bold">$</span><input type="text" id="ganancia" readonly class="p-2.5 pl-7 w-full rounded-md text-sm bg-[#0B0C10] font-mono font-black text-[#66FCF1] cursor-not-allowed" value="0.00"></div>
@@ -258,12 +278,13 @@
                     </div>
 
                     <div class="flex flex-col justify-end md:col-span-5 lg:col-span-2">
+                        <!-- Botón 100% Funcional sin el input de "estado" -->
                         <button type="submit" class="pink-btn py-2.5 px-4 rounded-md font-black uppercase tracking-wider h-[42px] w-full shadow-[0_0_15px_rgba(245,0,87,0.4)]">+ Registrar Venta</button>
                     </div>
                 </form>
             </div>
 
-            <!-- STREAMING CHUNK: Tabla de Ventas (Limpia sin Estado/Costo) -->
+            <!-- Tabla de Ventas (Sin Columna Costo y Estado) -->
             <div class="bg-[#12161c] rounded-lg shadow-xl overflow-hidden neon-border mb-8">
                 <div class="p-4 border-b border-[#1F2833] flex justify-between items-center bg-[#0B0C10]">
                     <h3 class="text-[#66FCF1] font-bold tracking-widest text-sm uppercase">Base de Datos de Ventas</h3>
@@ -291,12 +312,10 @@
                         <tbody id="tablaCuerpo" class="divide-y divide-[#1F2833]"></tbody>
                     </table>
                 </div>
-                <div id="emptyState" class="p-8 text-center text-gray-500">
-                    Aún no hay ventas registradas. ¡Tu negocio empieza aquí!
-                </div>
+                <div id="emptyState" class="p-8 text-center text-gray-500">Aún no hay ventas registradas. ¡Tu negocio empieza aquí!</div>
             </div>
 
-            <!-- STREAMING CHUNK: Catálogo de Inventario -->
+            <!-- Tabla de Inventario / Catálogo -->
             <div class="bg-[#12161c] rounded-lg shadow-xl overflow-hidden neon-border mb-10">
                 <div class="p-4 border-b border-[#1F2833] flex justify-between items-center bg-[#0B0C10] flex-wrap gap-3">
                     <h3 class="text-[#66FCF1] font-bold tracking-widest text-sm uppercase">Mi Inventario / Catálogo</h3>
@@ -326,9 +345,9 @@
         </div>
     </div>
 
+    <!-- Modales Globales -->
     <datalist id="listaProveedores"></datalist>
 
-    <!-- STREAMING CHUNK: Alerta Premio -->
     <div id="modalPremio" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg border-4 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.6)] p-8 w-full max-w-sm text-center relative animate-pulse">
             <div class="text-7xl mb-2">🎉🎁🎉</div>
@@ -338,7 +357,7 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Vista Previa Cuenta (Ojo) -->
+    <!-- Vista Previa de Venta y Garantías -->
     <div id="modalVistaPrevia" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <button type="button" onclick="cerrarModalVistaPrevia()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -354,12 +373,11 @@
                     <div><span class="text-xs text-[#a855f7] uppercase font-bold block">Perfil</span> <span id="vpPerfil" class="text-sm font-mono text-white break-all"></span></div>
                     <div><span class="text-xs text-[#a855f7] uppercase font-bold block">PIN</span> <span id="vpPin" class="text-sm font-mono text-white break-all"></span></div>
                 </div>
-                <div><span class="text-xs text-[#a855f7] uppercase font-bold block">Enlace de Invitación</span> <span id="vpEnlace" class="text-sm font-mono text-blue-400 break-all cursor-pointer underline"></span></div>
+                <div><span class="text-xs text-[#a855f7] uppercase font-bold block">Enlace</span> <span id="vpEnlace" class="text-sm font-mono text-blue-400 break-all cursor-pointer underline"></span></div>
                 <div class="border-t border-[#1F2833] my-2"></div>
                 <div><span class="text-xs text-yellow-500 uppercase font-bold block">Fecha Vencimiento</span> <span id="vpVence" class="text-sm font-bold text-yellow-400"></span></div>
                 <div><span class="text-xs text-gray-500 uppercase font-bold block">Proveedor Interno</span> <span id="vpProv" class="text-sm font-bold text-gray-300"></span></div>
                 
-                <!-- Caja de Garantía -->
                 <div id="vpGarantiaBox" class="hidden border border-[#F50057] bg-[#F50057]/10 p-2 rounded-md mt-2">
                     <span class="text-xs text-[#F50057] uppercase font-bold block">🛡️ Notas de Garantía</span>
                     <span id="vpGarantia" class="text-sm font-mono text-gray-200"></span>
@@ -372,7 +390,7 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Editar Venta (Con Calendario y Garantías) -->
+    <!-- Editar Venta (Con Calendario Universal) -->
     <div id="modalEditarVenta" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <button type="button" onclick="cerrarModalEditarVenta()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -388,15 +406,14 @@
                     <div><label class="text-xs text-yellow-400 font-bold uppercase">Fecha Vence</label><input type="date" id="editVentaVencimiento" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#0B0C10] text-yellow-400 border border-yellow-400 outline-none"></div>
                 </div>
 
-                <div class="border-t border-gray-700 my-2 pt-2"><p class="text-xs text-[#a855f7] font-bold uppercase mb-2">Datos de la Cuenta / Enlace</p></div>
+                <div class="border-t border-gray-700 my-2 pt-2"><p class="text-xs text-[#a855f7] font-bold uppercase mb-2">Datos de la Cuenta</p></div>
                 <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-[#a855f7] font-bold uppercase">Correo</label><input type="text" id="editVentaCorreo" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div><div><label class="text-xs text-[#a855f7] font-bold uppercase">Contraseña</label><input type="text" id="editVentaPass" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div></div>
-                <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-[#a855f7] font-bold uppercase">Nombre Perfil</label><input type="text" id="editVentaPerfil" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div><div><label class="text-xs text-[#a855f7] font-bold uppercase">PIN</label><input type="text" id="editVentaPin" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div></div>
-                <div><label class="text-xs text-[#a855f7] font-bold uppercase">Enlace / Link</label><input type="url" id="editVentaEnlace" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]" placeholder="https://..."></div>
+                <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-[#a855f7] font-bold uppercase">Perfil</label><input type="text" id="editVentaPerfil" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div><div><label class="text-xs text-[#a855f7] font-bold uppercase">PIN</label><input type="text" id="editVentaPin" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div></div>
+                <div><label class="text-xs text-[#a855f7] font-bold uppercase">Enlace</label><input type="url" id="editVentaEnlace" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#a855f7] outline-none focus:border-[#a855f7]"></div>
                 
-                <!-- Caja de Garantías -->
                 <div class="mt-2 border border-[#F50057] p-2 rounded bg-[#F50057]/5">
                     <label class="text-xs text-[#F50057] font-bold uppercase block">🛡️ Notas de Garantía / Reposición</label>
-                    <textarea id="editVentaGarantia" rows="2" class="w-full p-2 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#F50057] outline-none resize-none" placeholder="Ej. Cayó el 12 Oct, repuesto en Panel B..."></textarea>
+                    <textarea id="editVentaGarantia" rows="2" class="w-full p-2 mt-1 rounded-md text-sm bg-[#1A222C] text-white border border-[#F50057] outline-none resize-none" placeholder="Ej. Cayó el 12 Oct, repuesto..."></textarea>
                 </div>
             </div>
             <div class="pt-4 flex gap-3">
@@ -406,56 +423,49 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Ticket de WhatsApp Generador -->
+    <!-- Ticket de WhatsApp -->
     <div id="modalPreviewTicket" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-md shadow-2xl relative">
             <button type="button" onclick="cerrarModalPreviewTicket()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
             <h2 class="text-xl font-black text-green-400 mb-2 flex items-center gap-2">🟢 Enviar Ticket Oficial</h2>
-            <p class="text-xs text-gray-400 mb-2">Revisa el formato antes de mandarlo al cliente.</p>
             <input type="hidden" id="ticketWhatsAppNum">
             <textarea id="textoPreviewTicket" class="w-full h-80 p-3 rounded-md text-[13px] font-mono bg-[#0B0C10] text-gray-200 resize-none outline-none focus:ring-1 focus:ring-green-400 border border-[#1F2833] shadow-inner"></textarea>
             <div class="pt-4 flex gap-3">
                 <button type="button" onclick="cerrarModalPreviewTicket()" class="flex-1 bg-transparent border border-gray-600 text-gray-400 py-2.5 rounded-md font-bold transition hover:bg-gray-800">Cancelar</button>
-                <button type="button" onclick="enviarTicketFinal()" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-2.5 rounded-md font-black uppercase tracking-wider flex justify-center items-center gap-2 shadow-[0_0_10px_rgba(22,163,74,0.4)]">Enviar a WhatsApp</button>
+                <button type="button" onclick="enviarTicketFinal()" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-2.5 rounded-md font-black uppercase tracking-wider shadow-[0_0_10px_rgba(22,163,74,0.4)]">Enviar a WA</button>
             </div>
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Catálogo Modal (Para agregar) -->
+    <!-- Agregar Producto (Alta Res) -->
     <div id="modalCatalogo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-lg shadow-2xl relative max-h-[95vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalCatalogo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
             <h2 class="text-xl font-black neon-text-cyan mb-1">Agregar al Catálogo (Tienda Web)</h2>
             <div class="flex items-center justify-between mb-4 mt-2 bg-[#0B0C10] p-3 rounded-lg border border-[#1F2833]">
-                <div class="flex items-center gap-2"><div id="binanceStatus" class="status-dot-yellow"></div><span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Tasa Binance (En Vivo)</span></div>
+                <div class="flex items-center gap-2"><div id="binanceStatus" class="status-dot-yellow"></div><span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Tasa Binance</span></div>
                 <div class="flex items-center gap-1"><span class="text-[#F50057] font-bold text-sm">$</span><input type="number" id="tasaUsdtModal" step="0.01" value="20.00" readonly class="w-20 p-1 text-sm text-center font-bold rounded-md bg-[#1F2833] border-none text-white outline-none cursor-default"></div>
             </div>
             <form id="formNuevoProducto" class="space-y-4">
                 <div>
-                    <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Foto para la tienda (Opcional)</label>
+                    <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Foto (Alta Resolución Permitida)</label>
                     <input type="file" id="nuevaImagen" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#a855f7] file:text-white hover:file:bg-[#c084fc] bg-[#1A222C] rounded p-2">
-                    <p class="text-[10px] text-gray-500 mt-1">Si dejas esto en blanco, buscaremos el logo nativo (Netflix, Spotify...) automáticamente.</p>
                 </div>
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label><select id="nuevaCategoria" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold"><option value="🍿 CINE Y SERIES">🍿 CINE Y SERIES</option><option value="🎧 MÚSICA Y AUDIO">🎧 MÚSICA Y AUDIO</option><option value="🤖 INTELIGENCIA ARTIFICIAL">🤖 INTELIGENCIA ARTIFICIAL</option><option value="🎮 GAMING Y RECARGAS">🎮 GAMING Y RECARGAS</option><option value="🎁 COMBOS Y PROMOCIONES">🎁 COMBOS Y PROMOCIONES</option></select></div>
-                
-                <div>
-                    <label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label>
-                    <input type="text" id="nuevoServicio" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. Netflix, Spotify, Max...">
-                </div>
+                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label><input type="text" id="nuevoServicio" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. Netflix, Spotify, Max..."></div>
                 <div>
                     <label class="text-xs text-gray-400 font-semibold uppercase">Descripción del Servicio (Opcional)</label>
-                    <textarea id="nuevaDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1] resize-none" placeholder="Ej. Cuentas originales 4K, 4 perfiles sin caídas..."></textarea>
+                    <textarea id="nuevaDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1] resize-none" placeholder="Ej. Cuentas originales 4K..."></textarea>
                 </div>
-
-                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Modalidad</label><input type="text" id="nuevaModalidad" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. 1 Perfil, Cuenta Completa..." required></div>
+                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Modalidad</label><input type="text" id="nuevaModalidad" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold" placeholder="Ej. 1 Perfil..." required></div>
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Proveedor / Panel</label><input type="text" id="nuevoProveedor" list="listaProveedores" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
-                <div class="grid grid-cols-2 gap-4"><div><label class="text-xs text-gray-400 font-semibold uppercase flex justify-between">Costo <select id="monedaCosto" class="bg-transparent border-none text-[#66FCF1] font-bold outline-none cursor-pointer"><option value="MXN" class="bg-[#12161c]">MXN</option><option value="USDT" class="bg-[#12161c]">USDT</option></select></label><input type="number" id="nuevoCosto" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono" placeholder="0.00"><div id="conversionReal" class="text-xs text-yellow-400 mt-1.5 hidden font-mono tracking-wide font-bold">≈ $0.00 MXN</div></div><div><label class="text-xs text-[#F50057] font-bold uppercase">Precio Final (MXN)</label><input type="number" id="nuevoPrecio" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono border-[#F50057]" placeholder="0.00"></div></div>
+                <div class="grid grid-cols-2 gap-4"><div><label class="text-xs text-gray-400 font-semibold uppercase flex justify-between">Costo <select id="monedaCosto" class="bg-transparent border-none text-[#66FCF1] font-bold outline-none cursor-pointer"><option value="MXN" class="bg-[#12161c]">MXN</option><option value="USDT" class="bg-[#12161c]">USDT</option></select></label><input type="number" id="nuevoCosto" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono"><div id="conversionReal" class="text-xs text-yellow-400 mt-1.5 hidden font-mono tracking-wide font-bold">≈ $0.00 MXN</div></div><div><label class="text-xs text-[#F50057] font-bold uppercase">Precio Final (MXN)</label><input type="number" id="nuevoPrecio" step="0.01" required class="w-full p-2.5 mt-1 rounded-md text-sm font-mono border-[#F50057]"></div></div>
                 <div class="pt-4 flex gap-3"><button type="button" onclick="cerrarModalCatalogo()" class="flex-1 bg-transparent border border-gray-600 text-gray-400 py-2.5 rounded-md font-bold transition hover:bg-gray-800">Cancelar</button><button type="submit" id="btnGuardarCat" class="flex-1 cyan-btn py-2.5 rounded-md font-black uppercase tracking-wider">Guardar Público</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Confirmar Venta de Proveedor -->
+    <!-- Confirmar Venta -->
     <div id="modalConfirmarVenta" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <h2 class="text-xl font-black neon-text-cyan mb-2">Verificar Proveedor</h2>
@@ -468,7 +478,7 @@
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Editar Inventario (Con Imagen, Nombre y Desc) -->
+    <!-- Editar Inventario (Con Clonación Segura y Descripción) -->
     <div id="modalEditar" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative max-h-[95vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalEditar()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -480,18 +490,11 @@
             
             <div class="space-y-4">
                 <div>
-                    <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Cambiar Foto (Opcional)</label>
+                    <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Cambiar Foto</label>
                     <input type="file" id="editImagen" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#a855f7] file:text-white hover:file:bg-[#c084fc] bg-[#1A222C] rounded p-2">
                 </div>
-                
-                <div>
-                    <label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label>
-                    <input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required>
-                </div>
-                <div>
-                    <label class="text-xs text-gray-400 font-semibold uppercase">Descripción (Opcional)</label>
-                    <textarea id="editDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1] resize-none"></textarea>
-                </div>
+                <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label><input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
+                <div><label class="text-xs text-gray-400 font-semibold uppercase">Descripción</label><textarea id="editDescripcion" rows="2" class="w-full p-2.5 mt-1 rounded-md text-sm bg-[#1F2833] text-white border border-[#45A29E] outline-none resize-none"></textarea></div>
                 
                 <div class="border-t border-gray-700 my-2 pt-2"></div>
 
@@ -503,7 +506,7 @@
         </div>
     </div>
 
-    <!-- Catálogo WhatsApp -->
+    <!-- Catálogo Texto WA -->
     <div id="modalWhatsapp" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-md shadow-2xl relative">
             <h2 class="text-xl font-black text-green-400 mb-2 flex items-center gap-2">Catálogo en Texto</h2>
@@ -512,11 +515,11 @@
         </div>
     </div>
 
-    <!-- Creador Combos -->
+    <!-- Creador de Combos -->
     <div id="modalCombos" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg border border-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.3)] p-6 w-full max-w-2xl relative flex flex-col max-h-[90vh]">
             <button type="button" onclick="cerrarModalCombos()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
-            <h2 class="text-xl font-black neon-text-purple mb-4 flex items-center gap-2">🎁 Creador de Combos Públicos</h2>
+            <h2 class="text-xl font-black neon-text-purple mb-4 flex items-center gap-2">🎁 Creador de Combos</h2>
             <div class="flex border-b border-[#1F2833] mb-4"><button onclick="cambiarTabCombo('sugerencias')" id="btnTabSug" class="px-4 py-2 font-bold text-sm text-[#a855f7] border-b-2 border-[#a855f7]">💡 Sugerencias</button><button onclick="cambiarTabCombo('manual')" id="btnTabMan" class="px-4 py-2 font-bold text-sm text-gray-500 border-b-2 border-transparent hover:text-gray-300">🛠️ Manual</button></div>
             <div id="tabSugerencias" class="overflow-y-auto pr-2 space-y-4"></div>
             <div id="tabManual" class="hidden flex flex-col h-full overflow-hidden">
@@ -526,41 +529,37 @@
         </div>
     </div>
 
-    <!-- Configuración Tienda -->
+    <!-- Modal WhatsApp Config -->
     <div id="modalConfigTienda" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-sm shadow-2xl relative">
             <button type="button" onclick="cerrarModalConfig()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
-            <h2 class="text-xl font-black text-red-500 mb-2 flex items-center gap-2">📱 WhatsApp de Ventas</h2>
-            <p class="text-xs text-gray-400 mb-4">Ingresa tu número de WhatsApp para que los clientes de la tienda pública te puedan enviar los pedidos (con código de país, ej. 529991234567).</p>
-            <input type="tel" id="inputNumVentas" class="w-full p-3 rounded bg-[#1A222C] text-white border border-red-500 text-center font-bold font-mono tracking-widest" placeholder="52...">
-            <button onclick="guardarConfigTienda()" class="w-full mt-4 bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded uppercase tracking-wider">Guardar Número</button>
+            <h2 class="text-xl font-black text-red-500 mb-2 flex items-center gap-2">📱 WhatsApp Tienda</h2>
+            <input type="tel" id="inputNumVentas" class="w-full p-3 rounded bg-[#1A222C] text-white border border-red-500 text-center font-bold" placeholder="52...">
+            <button onclick="guardarConfigTienda()" class="w-full mt-4 bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded">Guardar</button>
         </div>
     </div>
 
-    <!-- Respaldo (Ruta Unificada y Rescate) -->
+    <!-- Respaldo -->
     <div id="modalRespaldo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg border border-gray-500 shadow-[0_0_15px_rgba(156,163,175,0.3)] p-6 w-full max-w-sm relative">
             <button type="button" onclick="cerrarModalRespaldo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
             <h2 class="text-xl font-black text-gray-200 mb-2 flex items-center gap-2">⚙️ Bóveda Cloud</h2>
             <div class="space-y-4">
-                <button onclick="exportarRespaldo()" class="w-full bg-[#1A222C] hover:bg-[#25303D] border border-gray-500 text-gray-200 py-3 rounded-md font-bold flex flex-col items-center justify-center gap-1 transition-all"><span class="text-lg">📥 Descargar JSON</span><span class="text-[10px] text-gray-400 font-normal">Respaldo manual de todo tu negocio</span></button>
+                <button onclick="exportarRespaldo()" class="w-full bg-[#1A222C] hover:bg-[#25303D] border border-gray-500 text-gray-200 py-3 rounded-md font-bold flex flex-col items-center justify-center gap-1 transition-all"><span class="text-lg">📥 Descargar JSON</span></button>
                 <div class="border-t border-gray-700 my-2"></div>
-                <button onclick="triggerImport()" class="w-full bg-[#0B0C10] hover:bg-[#12161c] border border-gray-600 text-gray-300 py-3 rounded-md font-bold flex flex-col items-center justify-center gap-1 transition-all"><span class="text-lg">☁️ Subir JSON (Filtro Anti-Choque)</span><span class="text-[10px] text-gray-500 font-normal">Sube cualquier archivo viejo para restaurarlo en Tienda</span></button>
+                <button onclick="triggerImport()" class="w-full bg-[#0B0C10] hover:bg-[#12161c] border border-gray-600 text-gray-300 py-3 rounded-md font-bold flex flex-col items-center justify-center gap-1 transition-all"><span class="text-lg">☁️ Subir JSON</span></button>
                 <input type="file" id="fileImport" accept=".json" class="hidden" onchange="importarRespaldo(event)">
             </div>
             <div class="mt-5 text-center"><button type="button" onclick="cerrarModalRespaldo()" class="text-xs text-gray-500 hover:text-gray-300 underline">Cerrar</button></div>
         </div>
     </div>
 
-    <!-- STREAMING CHUNK: Lógica de Firebase y Sistema -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDocs, getDoc, collection, query, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-        // =========================================================================
-        // LLAVES DE FIREBASE OFICIALES
-        // =========================================================================
+        // TUS LLAVES DE FIREBASE REALES
         const firebaseConfig = {
             apiKey: "AIzaSyBlZUM7j7kA5mMGL7bKN8D9wIWBJPZ1rog",
             authDomain: "streaming-latino-mx.firebaseapp.com",
@@ -570,7 +569,6 @@
             appId: "1:2673748472:web:b5d16e877ba0d2c2128e0d",
             measurementId: "G-1WFE0HM0FW"
         };
-        // =========================================================================
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -587,8 +585,10 @@
         let currentUsdtRate = 20.00; 
         let ventaPendiente = null;
         let numeroVentasPublico = "520000000000";
+        let filtroCatalogoActual = 'TODO';
+        let intervalPruebaSocial = null;
 
-        // BÓVEDA DE LOGOS NATIVOS A PRUEBA DE BLOQUEADORES
+        // BÓVEDA DE LOGOS NATIVOS
         function obtenerLogoNativo(nombre) {
             const n = (nombre || '').toLowerCase();
             if(n.includes('netflix')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg';
@@ -612,7 +612,7 @@
             return null; 
         }
 
-        // COMPRESOR DE IMÁGENES MANUALES (700PX ALTA DEFINICIÓN)
+        // Compresor de Imágenes a 700px ALTA DEFINICIÓN
         function comprimirImagen(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -664,7 +664,7 @@
             }
         };
 
-        // GESTIÓN DE SESIÓN
+        // Autenticación Principal
         onAuthStateChanged(auth, async (user) => {
             const ls = document.getElementById('loadingScreen');
             if(ls) { ls.style.opacity = '0'; setTimeout(() => ls.style.display = 'none', 500); }
@@ -696,7 +696,6 @@
             });
         };
 
-        // STREAMING CHUNK: Sistema del Contador de Visitas 👁️
         async function inicializarContadorVisitas() {
             const visitasRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'visitas');
             
@@ -727,10 +726,22 @@
             const configRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general');
             if(unsubConfig) unsubConfig();
             unsubConfig = onSnapshot(configRef, snap => {
-                if(snap.exists() && snap.data().whatsapp) {
-                    numeroVentasPublico = snap.data().whatsapp;
-                    const inputConf = document.getElementById('inputNumVentas');
-                    if(inputConf) inputConf.value = numeroVentasPublico;
+                if(snap.exists()) {
+                    if(snap.data().whatsapp) {
+                        numeroVentasPublico = snap.data().whatsapp;
+                        const inputConf = document.getElementById('inputNumVentas');
+                        if(inputConf) inputConf.value = numeroVentasPublico;
+                    }
+                    if(snap.data().promo && snap.data().promo.trim() !== '') {
+                        document.getElementById('promoBar').classList.remove('hidden');
+                        document.getElementById('promoText').innerHTML = snap.data().promo;
+                        const inputPromo = document.getElementById('inputPromoText');
+                        if(inputPromo) inputPromo.value = snap.data().promo;
+                    } else {
+                        document.getElementById('promoBar').classList.add('hidden');
+                        const inputPromo = document.getElementById('inputPromoText');
+                        if(inputPromo) inputPromo.value = '';
+                    }
                 }
             }, e => console.error(e));
 
@@ -779,16 +790,37 @@
             }
         }
 
+        // LÓGICA TIENDA PÚBLICA Y FILTROS
         function renderizarTiendaPublica() {
             const grid = document.getElementById('publicCatalogGrid');
-            if(!grid) return; grid.innerHTML = '';
+            const filtersContainer = document.getElementById('publicFilters');
+            if(!grid || !filtersContainer) return; 
+            grid.innerHTML = '';
+            
+            const categoriasUnicas = [...new Set(Object.values(catalogo).map(s => (s.cat || '').replace(/[^\w\s🍿🎬🎧🤖🎮🎁]/gi, '').trim()))].filter(Boolean);
+            
+            let filtersHtml = `<button onclick="cambiarFiltroTienda('TODO')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${filtroCatalogoActual === 'TODO' ? 'bg-[#a855f7] border-[#a855f7] text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-[#12161c] border-gray-700 text-gray-400 hover:border-[#a855f7] hover:text-white'}">🌟 TODO</button>`;
+            categoriasUnicas.forEach(cat => {
+                const isSelected = filtroCatalogoActual === cat;
+                filtersHtml += `<button onclick="cambiarFiltroTienda('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected ? 'bg-[#66FCF1] border-[#66FCF1] text-[#0B0C10] shadow-[0_0_10px_rgba(102,252,241,0.5)]' : 'bg-[#12161c] border-gray-700 text-gray-400 hover:border-[#66FCF1] hover:text-white'}">${cat}</button>`;
+            });
+            filtersContainer.innerHTML = filtersHtml;
+
             const ordenados = Object.keys(catalogo).sort((a, b) => { const catA = catalogo[a]?.cat || ''; const catB = catalogo[b]?.cat || ''; return catA.localeCompare(catB); });
             
+            let tarjetasMostradas = 0;
+
             ordenados.forEach(servicio => {
                 const datos = catalogo[servicio];
                 if(!datos || !datos.mods) return; 
+                
+                const catLimpia = (datos.cat || '').replace(/[^\w\s🍿🎬🎧🤖🎮🎁]/gi, '').trim();
+                if(filtroCatalogoActual !== 'TODO' && catLimpia !== filtroCatalogoActual) return;
+
                 const modsObj = datos.mods || {}; const mods = Object.entries(modsObj);
                 if(mods.length === 0) return;
+                
+                tarjetasMostradas++;
             
                 let imagenHtml = '';
                 if(datos.imgBase64) {
@@ -815,8 +847,45 @@
                 const primerMod = mods[0][0]; const primerPrecio = mods[0][1].p;
                 const textoComprar = encodeURIComponent(`👋 ¡Hola! Vi su catálogo web y me interesa contratar:\n📺 *${servicio}* (${primerMod}) por *$${primerPrecio} MXN*\n¿Cuáles son los métodos de pago?`);
 
-                grid.innerHTML += `<div class="bg-[#12161c] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#66FCF1] transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}<div class="mb-6 flex-1">${preciosHtml}</div><a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>Contratar</a></div></div>`;
+                grid.innerHTML += `<div class="bg-[#12161c] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#66FCF1] transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}<div class="mb-6 flex-1">${preciosHtml}</div><a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all">Contratar</a></div></div>`;
             });
+
+            if(tarjetasMostradas === 0 && Object.keys(catalogo).length > 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-500 text-lg font-bold">No hay servicios en esta categoría.</p></div>`;
+            }
+
+            iniciarPruebaSocial();
+        }
+
+        window.cambiarFiltroTienda = (cat) => { filtroCatalogoActual = cat; renderizarTiendaPublica(); };
+
+        // Robot Burbuja Prueba Social
+        function iniciarPruebaSocial() {
+            if(intervalPruebaSocial) clearInterval(intervalPruebaSocial);
+            const servicios = Object.keys(catalogo);
+            if(servicios.length === 0) return;
+
+            intervalPruebaSocial = setInterval(() => {
+                const bubble = document.getElementById('socialProofBubble');
+                if(!bubble || document.getElementById('publicStore').classList.contains('hidden')) return;
+
+                if(!bubble.classList.contains('hidden') && !bubble.classList.contains('hiding')) return;
+
+                const frases = ["Alguien acaba de contratar", "Un cliente acaba de renovar", "Nuevo pedido de", "Acaban de comprar"];
+                const iconos = ["🔥", "⭐", "🚀", "🍿"];
+                const tiempos = ["Hace unos instantes", "Hace 2 minutos", "Hace 4 minutos", "Hace 1 minuto"];
+
+                document.getElementById('socialProofIcon').textContent = iconos[Math.floor(Math.random() * iconos.length)];
+                document.getElementById('socialProofTime').textContent = tiempos[Math.floor(Math.random() * tiempos.length)];
+                document.getElementById('socialProofText').innerHTML = `<b>${frases[Math.floor(Math.random() * frases.length)]}</b><br><span class="text-[#66FCF1] font-bold">${servicios[Math.floor(Math.random() * servicios.length)]}</span>`;
+
+                bubble.classList.remove('hidden', 'hiding');
+                
+                setTimeout(() => {
+                    bubble.classList.add('hiding');
+                    setTimeout(() => bubble.classList.add('hidden'), 500);
+                }, 4500);
+            }, 25000); 
         }
 
         window.abrirModalConfig = () => { document.getElementById('modalConfigTienda').classList.remove('hidden'); };
@@ -828,6 +897,16 @@
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { whatsapp: nuevoTel }, { merge: true });
                 mostrarToast("Número Guardado", "success"); cerrarModalConfig();
             }
+        };
+
+        window.abrirModalPromo = () => { document.getElementById('modalPromo').classList.remove('hidden'); };
+        window.cerrarModalPromo = () => { document.getElementById('modalPromo').classList.add('hidden'); };
+        window.guardarPromoTienda = async () => {
+            if(!currentUserId) return;
+            const promoTexto = document.getElementById('inputPromoText').value.trim();
+            await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { promo: promoTexto }, { merge: true });
+            mostrarToast(promoTexto === '' ? "Marquesina apagada" : "Anuncio publicado y corriendo", "success");
+            cerrarModalPromo();
         };
 
         function mostrarToast(mensaje, tipo = "success") {
@@ -906,7 +985,7 @@
             gananciaInput.value = ganancia.toFixed(2); gananciaInput.className = `p-2.5 pl-7 w-full rounded-md text-sm bg-[#0B0C10] font-mono font-black cursor-not-allowed ${ganancia < 0 ? 'text-red-500' : 'text-[#66FCF1]'}`;
         }
 
-        // Motor de Fechas Blindado
+        // MOTOR DE FECHAS MATEMÁTICO (Nueva Venta)
         const ventaForm = document.getElementById('ventaForm');
         if(ventaForm) {
             ventaForm.addEventListener('submit', function(e) {
@@ -978,23 +1057,6 @@
             });
         }
 
-        window.enviarTicket = (folio) => {
-            const v = ventas.find(x => x.folio === folio); if(!v || !v.whatsapp) { mostrarToast("No hay número de WhatsApp registrado", "error"); return; }
-            let puntos = obtenerPuntosFidelidad(v.whatsapp); let faltan = 5 - puntos; 
-            let msjPremio = faltan === 0 ? "🎉 ¡Felicidades! Has completado tus 5 compras.\n¡Tienes un *MES GRATIS* en tu próxima renovación o cuenta nueva! 🎉" : `¡Te faltan ${faltan} compras para tu MES GRATIS! 🎁`;
-            let msg = `👋 ¡Hola *${v.cliente}*!\nGracias por tu preferencia en *STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU COMPRA*\n🔖 Folio: ${v.folio}\n📅 Fecha de compra: ${v.fecha}\n`;
-            if (v.fechaVencimiento) msg += `⏳ *Vencimiento:* ${v.fechaVencimiento}\n`;
-            msg += `\n📺 *Servicio:* ${v.servicio}\n🍿 *Modalidad:* ${v.modalidad}\n💰 *Total pagado:* $${(v.precio || 0).toFixed(2)} MXN\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-            let accesos = '';
-            if (v.correo) accesos += `📧 Correo: ${v.correo}\n`; if (v.password) accesos += `🔑 Pass: ${v.password}\n`; if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`; if (v.pin) accesos += `📍 PIN: ${v.pin}\n`; if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
-            if(accesos !== '') { msg += `🔐 *DATOS DE ACCESO*\n${accesos}━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
-            if(v.notasGarantia) { msg += `🛡️ *GARANTÍA APLICADA*\n${v.notasGarantia}\n━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
-            msg += `⭐ *PROGRAMA DE FIDELIDAD*\nProgreso: [ ${'★ '.repeat(puntos)}${'☆ '.repeat(faltan)}] (${puntos} de 5)\n${msjPremio}\n\nCualquier duda con tu servicio, envíanos un mensaje por aquí.\n¡Disfruta tu contenido! 🚀`;
-            document.getElementById('ticketWhatsAppNum').value = v.whatsapp.replace(/\D/g,''); document.getElementById('textoPreviewTicket').value = msg; document.getElementById('modalPreviewTicket').classList.remove('hidden');
-        };
-        window.cerrarModalPreviewTicket = () => { document.getElementById('modalPreviewTicket').classList.add('hidden'); };
-        window.enviarTicketFinal = () => { const num = document.getElementById('ticketWhatsAppNum').value; const texto = document.getElementById('textoPreviewTicket').value; window.open(`https://wa.me/52${num}?text=${encodeURIComponent(texto)}`, '_blank'); cerrarModalPreviewTicket(); };
-
         function renderizarTablaInventario() {
             const tbody = document.getElementById('tablaInventarioCuerpo'); tbody.innerHTML = ''; const ordenados = Object.keys(catalogo).sort((a, b) => { const catA = catalogo[a]?.cat || ''; const catB = catalogo[b]?.cat || ''; return catA.localeCompare(catB); });
             ordenados.forEach(servicio => { 
@@ -1050,7 +1112,7 @@
             cerrarModalCatalogo();
         });
 
-        // STREAMING CHUNK: Edición y Clonación Inteligente
+        // EDICIÓN DE CATÁLOGO Y CLONACIÓN
         window.abrirModalEditar = (serv, mod) => { 
             const datosServ = catalogo[serv] || {};
             const datosMod = datosServ.mods?.[mod] || {};
@@ -1083,7 +1145,6 @@
                 nuevaImg = await comprimirImagen(fileInput.files[0]);
             }
 
-            // Truco de Clonación (Si el nombre cambió, actualizar atómicamente)
             if (servOrig !== servNuevo) {
                 if (!catalogo[servNuevo]) {
                     catalogo[servNuevo] = { ...catalogo[servOrig] };
@@ -1091,24 +1152,20 @@
                     catalogo[servNuevo].mods = { ...catalogo[servNuevo].mods, ...catalogo[servOrig].mods };
                     if(!catalogo[servNuevo].imgBase64) catalogo[servNuevo].imgBase64 = catalogo[servOrig].imgBase64;
                 }
-                delete catalogo[servOrig]; // Borramos el viejo localmente
+                delete catalogo[servOrig]; 
                 
                 catalogo[servNuevo].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servNuevo].desc = desc;
                 if (nuevaImg) catalogo[servNuevo].imgBase64 = nuevaImg;
 
-                // Borramos el viejo de Firebase y subimos el nuevo (En bloque para que no parpadee)
                 const batch = writeBatch(db);
                 batch.delete(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig));
                 batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servNuevo), catalogo[servNuevo]);
                 await batch.commit();
-
             } else {
-                // Edición Normal (Mismo nombre)
                 catalogo[servOrig].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servOrig].desc = desc;
                 if (nuevaImg) catalogo[servOrig].imgBase64 = nuevaImg;
-
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig), catalogo[servOrig]); 
             }
             
@@ -1117,7 +1174,7 @@
 
         window.eliminarProducto = async (serv, mod) => { if(!currentUserId) return; if(catalogo[serv] && catalogo[serv].mods) { delete catalogo[serv].mods[mod]; if (Object.keys(catalogo[serv].mods).length === 0) { delete catalogo[serv]; await deleteDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv)); } else { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); } mostrarToast("🗑️ Producto eliminado", "success"); } };
 
-        // STREAMING CHUNK: Edición y Resucitación de Cuentas (Calendario y Notas)
+        // VISTA PREVIA Y EDICIÓN DE VENTAS (Traductor Universal Fechas)
         window.abrirModalVistaPrevia = (folio) => {
             const venta = ventas.find(v => v.folio === folio); if(!venta) return;
             document.getElementById('vpFolio').textContent = venta.folio || 'N/A'; document.getElementById('vpCliente').textContent = `${venta.cliente || 'Sin Nombre'} (${venta.whatsapp || 'Sin número'})`; document.getElementById('vpServicio').textContent = `${venta.servicio || 'N/A'} | ${venta.modalidad || 'N/A'}`;
@@ -1136,19 +1193,18 @@
             document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente || ''; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || ''; document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || ''; document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); 
             document.getElementById('editVentaGarantia').value = venta.notasGarantia || '';
             
-            // Traductor Universal de Fechas (Para reparar cuentas viejas)
-            if(venta.fechaVencimiento) { 
-                const p = venta.fechaVencimiento.split('/'); 
-                if(p.length === 3) {
-                    const dia = p[0].padStart(2, '0');
-                    const mes = p[1].padStart(2, '0');
-                    const anio = p[2];
-                    document.getElementById('editVentaVencimiento').value = `${anio}-${mes}-${dia}`; 
-                } else if(venta.fechaVencimiento.includes('-')) {
-                    document.getElementById('editVentaVencimiento').value = venta.fechaVencimiento;
+            if(venta.fechaVencimiento && venta.fechaVencimiento.trim() !== "") { 
+                let fStr = venta.fechaVencimiento;
+                if(fStr.includes('/')) {
+                    const p = fStr.split('/');
+                    if(p.length === 3) {
+                        document.getElementById('editVentaVencimiento').value = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+                    } else { document.getElementById('editVentaVencimiento').value = ""; }
+                } else if(fStr.includes('-')) {
+                    document.getElementById('editVentaVencimiento').value = fStr;
                 }
             } else { 
-                document.getElementById('editVentaVencimiento').value = ''; 
+                document.getElementById('editVentaVencimiento').value = ""; 
             }
             
             document.getElementById('modalEditarVenta').classList.remove('hidden');
@@ -1161,13 +1217,13 @@
             
             let nuevosDatos = { cliente: document.getElementById('editVentaCliente').value.trim(), whatsapp: nuevoWhatsApp, correo: document.getElementById('editVentaCorreo').value.trim(), password: document.getElementById('editVentaPass').value.trim(), perfil: document.getElementById('editVentaPerfil').value.trim(), pin: document.getElementById('editVentaPin').value.trim(), enlace: document.getElementById('editVentaEnlace').value.trim(), notasGarantia: document.getElementById('editVentaGarantia').value.trim() };
             
-            // Traductor y Limpiador de Calendario al Guardar
             const nuevaFechaIn = document.getElementById('editVentaVencimiento').value;
             if(nuevaFechaIn && nuevaFechaIn.trim() !== "") {
                 const partes = nuevaFechaIn.split('-');
                 if(partes.length === 3) {
-                    const d = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
-                    nuevosDatos.vencimientoTimestamp = d.getTime();
+                    const y = parseInt(partes[0]); const m = parseInt(partes[1]) - 1; const d = parseInt(partes[2]);
+                    const fec = new Date(y, m, d);
+                    nuevosDatos.vencimientoTimestamp = fec.getTime();
                     nuevosDatos.fechaVencimiento = `${partes[2].padStart(2, '0')}/${partes[1].padStart(2, '0')}/${partes[0]}`;
                 }
             } else {
@@ -1198,11 +1254,27 @@
         window.guardarComboManual = () => { const checks = document.querySelectorAll('.combo-check:checked'); if(checks.length < 2) { mostrarToast("Selecciona al menos 2", "error"); return; } const oferta = parseFloat(document.getElementById('comboPrecioOferta').value); if(!oferta) return; let nombres = []; checks.forEach(chk => { nombres.push(chk.dataset.id.split('|')[0]); }); guardarComboEnBd("Combo: " + nombres.join(' + '), parseFloat(document.getElementById('comboCostoTotal').textContent) || 0, oferta); window.cerrarModalCombos(); };
         async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; const safeNombre = nombre.replace(/\//g, '-'); if (!catalogo[safeNombre]) catalogo[safeNombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {} }; catalogo[safeNombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeNombre), catalogo[safeNombre]); mostrarToast("☁️ Combo Público Creado", "success"); }
 
+        window.enviarTicket = (folio) => {
+            const v = ventas.find(x => x.folio === folio); if(!v || !v.whatsapp) { mostrarToast("No hay número de WhatsApp registrado", "error"); return; }
+            let puntos = obtenerPuntosFidelidad(v.whatsapp); let faltan = 5 - puntos; 
+            let msjPremio = faltan === 0 ? "🎉 ¡Felicidades! Has completado tus 5 compras.\n¡Tienes un *MES GRATIS* en tu próxima renovación o cuenta nueva! 🎉" : `¡Te faltan ${faltan} compras para tu MES GRATIS! 🎁`;
+            let msg = `👋 ¡Hola *${v.cliente}*!\nGracias por tu preferencia en *STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU COMPRA*\n🔖 Folio: ${v.folio}\n📅 Fecha de compra: ${v.fecha}\n`;
+            if (v.fechaVencimiento) msg += `⏳ *Vencimiento:* ${v.fechaVencimiento}\n`;
+            msg += `\n📺 *Servicio:* ${v.servicio}\n🍿 *Modalidad:* ${v.modalidad}\n💰 *Total pagado:* $${(v.precio || 0).toFixed(2)} MXN\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            let accesos = '';
+            if (v.correo) accesos += `📧 Correo: ${v.correo}\n`; if (v.password) accesos += `🔑 Pass: ${v.password}\n`; if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`; if (v.pin) accesos += `📍 PIN: ${v.pin}\n`; if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
+            if(accesos !== '') { msg += `🔐 *DATOS DE ACCESO*\n${accesos}━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
+            if(v.notasGarantia) { msg += `🛡️ *GARANTÍA APLICADA*\n${v.notasGarantia}\n━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
+            msg += `⭐ *PROGRAMA DE FIDELIDAD*\nProgreso: [ ${'★ '.repeat(puntos)}${'☆ '.repeat(faltan)}] (${puntos} de 5)\n${msjPremio}\n\nCualquier duda con tu servicio, envíanos un mensaje por aquí.\n¡Disfruta tu contenido! 🚀`;
+            document.getElementById('ticketWhatsAppNum').value = v.whatsapp.replace(/\D/g,''); document.getElementById('textoPreviewTicket').value = msg; document.getElementById('modalPreviewTicket').classList.remove('hidden');
+        };
+        window.cerrarModalPreviewTicket = () => { document.getElementById('modalPreviewTicket').classList.add('hidden'); };
+        window.enviarTicketFinal = () => { const num = document.getElementById('ticketWhatsAppNum').value; const texto = document.getElementById('textoPreviewTicket').value; window.open(`https://wa.me/52${num}?text=${encodeURIComponent(texto)}`, '_blank'); cerrarModalPreviewTicket(); };
+
         window.abrirModalRespaldo = () => { document.getElementById('modalRespaldo').classList.remove('hidden'); };
         window.cerrarModalRespaldo = () => { document.getElementById('modalRespaldo').classList.add('hidden'); document.getElementById('fileImport').value = ''; };
         window.exportarRespaldo = () => { const datosRespaldo = { catalogo: catalogo, ventas: ventas, contadorFolio: contadorFolio, fidelidad: fidelidadClientes }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosRespaldo)); const btnDescarga = document.createElement('a'); btnDescarga.setAttribute("href", dataStr); const hoy = new Date(); btnDescarga.setAttribute("download", `Respaldo_SLMX_Cloud_${hoy.getDate()}-${hoy.getMonth() + 1}-${hoy.getFullYear()}.json`); document.body.appendChild(btnDescarga); btnDescarga.click(); btnDescarga.remove(); window.cerrarModalRespaldo(); mostrarToast("📥 Respaldo descargado", "success"); };
         window.triggerImport = () => { document.getElementById('fileImport').click(); };
-        
         window.importarRespaldo = (event) => { 
             if(!currentUserId) return; 
             const archivo = event.target.files[0]; 
@@ -1212,33 +1284,16 @@
                 let d;
                 try { d = JSON.parse(e.target.result); } catch(err) { mostrarToast("❌ El archivo no es un JSON válido", "error"); return; }
                 if(!d) { mostrarToast("❌ Archivo vacío", "error"); return; }
-
                 const resCatalogo = d.catalogo || {}; const resVentas = d.ventas || []; const resContador = d.contadorFolio || 1; const resFidelidad = d.fidelidad || d.fidelidadClientes || {};
-
                 mostrarToast("Subiendo archivo a la nube... No cierres.", "success"); 
                 try {
                     const batch1 = writeBatch(db); 
                     batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: resContador, fidelidadClientes: resFidelidad }, { merge: true }); 
-                    
-                    for(let serv in resCatalogo) { 
-                        if(resCatalogo[serv]) {
-                            const safeServ = serv.toString().replace(/\//g, '-'); 
-                            if(!resCatalogo[serv].cat) resCatalogo[serv].cat = "🍿 Otros";
-                            batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeServ), resCatalogo[serv]); 
-                        }
-                    } 
+                    for(let serv in resCatalogo) { if(resCatalogo[serv]) { const safeServ = serv.toString().replace(/\//g, '-'); if(!resCatalogo[serv].cat) resCatalogo[serv].cat = "🍿 Otros"; batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeServ), resCatalogo[serv]); } } 
                     await batch1.commit(); 
-
                     let batch2 = writeBatch(db); let count = 0; 
-                    for(let v of resVentas) { 
-                        if(v) {
-                            const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`; 
-                            batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); 
-                            count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } 
-                        }
-                    } 
+                    for(let v of resVentas) { if(v) { const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`; batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } } } 
                     if(count % 400 !== 0) await batch2.commit(); 
-                    
                     window.cerrarModalRespaldo(); mostrarToast("✅ Respaldo subido a la nube", "success"); 
                 } catch(error) { console.error(error); mostrarToast("❌ Error al subir: Archivo corrupto", "error"); } 
             }; 
