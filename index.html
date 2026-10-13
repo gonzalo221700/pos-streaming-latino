@@ -161,9 +161,9 @@
     </div>
 
     <!-- MODAL PÚBLICO: CONSULTAR ESTRELLAS VIP (Por Código SL-XXXX) -->
-    <div id="modalConsultaVIP" class="fixed inset-0 modal-bg z-[99990] hidden flex items-center justify-center p-4">
+    <div id="modalConsultaVIP" onclick="if(event.target === this) cerrarModalConsultaVIP()" class="fixed inset-0 modal-bg z-[99990] hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] border-2 border-yellow-400 p-6 rounded-2xl shadow-[0_0_35px_rgba(250,204,21,0.3)] w-full max-w-md relative text-center">
-            <button type="button" onclick="cerrarModalConsultaVIP()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <button type="button" onclick="cerrarModalConsultaVIP()" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-gray-800/80 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center font-bold transition-colors" title="Cerrar">✕</button>
             <div class="w-14 h-14 mx-auto bg-[#0B0C10] rounded-full border-2 border-yellow-400 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(250,204,21,0.5)] text-2xl">
                 ⭐
             </div>
@@ -171,7 +171,7 @@
             <p class="text-xs text-gray-400 mb-4">Ingresa tu código de socio (viene en tu ticket de compra) para ver tus estrellas acumuladas por compras y referidos.</p>
             
             <div class="flex gap-2 mb-4">
-                <input type="text" id="inputCodigoVIPPublico" class="flex-1 p-3 rounded-lg bg-[#0B0C10] text-yellow-300 border border-yellow-500/60 text-center font-mono font-black uppercase tracking-widest text-base focus:border-yellow-400" placeholder="Ej. SL-1234A">
+                <input type="text" id="inputCodigoVIPPublico" onkeydown="if(event.key==='Enter'){event.preventDefault(); buscarCodigoVIPPublico();}" class="flex-1 p-3 rounded-lg bg-[#0B0C10] text-yellow-300 border border-yellow-500/60 text-center font-mono font-black uppercase tracking-widest text-base focus:border-yellow-400" placeholder="Ej. SL-1234A">
                 <button type="button" onclick="buscarCodigoVIPPublico()" class="bg-yellow-500 hover:bg-yellow-400 text-black font-black px-5 rounded-lg uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(250,204,21,0.4)] transition-all">Ver</button>
             </div>
 
@@ -200,6 +200,10 @@
             <div id="errorVIPBox" class="hidden bg-red-950/40 border border-red-500/60 text-red-300 text-xs font-bold p-3 rounded-lg mt-2">
                 ⚠️ No encontramos ese código. Verifica que esté bien escrito (Ej. SL-1234A) o solicita tu código en tu próxima compra.
             </div>
+
+            <button type="button" onclick="cerrarModalConsultaVIP()" class="w-full mt-4 bg-transparent border border-gray-700 hover:bg-gray-800 text-gray-400 hover:text-white py-2 rounded-lg font-bold text-xs transition-colors">
+                Cerrar Ventana
+            </button>
         </div>
     </div>
 
@@ -552,6 +556,7 @@
         </div>
     </div>
 
+    <!-- Modal Agregar Producto al Catálogo -->
     <div id="modalCatalogo" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-lg shadow-2xl relative max-h-[95vh] overflow-y-auto">
             <button type="button" onclick="cerrarModalCatalogo()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -567,18 +572,18 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label>
-                        <select id="nuevaCategoria" required class="w-full p-2.5 mt-1 rounded-md text-sm font-bold">
-                            <option value="🍿 CINE Y SERIES">🍿 CINE Y SERIES</option>
-                            <option value="🎧 MÚSICA Y AUDIO">🎧 MÚSICA Y AUDIO</option>
-                            <option value="🤖 INTELIGENCIA ARTIFICIAL">🤖 INTELIGENCIA ARTIFICIAL</option>
-                            <option value="🎮 GAMING Y RECARGAS">🎮 GAMING Y RECARGAS</option>
-                            <option value="🎁 COMBOS Y PROMOCIONES">🎁 COMBOS Y PROMOCIONES</option>
-                        </select>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="abrirGestorCategoria('nueva', 'nuevaCategoria')" class="text-[10px] bg-[#1F2833] hover:bg-[#66FCF1] text-[#66FCF1] hover:text-black border border-[#66FCF1]/50 px-1.5 py-0.5 rounded font-bold transition-colors" title="Crear nueva categoría">+ Nueva</button>
+                                <button type="button" onclick="abrirGestorCategoria('renombrar', 'nuevaCategoria')" class="text-[10px] bg-[#1F2833] hover:bg-[#a855f7] text-[#a855f7] hover:text-white border border-[#a855f7]/50 px-1.5 py-0.5 rounded font-bold transition-colors" title="Renombrar categoría seleccionada">✏️ Renombrar</button>
+                            </div>
+                        </div>
+                        <select id="nuevaCategoria" required class="w-full p-2.5 rounded-md text-sm font-bold"></select>
                     </div>
                     <div>
-                        <label class="text-xs text-yellow-400 font-bold uppercase">Etiqueta / Estado Tienda</label>
-                        <select id="nuevaEtiqueta" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold border-yellow-500/60 bg-[#0B0C10]">
+                        <label class="text-xs text-yellow-400 font-bold uppercase block mb-1">Etiqueta / Estado Tienda</label>
+                        <select id="nuevaEtiqueta" class="w-full p-2.5 rounded-md text-sm font-bold border-yellow-500/60 bg-[#0B0C10]">
                             <option value="normal">✅ Disponible (Normal)</option>
                             <option value="popular">🔥 Más Vendido (Va 1º)</option>
                             <option value="ultimos">⚡ Últimos Perfiles</option>
@@ -628,6 +633,16 @@
                     <label class="text-xs text-[#a855f7] font-bold uppercase mb-1 flex items-center gap-2">🖼️ Cambiar Foto (HD)</label>
                     <input type="file" id="editImagen" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#a855f7] file:text-white hover:file:bg-[#c084fc] bg-[#1A222C] rounded p-2">
                 </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs text-gray-400 font-semibold uppercase">Categoría</label>
+                        <div class="flex gap-1">
+                            <button type="button" onclick="abrirGestorCategoria('nueva', 'editCategoria')" class="text-[10px] bg-[#1F2833] hover:bg-[#66FCF1] text-[#66FCF1] hover:text-black border border-[#66FCF1]/50 px-1.5 py-0.5 rounded font-bold transition-colors" title="Crear nueva categoría">+ Nueva</button>
+                            <button type="button" onclick="abrirGestorCategoria('renombrar', 'editCategoria')" class="text-[10px] bg-[#1F2833] hover:bg-[#a855f7] text-[#a855f7] hover:text-white border border-[#a855f7]/50 px-1.5 py-0.5 rounded font-bold transition-colors" title="Renombrar categoría seleccionada">✏️ Renombrar</button>
+                        </div>
+                    </div>
+                    <select id="editCategoria" class="w-full p-2.5 rounded-md text-sm font-bold"></select>
+                </div>
                 <div><label class="text-xs text-[#66FCF1] font-bold uppercase">Nombre del Servicio</label><input type="text" id="editServicioNombre" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]" required></div>
                 <div>
                     <label class="text-xs text-yellow-400 font-bold uppercase">Etiqueta / Estado en Tienda</label>
@@ -647,6 +662,20 @@
                 <div><label class="text-xs text-gray-400 font-semibold uppercase">Costo Proveedor ($)</label><input type="number" id="editCosto" step="0.01" class="w-full p-2.5 mt-1 rounded-md text-sm font-mono bg-[#1F2833] text-white border border-[#45A29E] outline-none focus:border-[#66FCF1]"></div>
                 <div><label class="text-xs text-[#F50057] font-bold uppercase">Precio Final ($)</label><input type="number" id="editPrecio" step="0.01" class="w-full p-2.5 mt-1 rounded-md text-sm font-mono border border-[#F50057] bg-[#1F2833] text-white outline-none"></div>
                 <div class="pt-2 flex gap-3"><button type="button" onclick="cerrarModalEditar()" class="flex-1 bg-transparent border border-gray-600 text-gray-400 py-2.5 rounded-md font-bold transition hover:bg-gray-800">Cancelar</button><button type="button" onclick="guardarEdicion()" class="flex-1 cyan-btn py-2.5 rounded-md font-black uppercase tracking-wider">Guardar Cambios</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GESTOR DE CATEGORÍAS (Crear Nueva o Renombrar en Masa) -->
+    <div id="modalGestorCategoria" class="fixed inset-0 modal-bg z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-[#12161c] rounded-xl border-2 border-[#66FCF1] p-6 w-full max-w-sm shadow-[0_0_30px_rgba(102,252,241,0.3)] relative">
+            <button type="button" onclick="cerrarGestorCategoria()" class="absolute top-3.5 right-3.5 text-gray-400 hover:text-white">✕</button>
+            <h3 id="tituloGestorCat" class="text-lg font-black text-[#66FCF1] uppercase tracking-wider mb-1">➕ Nueva Categoría</h3>
+            <p id="subtituloGestorCat" class="text-xs text-gray-400 mb-4">Escribe el nombre de la categoría (puedes incluir un emoji al inicio, ej. ⚽ DEPORTES).</p>
+            <input type="text" id="inputNombreCategoria" onkeydown="if(event.key==='Enter'){event.preventDefault(); guardarGestorCategoria();}" class="w-full p-3 rounded-lg bg-[#0B0C10] text-white border border-[#66FCF1] font-bold text-sm mb-4" placeholder="Ej. 📺 TV EN VIVO">
+            <div class="flex gap-2">
+                <button type="button" onclick="cerrarGestorCategoria()" class="flex-1 bg-transparent border border-gray-600 text-gray-400 py-2.5 rounded-md font-bold text-xs hover:bg-gray-800">Cancelar</button>
+                <button type="button" id="btnConfirmarGestorCat" onclick="guardarGestorCategoria()" class="flex-1 cyan-btn py-2.5 rounded-md font-black uppercase tracking-wider text-xs">Guardar</button>
             </div>
         </div>
     </div>
@@ -723,12 +752,24 @@
         let currentUserId = null;
         let unsubVentas, unsubCatalogo, unsubMeta, unsubConfig, unsubVIPPublico;
         
+        const CATEGORIAS_BASE = [
+            "🍿 CINE Y SERIES",
+            "🎧 MÚSICA Y AUDIO",
+            "🤖 INTELIGENCIA ARTIFICIAL",
+            "🎮 GAMING Y RECARGAS",
+            "🎁 COMBOS Y PROMOCIONES"
+        ];
+        let listaCategorias = [...CATEGORIAS_BASE];
+        let modoGestorCat = 'nueva';
+        let targetSelectCatId = 'nuevaCategoria';
+        let categoriaOriginalRenombrar = '';
+
         let catalogo = {};
         let ventas = [];
         let contadorFolio = 1;
         let fidelidadClientes = {};
         let codigosReferidos = {}; 
-        let directorioVIPPublico = {}; // Espejo público seguro: { "SL-1234A": { nombre: "Juan", puntos: 3 } }
+        let directorioVIPPublico = {};
         let codigoVIPConsultadoActual = '';
         let currentUsdtRate = 20.00; 
         let ventaPendiente = null;
@@ -737,6 +778,146 @@
         let busquedaCatalogoActual = '';
         let intervalPruebaSocial = null;
         let binanceInterval = null;
+
+        function obtenerTodasLasCategorias() {
+            const setCats = new Set(listaCategorias);
+            Object.values(catalogo).forEach(item => {
+                if (item && item.cat && item.cat.trim() !== '') {
+                    setCats.add(item.cat.trim());
+                }
+            });
+            return Array.from(setCats);
+        }
+
+        function renderizarSelectsCategorias(selNueva, selEdit) {
+            const todas = obtenerTodasLasCategorias();
+            const slcNueva = document.getElementById('nuevaCategoria');
+            const slcEdit = document.getElementById('editCategoria');
+
+            if (slcNueva) {
+                const valPrev = selNueva || slcNueva.value || todas[0];
+                slcNueva.innerHTML = '';
+                todas.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    slcNueva.appendChild(opt);
+                });
+                if (todas.includes(valPrev)) slcNueva.value = valPrev;
+            }
+
+            if (slcEdit) {
+                const valPrevEdit = selEdit || slcEdit.value || todas[0];
+                slcEdit.innerHTML = '';
+                todas.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    slcEdit.appendChild(opt);
+                });
+                if (todas.includes(valPrevEdit)) slcEdit.value = valPrevEdit;
+            }
+        }
+
+        window.abrirGestorCategoria = (modo, selectId) => {
+            modoGestorCat = modo;
+            targetSelectCatId = selectId;
+            const selectEl = document.getElementById(selectId);
+            const catActual = selectEl ? selectEl.value : '';
+            const inputEl = document.getElementById('inputNombreCategoria');
+            const tituloEl = document.getElementById('tituloGestorCat');
+            const subEl = document.getElementById('subtituloGestorCat');
+
+            if (modo === 'renombrar') {
+                if (!catActual) {
+                    mostrarToast("Selecciona primero una categoría", "error");
+                    return;
+                }
+                categoriaOriginalRenombrar = catActual;
+                tituloEl.textContent = '✏️ Renombrar Categoría';
+                subEl.innerHTML = `Cambiando el nombre de <b class="text-white">${catActual}</b>. Todos los productos dentro de esta categoría se actualizarán automáticamente.`;
+                inputEl.value = catActual;
+            } else {
+                categoriaOriginalRenombrar = '';
+                tituloEl.textContent = '➕ Nueva Categoría';
+                subEl.textContent = 'Escribe el nombre de la nueva categoría (puedes incluir un emoji al inicio, ej. ⚽ DEPORTES).';
+                inputEl.value = '';
+            }
+
+            document.getElementById('modalGestorCategoria').classList.remove('hidden');
+            setTimeout(() => inputEl.focus(), 50);
+        };
+
+        window.cerrarGestorCategoria = () => {
+            document.getElementById('modalGestorCategoria').classList.add('hidden');
+            document.getElementById('inputNombreCategoria').value = '';
+        };
+
+        window.guardarGestorCategoria = async () => {
+            if (!currentUserId) return;
+            const nuevoNombre = document.getElementById('inputNombreCategoria').value.trim();
+            if (!nuevoNombre) {
+                mostrarToast("Escribe un nombre válido", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btnConfirmarGestorCat');
+            const txtOrig = btn.textContent;
+            btn.textContent = 'GUARDANDO...';
+            btn.disabled = true;
+
+            try {
+                const todasActuales = obtenerTodasLasCategorias();
+
+                if (modoGestorCat === 'nueva') {
+                    if (!todasActuales.includes(nuevoNombre)) {
+                        todasActuales.push(nuevoNombre);
+                    }
+                    listaCategorias = todasActuales;
+                    await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), {
+                        categorias: listaCategorias
+                    }, { merge: true });
+
+                    renderizarSelectsCategorias(
+                        targetSelectCatId === 'nuevaCategoria' ? nuevoNombre : null,
+                        targetSelectCatId === 'editCategoria' ? nuevoNombre : null
+                    );
+                    mostrarToast("✅ Categoría agregada", "success");
+                } else if (modoGestorCat === 'renombrar') {
+                    if (nuevoNombre !== categoriaOriginalRenombrar) {
+                        listaCategorias = todasActuales.map(c => c === categoriaOriginalRenombrar ? nuevoNombre : c);
+                        // Eliminar duplicados si renombró a una existente
+                        listaCategorias = [...new Set(listaCategorias)];
+
+                        const batch = writeBatch(db);
+                        const configRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general');
+                        batch.set(configRef, { categorias: listaCategorias }, { merge: true });
+
+                        for (const [serv, datos] of Object.entries(catalogo)) {
+                            if (datos && (datos.cat || '').trim() === categoriaOriginalRenombrar.trim()) {
+                                datos.cat = nuevoNombre;
+                                const servRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv);
+                                batch.set(servRef, datos);
+                            }
+                        }
+
+                        await batch.commit();
+                        renderizarSelectsCategorias(
+                            targetSelectCatId === 'nuevaCategoria' ? nuevoNombre : null,
+                            targetSelectCatId === 'editCategoria' ? nuevoNombre : null
+                        );
+                        mostrarToast("✅ Categoría renombrada en todos tus productos", "success");
+                    }
+                }
+                cerrarGestorCategoria();
+            } catch (e) {
+                console.error(e);
+                mostrarToast("❌ Error al actualizar categoría", "error");
+            } finally {
+                btn.textContent = txtOrig;
+                btn.disabled = false;
+            }
+        };
 
         // BÓVEDA DE LOGOS NATIVOS
         function obtenerLogoNativo(nombre) {
@@ -814,6 +995,10 @@
 
         function aplicarConfigPublicaUI(data) {
             if(!data) return;
+            if (Array.isArray(data.categorias) && data.categorias.length > 0) {
+                listaCategorias = data.categorias;
+            }
+            renderizarSelectsCategorias();
             if(data.whatsapp) {
                 numeroVentasPublico = data.whatsapp;
                 const inputConf = document.getElementById('inputNumVentas');
@@ -851,6 +1036,7 @@
 
         // ARRANQUE INSTANTÁNEO DESDE CACHÉ LOCAL (0.1 SEGUNDOS)
         function arranqueInstantaneoCache() {
+            renderizarSelectsCategorias();
             if (localStorage.getItem('adminUnlocked') === 'true') return;
             try {
                 const cacheConfig = localStorage.getItem('slmx_cache_config');
@@ -884,6 +1070,7 @@
             document.getElementById('publicStore').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
             ocultarPantallaCarga();
+            renderizarSelectsCategorias();
             fetchBinanceRate();
             if(!binanceInterval) binanceInterval = setInterval(fetchBinanceRate, 15000);
         }
@@ -1017,6 +1204,7 @@
                 catalogo = {};
                 snap.forEach(d => { catalogo[d.id] = d.data(); });
                 ocultarPantallaCarga();
+                renderizarSelectsCategorias();
                 
                 if(Object.keys(catalogo).length > 0) {
                     document.getElementById('emptyStore').classList.add('hidden');
@@ -1160,20 +1348,26 @@
             filtrarPorBusqueda('');
         };
 
-        // FUNCIONES DEL MODAL PÚBLICO DE ESTRELLAS VIP
+        // FUNCIONES DEL MODAL PÚBLICO DE ESTRELLAS VIP (LIMPIEZA TOTAL AL ABRIR Y CERRAR)
         window.abrirModalConsultaVIP = () => {
-            document.getElementById('modalConsultaVIP').classList.remove('hidden');
+            codigoVIPConsultadoActual = '';
+            const inputEl = document.getElementById('inputCodigoVIPPublico');
+            if (inputEl) inputEl.value = '';
             document.getElementById('resultadoVIPBox').classList.add('hidden');
             document.getElementById('errorVIPBox').classList.add('hidden');
-            const ultimoCodigo = localStorage.getItem('slmx_mi_codigo_vip');
-            if (ultimoCodigo) {
-                document.getElementById('inputCodigoVIPPublico').value = ultimoCodigo;
-                buscarCodigoVIPPublico();
-            }
+            document.getElementById('modalConsultaVIP').classList.remove('hidden');
+            try { localStorage.removeItem('slmx_mi_codigo_vip'); } catch(e) {}
+            setTimeout(() => { if(inputEl) inputEl.focus(); }, 50);
         };
 
         window.cerrarModalConsultaVIP = () => {
             document.getElementById('modalConsultaVIP').classList.add('hidden');
+            codigoVIPConsultadoActual = '';
+            const inputEl = document.getElementById('inputCodigoVIPPublico');
+            if (inputEl) inputEl.value = '';
+            document.getElementById('resultadoVIPBox').classList.add('hidden');
+            document.getElementById('errorVIPBox').classList.add('hidden');
+            try { localStorage.removeItem('slmx_mi_codigo_vip'); } catch(e) {}
         };
 
         window.buscarCodigoVIPPublico = () => {
@@ -1192,7 +1386,6 @@
             errBox.classList.add('hidden');
             resBox.classList.remove('hidden');
             codigoVIPConsultadoActual = raw;
-            try { localStorage.setItem('slmx_mi_codigo_vip', raw); } catch(e) {}
 
             const puntos = Math.min(Math.max(parseInt(datosSocio.puntos) || 0, 0), 5);
             const faltan = 5 - puntos;
@@ -1267,12 +1460,13 @@
             if(!grid || !filtersContainer) return; 
             grid.innerHTML = '';
             
-            const categoriasUnicas = [...new Set(Object.values(catalogo).map(s => (s.cat || '').replace(/[^\w\s🍿🎬🎧🤖🎮🎁]/gi, '').trim()))].filter(Boolean);
+            const categoriasConProductos = [...new Set(Object.values(catalogo).map(s => (s?.cat || '').trim()))].filter(Boolean);
             
             let filtersHtml = `<button onclick="cambiarFiltroTienda('TODO')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${filtroCatalogoActual === 'TODO' ? 'bg-[#a855f7] border-[#a855f7] text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-[#12161c] border-gray-700 text-gray-400 hover:border-[#a855f7] hover:text-white'}">🌟 TODO</button>`;
-            categoriasUnicas.forEach(cat => {
+            categoriasConProductos.forEach(cat => {
                 const isSelected = filtroCatalogoActual === cat;
-                filtersHtml += `<button onclick="cambiarFiltroTienda('${cat}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected ? 'bg-[#66FCF1] border-[#66FCF1] text-[#0B0C10] shadow-[0_0_10px_rgba(102,252,241,0.5)]' : 'bg-[#12161c] border-gray-700 text-gray-400 hover:border-[#66FCF1] hover:text-white'}">${cat}</button>`;
+                const catEnc = encodeURIComponent(cat);
+                filtersHtml += `<button onclick="cambiarFiltroTienda(decodeURIComponent('${catEnc}'))" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected ? 'bg-[#66FCF1] border-[#66FCF1] text-[#0B0C10] shadow-[0_0_10px_rgba(102,252,241,0.5)]' : 'bg-[#12161c] border-gray-700 text-gray-400 hover:border-[#66FCF1] hover:text-white'}">${cat}</button>`;
             });
             filtersContainer.innerHTML = filtersHtml;
 
@@ -1294,13 +1488,13 @@
                 const datos = catalogo[servicio];
                 if(!datos || !datos.mods) return; 
                 
-                const catLimpia = (datos.cat || '').replace(/[^\w\s🍿🎬🎧🤖🎮🎁]/gi, '').trim();
+                const catLimpia = (datos.cat || '').trim();
                 if(filtroCatalogoActual !== 'TODO' && catLimpia !== filtroCatalogoActual) return;
 
                 const modsObj = datos.mods || {}; const mods = Object.entries(modsObj);
                 if(mods.length === 0) return;
 
-                // FILTRO DEL BUSCADOR EN TIEMPO REAL (Busca en nombre, descripción, categoría y planes)
+                // FILTRO DEL BUSCADOR EN TIEMPO REAL
                 if (busquedaCatalogoActual !== '') {
                     const textoBuscable = `${servicio} ${datos.desc || ''} ${datos.cat || ''} ${ Object.keys(modsObj).join(' ') }`.toLowerCase();
                     if (!textoBuscable.includes(busquedaCatalogoActual)) return;
@@ -1364,7 +1558,7 @@
                 const hintPlan = mods.length > 1 ? `<p class="text-[10px] text-[#66FCF1]/80 uppercase font-bold tracking-wider mb-1.5">👇 Toca el plan que deseas:</p>` : '';
                 const cardBorder = isAgotado ? 'border-gray-800/60' : (isPopular ? 'border-orange-500/70 hover:border-[#66FCF1] shadow-[0_0_20px_rgba(249,115,22,0.15)]' : 'border-gray-800 hover:border-[#66FCF1]');
 
-                grid.innerHTML += `<div class="store-card-item bg-[#12161c] border ${cardBorder} rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 w-full bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${badgeHTML}${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}${hintPlan}<div class="mb-5 flex-1">${preciosHtml}</div>${botonAccionHtml}</div></div>`;
+                grid.innerHTML += `<div class="store-card-item bg-[#12161c] border ${cardBorder} rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 w-full bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${badgeHTML}${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${catLimpia}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}${hintPlan}<div class="mb-5 flex-1">${preciosHtml}</div>${botonAccionHtml}</div></div>`;
             });
 
             if(tarjetasMostradas === 0 && Object.keys(catalogo).length > 0) {
@@ -1653,14 +1847,20 @@
                 if (badge === 'oferta') badgeCell = '<span class="text-[10px] px-2 py-0.5 rounded bg-purple-900/40 text-purple-300 border border-purple-500/50 font-bold">💎 Oferta</span>';
                 if (badge === 'agotado') badgeCell = '<span class="text-[10px] px-2 py-0.5 rounded bg-gray-800 text-red-400 border border-red-500 font-bold">⛔ Agotado</span>';
 
+                const servEnc = encodeURIComponent(servicio);
                 for (const [modalidad, precios] of Object.entries(datos.mods)) { 
+                    const modEnc = encodeURIComponent(modalidad);
                     const margen = (precios.p || 0) - (precios.c || 0); 
-                    tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 text-xs text-gray-400 whitespace-nowrap">${datos.cat || 'Otros'}</td><td class="p-3 text-center flex justify-center">${imgMini}</td><td class="p-3 font-bold ${(datos.cat || '').includes('COMBOS') ? 'neon-text-purple' : 'neon-text-pink'}">${servicio}</td><td class="p-3 whitespace-nowrap">${badgeCell}</td><td class="p-3 text-xs text-gray-300">${modalidad}</td><td class="p-3 text-xs text-[#66FCF1] uppercase font-bold">${precios.prov || 'Sin asignar'}</td><td class="p-3 font-mono text-gray-500">$${(precios.c || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-white">$${(precios.p || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-[#66FCF1]">$${margen.toFixed(2)}</td><td class="p-3 flex justify-center gap-3"><button onclick="abrirModalEditar('${servicio}', '${modalidad}')" class="text-[#66FCF1] hover:text-white"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg></button><button onclick="eliminarProducto('${servicio}', '${modalidad}')" class="text-[#F50057] hover:text-red-400"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td></tr>`; 
+                    tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 text-xs text-gray-400 whitespace-nowrap">${datos.cat || 'Otros'}</td><td class="p-3 text-center flex justify-center">${imgMini}</td><td class="p-3 font-bold ${(datos.cat || '').includes('COMBOS') ? 'neon-text-purple' : 'neon-text-pink'}">${servicio}</td><td class="p-3 whitespace-nowrap">${badgeCell}</td><td class="p-3 text-xs text-gray-300">${modalidad}</td><td class="p-3 text-xs text-[#66FCF1] uppercase font-bold">${precios.prov || 'Sin asignar'}</td><td class="p-3 font-mono text-gray-500">$${(precios.c || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-white">$${(precios.p || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-[#66FCF1]">$${margen.toFixed(2)}</td><td class="p-3 flex justify-center gap-3"><button onclick="abrirModalEditar(decodeURIComponent('${servEnc}'), decodeURIComponent('${modEnc}'))" class="text-[#66FCF1] hover:text-white"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg></button><button onclick="eliminarProducto(decodeURIComponent('${servEnc}'), decodeURIComponent('${modEnc}'))" class="text-[#F50057] hover:text-red-400"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td></tr>`; 
                 } 
             });
         }
 
-        window.abrirModalCatalogo = () => { document.getElementById('modalCatalogo').classList.remove('hidden'); fetchBinanceRate(); };
+        window.abrirModalCatalogo = () => {
+            renderizarSelectsCategorias();
+            document.getElementById('modalCatalogo').classList.remove('hidden');
+            fetchBinanceRate();
+        };
         window.cerrarModalCatalogo = () => { document.getElementById('modalCatalogo').classList.add('hidden'); document.getElementById('formNuevoProducto').reset(); document.getElementById('nuevaImagen').value = ''; };
         
         document.getElementById('formNuevoProducto').addEventListener('submit', async function(e) {
@@ -1683,6 +1883,7 @@
             const serv = servRaw.replace(/\//g, '-');
             
             if (!catalogo[serv]) catalogo[serv] = { cat, mods: {}, desc: desc, badge: badge }; 
+            catalogo[serv].cat = cat;
             catalogo[serv].mods[mod] = { c: costo, p: precio, prov };
             catalogo[serv].desc = desc;
             catalogo[serv].badge = badge;
@@ -1701,7 +1902,10 @@
         window.abrirModalEditar = (serv, mod) => { 
             const datosServ = catalogo[serv] || {};
             const datosMod = datosServ.mods?.[mod] || {};
+            const catActual = datosServ.cat || CATEGORIAS_BASE[0];
             
+            renderizarSelectsCategorias(null, catActual);
+            document.getElementById('editCategoria').value = catActual;
             document.getElementById('editServicioOriginal').value = serv;
             document.getElementById('editServicioNombre').value = serv; 
             document.getElementById('editModalidad').value = mod; 
@@ -1721,6 +1925,7 @@
             const servOrig = document.getElementById('editServicioOriginal').value; 
             let servNuevo = document.getElementById('editServicioNombre').value.trim().replace(/\//g, '-'); 
             const mod = document.getElementById('editModalidad').value; 
+            const catNueva = document.getElementById('editCategoria').value || CATEGORIAS_BASE[0];
             const badge = document.getElementById('editEtiqueta').value || 'normal';
             const desc = document.getElementById('editDescripcion').value.trim();
             
@@ -1741,6 +1946,7 @@
                 }
                 delete catalogo[servOrig]; 
                 
+                catalogo[servNuevo].cat = catNueva;
                 catalogo[servNuevo].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servNuevo].desc = desc;
                 catalogo[servNuevo].badge = badge;
@@ -1751,6 +1957,7 @@
                 batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servNuevo), catalogo[servNuevo]);
                 await batch.commit();
             } else {
+                catalogo[servOrig].cat = catNueva;
                 catalogo[servOrig].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servOrig].desc = desc;
                 catalogo[servOrig].badge = badge;
@@ -1890,7 +2097,7 @@
 
         window.abrirModalRespaldo = () => { document.getElementById('modalRespaldo').classList.remove('hidden'); };
         window.cerrarModalRespaldo = () => { document.getElementById('modalRespaldo').classList.add('hidden'); document.getElementById('fileImport').value = ''; };
-        window.exportarRespaldo = () => { const datosRespaldo = { catalogo: catalogo, ventas: ventas, contadorFolio: contadorFolio, fidelidad: fidelidadClientes, codigosReferidos: codigosReferidos }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosRespaldo)); const btnDescarga = document.createElement('a'); btnDescarga.setAttribute("href", dataStr); const hoy = new Date(); btnDescarga.setAttribute("download", `Respaldo_SLMX_Cloud_${hoy.getDate()}-${hoy.getMonth() + 1}-${hoy.getFullYear()}.json`); document.body.appendChild(btnDescarga); btnDescarga.click(); btnDescarga.remove(); window.cerrarModalRespaldo(); mostrarToast("📥 Respaldo descargado", "success"); };
+        window.exportarRespaldo = () => { const datosRespaldo = { catalogo: catalogo, ventas: ventas, contadorFolio: contadorFolio, fidelidad: fidelidadClientes, codigosReferidos: codigosReferidos, categorias: listaCategorias }; const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosRespaldo)); const btnDescarga = document.createElement('a'); btnDescarga.setAttribute("href", dataStr); const hoy = new Date(); btnDescarga.setAttribute("download", `Respaldo_SLMX_Cloud_${hoy.getDate()}-${hoy.getMonth() + 1}-${hoy.getFullYear()}.json`); document.body.appendChild(btnDescarga); btnDescarga.click(); btnDescarga.remove(); window.cerrarModalRespaldo(); mostrarToast("📥 Respaldo descargado", "success"); };
         window.triggerImport = () => { document.getElementById('fileImport').click(); };
         window.importarRespaldo = (event) => { 
             if(!currentUserId) return; 
@@ -1902,10 +2109,12 @@
                 try { d = JSON.parse(e.target.result); } catch(err) { mostrarToast("❌ El archivo no es un JSON válido", "error"); return; }
                 if(!d) { mostrarToast("❌ Archivo vacío", "error"); return; }
                 const resCatalogo = d.catalogo || {}; const resVentas = d.ventas || []; const resContador = d.contadorFolio || 1; const resFidelidad = d.fidelidad || d.fidelidadClientes || {}; const resCodigos = d.codigosReferidos || {};
+                if (Array.isArray(d.categorias) && d.categorias.length > 0) listaCategorias = d.categorias;
                 mostrarToast("Subiendo archivo a la nube... No cierres.", "success"); 
                 try {
                     const batch1 = writeBatch(db); 
                     batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: resContador, fidelidadClientes: resFidelidad, codigosReferidos: resCodigos }, { merge: true }); 
+                    batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { categorias: listaCategorias }, { merge: true });
                     for(let serv in resCatalogo) { if(resCatalogo[serv]) { const safeServ = serv.toString().replace(/\//g, '-'); if(!resCatalogo[serv].cat) resCatalogo[serv].cat = "🍿 Otros"; batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeServ), resCatalogo[serv]); } } 
                     await batch1.commit(); 
                     let batch2 = writeBatch(db); let count = 0; 
