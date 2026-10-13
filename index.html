@@ -102,17 +102,29 @@
         <div class="max-w-6xl mx-auto px-4 pb-4 md:px-8 md:pb-8 pt-1 relative mt-0">
             
             <!-- Cabecera Compacta (Logo y Mensaje) -->
-            <header class="flex flex-col items-center justify-center mb-4 text-center mt-0">
+            <header class="flex flex-col items-center justify-center mb-3 text-center mt-0">
                 <img src="titulo.png" alt="Streaming Latino MX" fetchpriority="high" class="max-w-[300px] md:max-w-[450px] drop-shadow-[0_0_20px_rgba(102,252,241,0.6)]" onerror="this.outerHTML='<h1 class=\'text-4xl md:text-6xl font-black neon-text-cyan tracking-widest uppercase drop-shadow-lg\'>Streaming Latino <span class=\'text-white\'>MX</span></h1>'">
                 
-                <div class="mt-4 w-full max-w-2xl mx-auto p-[2px] rounded-2xl bg-gradient-to-r from-[#66FCF1] via-[#a855f7] to-[#F50057] shadow-[0_0_25px_rgba(168,85,247,0.3)]">
-                    <div class="bg-[#0B0C10]/95 backdrop-blur-xl rounded-2xl p-4 md:p-5 border border-gray-800/50">
+                <div class="mt-3 w-full max-w-2xl mx-auto p-[2px] rounded-2xl bg-gradient-to-r from-[#66FCF1] via-[#a855f7] to-[#F50057] shadow-[0_0_25px_rgba(168,85,247,0.3)]">
+                    <div class="bg-[#0B0C10]/95 backdrop-blur-xl rounded-2xl p-3.5 md:p-4 border border-gray-800/50">
                         <p id="welcomeMessageText" class="text-gray-300 text-sm md:text-[15px] font-medium leading-relaxed tracking-wide">
                             Disfruta del mejor entretenimiento al mejor precio. Selecciona tu servicio y contrata de forma rápida y segura.
                         </p>
                     </div>
                 </div>
             </header>
+
+            <!-- Barra Compacta: Buscador de Apps en Vivo + Botón Consultar Estrellas VIP -->
+            <div class="max-w-2xl mx-auto mb-3.5 flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                <div class="relative flex-1">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#66FCF1] pointer-events-none text-sm">🔍</span>
+                    <input type="text" id="inputBuscarTienda" oninput="filtrarPorBusqueda(this.value)" class="w-full pl-10 pr-9 py-2 rounded-full bg-[#12161c] border border-[#45A29E] focus:border-[#66FCF1] text-xs md:text-sm text-white placeholder-gray-400 font-medium shadow-[0_0_12px_rgba(102,252,241,0.12)] transition-all" placeholder="Buscar aplicación o combo... (Ej. Netflix, Spotify, Vix)">
+                    <button type="button" id="btnLimpiarBusqueda" onclick="limpiarBusquedaTienda()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white text-xs bg-gray-800 hover:bg-red-600 w-5 h-5 rounded-full flex items-center justify-center transition-colors">✕</button>
+                </div>
+                <button type="button" onclick="abrirModalConsultaVIP()" class="px-4 py-2 rounded-full bg-[#12161c] border border-yellow-400 hover:bg-yellow-400 hover:text-black text-yellow-300 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(250,204,21,0.35)] transition-all flex items-center justify-center gap-1.5 shrink-0">
+                    <span class="text-sm">⭐</span> Mis Estrellas VIP
+                </button>
+            </div>
 
             <!-- Filtros Inteligentes -->
             <div id="publicFilters" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-5"></div>
@@ -144,6 +156,49 @@
             <div id="btnOjoSecreto" class="flex items-center gap-2 px-4 py-2 hover:bg-[#a855f7]/20 transition-colors rounded-r-full cursor-pointer" title="Contador de Visitas">
                 <span class="text-xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]">👁️</span>
                 <span id="publicVisitasContador" class="text-sm font-mono font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PÚBLICO: CONSULTAR ESTRELLAS VIP (Por Código SL-XXXX) -->
+    <div id="modalConsultaVIP" class="fixed inset-0 modal-bg z-[99990] hidden flex items-center justify-center p-4">
+        <div class="bg-[#12161c] border-2 border-yellow-400 p-6 rounded-2xl shadow-[0_0_35px_rgba(250,204,21,0.3)] w-full max-w-md relative text-center">
+            <button type="button" onclick="cerrarModalConsultaVIP()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <div class="w-14 h-14 mx-auto bg-[#0B0C10] rounded-full border-2 border-yellow-400 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(250,204,21,0.5)] text-2xl">
+                ⭐
+            </div>
+            <h2 class="text-xl font-black text-yellow-400 uppercase tracking-widest mb-1">Club de Socios VIP</h2>
+            <p class="text-xs text-gray-400 mb-4">Ingresa tu código de socio (viene en tu ticket de compra) para ver tus estrellas acumuladas por compras y referidos.</p>
+            
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="inputCodigoVIPPublico" class="flex-1 p-3 rounded-lg bg-[#0B0C10] text-yellow-300 border border-yellow-500/60 text-center font-mono font-black uppercase tracking-widest text-base focus:border-yellow-400" placeholder="Ej. SL-1234A">
+                <button type="button" onclick="buscarCodigoVIPPublico()" class="bg-yellow-500 hover:bg-yellow-400 text-black font-black px-5 rounded-lg uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(250,204,21,0.4)] transition-all">Ver</button>
+            </div>
+
+            <!-- Resultado de la búsqueda VIP -->
+            <div id="resultadoVIPBox" class="hidden bg-[#0B0C10] border border-gray-800 rounded-xl p-4 mt-2 text-center">
+                <p class="text-xs text-gray-400 uppercase font-bold">Socio Verificado</p>
+                <h3 id="vipNombreCliente" class="text-lg font-black text-[#66FCF1] mt-0.5 mb-2"></h3>
+                
+                <div id="vipEstrellasContenedor" class="flex justify-center gap-1.5 my-2 text-3xl"></div>
+                <p id="vipTextoProgreso" class="text-xs font-bold text-gray-200 mb-4"></p>
+
+                <!-- Botón especial cuando llega a 5 estrellas -->
+                <a id="btnReclamarPremioVIP" href="#" target="_blank" class="hidden w-full mb-3 bg-gradient-to-r from-yellow-500 to-amber-400 hover:from-yellow-400 hover:to-amber-300 text-black font-black py-3 rounded-lg uppercase tracking-wider text-xs shadow-[0_0_20px_rgba(250,204,21,0.6)] flex items-center justify-center gap-2 animate-bounce">
+                    🎁 ¡Reclamar mi Mes Gratis por WhatsApp!
+                </a>
+
+                <div class="border-t border-gray-800 pt-3 mt-2">
+                    <p class="text-[11px] text-gray-400 mb-2">🎁 <b class="text-white">¡Suma estrellas sin gastar!</b> Comparte tu código con amigos; cada vez que uno compre usando tu código, recibes <b class="text-yellow-400">+1 Estrella automática</b>.</p>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="copiarCodigoVIPCliente()" class="flex-1 bg-[#1F2833] hover:bg-gray-700 text-[#66FCF1] border border-[#66FCF1]/50 py-2 rounded-lg font-bold text-xs transition-all">📋 Copiar Código</button>
+                        <a id="btnCompartirWaVIP" href="#" target="_blank" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(22,163,74,0.4)] transition-all">📲 Invitar Amigos</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorVIPBox" class="hidden bg-red-950/40 border border-red-500/60 text-red-300 text-xs font-bold p-3 rounded-lg mt-2">
+                ⚠️ No encontramos ese código. Verifica que esté bien escrito (Ej. SL-1234A) o solicita tu código en tu próxima compra.
             </div>
         </div>
     </div>
@@ -525,7 +580,7 @@
                         <label class="text-xs text-yellow-400 font-bold uppercase">Etiqueta / Estado Tienda</label>
                         <select id="nuevaEtiqueta" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold border-yellow-500/60 bg-[#0B0C10]">
                             <option value="normal">✅ Disponible (Normal)</option>
-                            <option value="popular">🔥 Más Vendido</option>
+                            <option value="popular">🔥 Más Vendido (Va 1º)</option>
                             <option value="ultimos">⚡ Últimos Perfiles</option>
                             <option value="oferta">💎 Oferta Especial</option>
                             <option value="agotado">⛔ Agotado Temporalmente</option>
@@ -578,7 +633,7 @@
                     <label class="text-xs text-yellow-400 font-bold uppercase">Etiqueta / Estado en Tienda</label>
                     <select id="editEtiqueta" class="w-full p-2.5 mt-1 rounded-md text-sm font-bold border-yellow-500/60 bg-[#0B0C10]">
                         <option value="normal">✅ Disponible (Normal)</option>
-                        <option value="popular">🔥 Más Vendido</option>
+                        <option value="popular">🔥 Más Vendido (Va 1º)</option>
                         <option value="ultimos">⚡ Últimos Perfiles</option>
                         <option value="oferta">💎 Oferta Especial</option>
                         <option value="agotado">⛔ Agotado Temporalmente</option>
@@ -666,17 +721,20 @@
         const appIdentifier = 'streaming-latino'; 
         
         let currentUserId = null;
-        let unsubVentas, unsubCatalogo, unsubMeta, unsubConfig;
+        let unsubVentas, unsubCatalogo, unsubMeta, unsubConfig, unsubVIPPublico;
         
         let catalogo = {};
         let ventas = [];
         let contadorFolio = 1;
         let fidelidadClientes = {};
         let codigosReferidos = {}; 
+        let directorioVIPPublico = {}; // Espejo público seguro: { "SL-1234A": { nombre: "Juan", puntos: 3 } }
+        let codigoVIPConsultadoActual = '';
         let currentUsdtRate = 20.00; 
         let ventaPendiente = null;
         let numeroVentasPublico = "520000000000";
         let filtroCatalogoActual = 'TODO';
+        let busquedaCatalogoActual = '';
         let intervalPruebaSocial = null;
         let binanceInterval = null;
 
@@ -797,9 +855,9 @@
             try {
                 const cacheConfig = localStorage.getItem('slmx_cache_config');
                 const cacheCat = localStorage.getItem('slmx_cache_catalogo');
-                if (cacheConfig) {
-                    aplicarConfigPublicaUI(JSON.parse(cacheConfig));
-                }
+                const cacheVIP = localStorage.getItem('slmx_cache_vip');
+                if (cacheConfig) aplicarConfigPublicaUI(JSON.parse(cacheConfig));
+                if (cacheVIP) directorioVIPPublico = JSON.parse(cacheVIP) || {};
                 if (cacheCat) {
                     const parsedCat = JSON.parse(cacheCat);
                     if (Object.keys(parsedCat).length > 0) {
@@ -896,7 +954,6 @@
                     }
                 }
             } else {
-                // Mostrar tienda de inmediato sin esperar que termine el login anónimo
                 if (localStorage.getItem('adminUnlocked') !== 'true') {
                     mostrarTiendaPublica();
                 }
@@ -944,6 +1001,16 @@
                 }
             }, e => console.error(e));
 
+            // Suscripción al Espejo Público Seguro de Estrellas VIP
+            const vipRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'vip_socios');
+            if(unsubVIPPublico) unsubVIPPublico();
+            unsubVIPPublico = onSnapshot(vipRef, snap => {
+                if(snap.exists()) {
+                    directorioVIPPublico = snap.data().socios || {};
+                    try { localStorage.setItem('slmx_cache_vip', JSON.stringify(directorioVIPPublico)); } catch(e) {}
+                }
+            }, e => console.error(e));
+
             const catRef = collection(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo');
             if(unsubCatalogo) unsubCatalogo();
             unsubCatalogo = onSnapshot(query(catRef), (snap) => {
@@ -969,6 +1036,48 @@
             }, (error) => { ocultarPantallaCarga(); console.error(error); });
         }
 
+        // Robot Sincronizador del Espejo Público Seguro (Sin exponer teléfonos ni correos)
+        async function sincronizarEspejoVIPPublico() {
+            if (!currentUserId) return;
+            try {
+                let huboNuevoCodigo = false;
+                const todosLosWhatsApps = new Set([
+                    ...Object.keys(fidelidadClientes),
+                    ...ventas.map(v => v?.whatsapp).filter(Boolean)
+                ]);
+
+                todosLosWhatsApps.forEach(wp => {
+                    if (wp && !codigosReferidos[wp]) {
+                        codigosReferidos[wp] = generarCodigoUnico();
+                        huboNuevoCodigo = true;
+                    }
+                });
+
+                if (huboNuevoCodigo) {
+                    const configRef = doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global');
+                    await setDoc(configRef, { codigosReferidos: codigosReferidos }, { merge: true });
+                }
+
+                const mapaSeguro = {};
+                for (const [wp, codigo] of Object.entries(codigosReferidos)) {
+                    if (!codigo) continue;
+                    const puntos = obtenerPuntosFidelidad(wp);
+                    const ventaCliente = ventas.find(v => v && v.whatsapp === wp && v.cliente);
+                    const nombreCompleto = ventaCliente ? ventaCliente.cliente.trim() : 'Socio VIP';
+                    mapaSeguro[codigo.toUpperCase()] = {
+                        nombre: nombreCompleto,
+                        puntos: puntos
+                    };
+                }
+
+                directorioVIPPublico = mapaSeguro;
+                const vipPublicRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'vip_socios');
+                await setDoc(vipPublicRef, { socios: mapaSeguro, updatedAt: Date.now() }, { merge: true });
+            } catch (e) {
+                console.error("Error sincronizando espejo VIP:", e);
+            }
+        }
+
         async function inicializarNubeAdmin(uid) {
             const configRef = doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global');
             unsubMeta = onSnapshot(configRef, (docSnap) => {
@@ -977,17 +1086,7 @@
                     contadorFolio = d.contadorFolio || 1; 
                     fidelidadClientes = d.fidelidadClientes || {}; 
                     codigosReferidos = d.codigosReferidos || {};
-
-                    let changed = false;
-                    for (let wp in fidelidadClientes) {
-                        if (!codigosReferidos[wp]) {
-                            codigosReferidos[wp] = generarCodigoUnico();
-                            changed = true;
-                        }
-                    }
-                    if (changed) {
-                        setDoc(configRef, { codigosReferidos: codigosReferidos }, { merge: true });
-                    }
+                    sincronizarEspejoVIPPublico();
                 }
             }, (error) => console.error(error));
 
@@ -996,7 +1095,10 @@
                 ventas = [];
                 snap.forEach(d => { ventas.push(d.data()); });
                 ventas.sort((a,b) => parseInt((b.folio || '0').replace('V-','')) - parseInt((a.folio || '0').replace('V-','')));
-                try { renderTablaVentas(); } catch(e) { console.error(e); }
+                try { 
+                    renderTablaVentas(); 
+                    sincronizarEspejoVIPPublico();
+                } catch(e) { console.error(e); }
             }, (error) => console.error(error));
             
             const pubCatRef = collection(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo');
@@ -1028,6 +1130,108 @@
             }
             return '';
         }
+
+        // Jerarquía de Ordenamiento: 1º Más Vendido, 2º Oferta/Últimos, 3º Normal, 4º Agotado (al final)
+        function obtenerPrioridadOrden(servNombre) {
+            const b = catalogo[servNombre]?.badge || 'normal';
+            if (b === 'popular') return 1;
+            if (b === 'oferta' || b === 'ultimos') return 2;
+            if (b === 'normal') return 3;
+            if (b === 'agotado') return 4;
+            return 3;
+        }
+
+        window.filtrarPorBusqueda = (valor) => {
+            busquedaCatalogoActual = (valor || '').trim().toLowerCase();
+            const btnLimpiar = document.getElementById('btnLimpiarBusqueda');
+            if (btnLimpiar) {
+                if (busquedaCatalogoActual.length > 0) btnLimpiar.classList.remove('hidden');
+                else btnLimpiar.classList.add('hidden');
+            }
+            if (busquedaCatalogoActual.length > 0 && filtroCatalogoActual !== 'TODO') {
+                filtroCatalogoActual = 'TODO';
+            }
+            renderizarTiendaPublica();
+        };
+
+        window.limpiarBusquedaTienda = () => {
+            const input = document.getElementById('inputBuscarTienda');
+            if (input) input.value = '';
+            filtrarPorBusqueda('');
+        };
+
+        // FUNCIONES DEL MODAL PÚBLICO DE ESTRELLAS VIP
+        window.abrirModalConsultaVIP = () => {
+            document.getElementById('modalConsultaVIP').classList.remove('hidden');
+            document.getElementById('resultadoVIPBox').classList.add('hidden');
+            document.getElementById('errorVIPBox').classList.add('hidden');
+            const ultimoCodigo = localStorage.getItem('slmx_mi_codigo_vip');
+            if (ultimoCodigo) {
+                document.getElementById('inputCodigoVIPPublico').value = ultimoCodigo;
+                buscarCodigoVIPPublico();
+            }
+        };
+
+        window.cerrarModalConsultaVIP = () => {
+            document.getElementById('modalConsultaVIP').classList.add('hidden');
+        };
+
+        window.buscarCodigoVIPPublico = () => {
+            const raw = document.getElementById('inputCodigoVIPPublico').value.trim().toUpperCase();
+            const resBox = document.getElementById('resultadoVIPBox');
+            const errBox = document.getElementById('errorVIPBox');
+            if (!raw) return;
+
+            const datosSocio = directorioVIPPublico[raw];
+            if (!datosSocio) {
+                resBox.classList.add('hidden');
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            errBox.classList.add('hidden');
+            resBox.classList.remove('hidden');
+            codigoVIPConsultadoActual = raw;
+            try { localStorage.setItem('slmx_mi_codigo_vip', raw); } catch(e) {}
+
+            const puntos = Math.min(Math.max(parseInt(datosSocio.puntos) || 0, 0), 5);
+            const faltan = 5 - puntos;
+            document.getElementById('vipNombreCliente').textContent = `👋 ¡Hola, ${datosSocio.nombre}!`;
+
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += i <= puntos
+                    ? `<span class="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">★</span>`
+                    : `<span class="text-gray-700">☆</span>`;
+            }
+            document.getElementById('vipEstrellasContenedor').innerHTML = starsHtml;
+
+            const btnReclamar = document.getElementById('btnReclamarPremioVIP');
+            if (puntos >= 5) {
+                document.getElementById('vipTextoProgreso').innerHTML = `<span class="text-yellow-400 font-black">🎉 ¡FELICIDADES! Tienes 5 de 5 Estrellas.</span><br>¡Ya ganaste tu MES GRATIS o recompensa VIP!`;
+                const msgReclamo = encodeURIComponent(`👋 ¡Hola! Mi código de socio VIP es *${raw}* (${datosSocio.nombre}) y acabo de completar mis *5 Estrellas ⭐*. ¡Quiero reclamar mi beneficio!`);
+                btnReclamar.href = `https://wa.me/${numeroVentasPublico}?text=${msgReclamo}`;
+                btnReclamar.classList.remove('hidden');
+            } else {
+                document.getElementById('vipTextoProgreso').innerHTML = `Llevas <b class="text-yellow-400">${puntos} de 5</b> estrellas.<br>¡Solo te faltan <b>${faltan}</b> para tu MES GRATIS! 🎁`;
+                btnReclamar.classList.add('hidden');
+            }
+
+            const urlTienda = window.location.origin + window.location.pathname;
+            const textoInvitar = encodeURIComponent(`🍿 ¡Hola! Te recomiendo *Streaming Latino MX*, tienen Netflix, Spotify, Max y más al mejor precio.\n\n🎁 Da mi código VIP *${raw}* cuando compres para que te atiendan de lujo:\n👉 ${urlTienda}`);
+            document.getElementById('btnCompartirWaVIP').href = `https://wa.me/?text=${textoInvitar}`;
+        };
+
+        window.copiarCodigoVIPCliente = () => {
+            if (!codigoVIPConsultadoActual) return;
+            const tempInput = document.createElement('input');
+            tempInput.value = codigoVIPConsultadoActual;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            tempInput.remove();
+            mostrarToast(`Código ${codigoVIPConsultadoActual} copiado`, "success");
+        };
 
         window.seleccionarPlanCard = (rowEl, servEnc, modEnc, precio) => {
             const card = rowEl.closest('.store-card-item');
@@ -1072,7 +1276,18 @@
             });
             filtersContainer.innerHTML = filtersHtml;
 
-            const ordenados = Object.keys(catalogo).sort((a, b) => { const catA = catalogo[a]?.cat || ''; const catB = catalogo[b]?.cat || ''; return catA.localeCompare(catB); });
+            // ORDENAMIENTO INTELIGENTE: 1º Más Vendidos, 2º Ofertas/Últimos, 3º Normales, 4º Agotados
+            const ordenados = Object.keys(catalogo).sort((a, b) => {
+                const prioA = obtenerPrioridadOrden(a);
+                const prioB = obtenerPrioridadOrden(b);
+                if (prioA !== prioB) return prioA - prioB;
+                const catA = catalogo[a]?.cat || '';
+                const catB = catalogo[b]?.cat || '';
+                const cmpCat = catA.localeCompare(catB);
+                if (cmpCat !== 0) return cmpCat;
+                return a.localeCompare(b);
+            });
+
             let tarjetasMostradas = 0;
 
             ordenados.forEach(servicio => {
@@ -1084,10 +1299,18 @@
 
                 const modsObj = datos.mods || {}; const mods = Object.entries(modsObj);
                 if(mods.length === 0) return;
+
+                // FILTRO DEL BUSCADOR EN TIEMPO REAL (Busca en nombre, descripción, categoría y planes)
+                if (busquedaCatalogoActual !== '') {
+                    const textoBuscable = `${servicio} ${datos.desc || ''} ${datos.cat || ''} ${ Object.keys(modsObj).join(' ') }`.toLowerCase();
+                    if (!textoBuscable.includes(busquedaCatalogoActual)) return;
+                }
+
                 tarjetasMostradas++;
 
                 const badgeStatus = datos.badge || 'normal';
                 const isAgotado = badgeStatus === 'agotado';
+                const isPopular = badgeStatus === 'popular';
                 const badgeHTML = obtenerBadgeTiendaHTML(badgeStatus);
             
                 let imagenHtml = '';
@@ -1139,12 +1362,13 @@
                     : `<a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="btn-contratar-wa w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-wider py-3 rounded-lg shadow-[0_0_15px_rgba(22,163,74,0.4)] flex items-center justify-center gap-2 transition-all">Contratar ($${primerPrecio})</a>`;
 
                 const hintPlan = mods.length > 1 ? `<p class="text-[10px] text-[#66FCF1]/80 uppercase font-bold tracking-wider mb-1.5">👇 Toca el plan que deseas:</p>` : '';
+                const cardBorder = isAgotado ? 'border-gray-800/60' : (isPopular ? 'border-orange-500/70 hover:border-[#66FCF1] shadow-[0_0_20px_rgba(249,115,22,0.15)]' : 'border-gray-800 hover:border-[#66FCF1]');
 
-                grid.innerHTML += `<div class="store-card-item bg-[#12161c] border ${isAgotado ? 'border-gray-800/60' : 'border-gray-800 hover:border-[#66FCF1]'} rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 w-full bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${badgeHTML}${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}${hintPlan}<div class="mb-5 flex-1">${preciosHtml}</div>${botonAccionHtml}</div></div>`;
+                grid.innerHTML += `<div class="store-card-item bg-[#12161c] border ${cardBorder} rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col transform hover:-translate-y-1"><div class="h-48 w-full bg-[#0B0C10] relative border-b border-gray-800 overflow-hidden">${badgeHTML}${imagenHtml}</div><div class="p-5 flex-1 flex flex-col"><span class="text-[10px] text-[#a855f7] uppercase tracking-widest font-bold mb-1 block">${(datos.cat || '').replace(/[^\w\s]/gi, '')}</span><h3 class="text-xl font-black text-white mb-2 uppercase">${servicio}</h3>${descHtml}${hintPlan}<div class="mb-5 flex-1">${preciosHtml}</div>${botonAccionHtml}</div></div>`;
             });
 
             if(tarjetasMostradas === 0 && Object.keys(catalogo).length > 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-500 text-lg font-bold">No hay servicios en esta categoría.</p></div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-gray-400 text-base font-bold mb-3">No encontramos resultados para tu búsqueda.</p><button onclick="limpiarBusquedaTienda(); cambiarFiltroTienda('TODO');" class="px-4 py-2 rounded-full bg-[#1F2833] border border-[#66FCF1] text-[#66FCF1] text-xs font-bold uppercase">Ver Todo el Catálogo</button></div>`;
             }
 
             iniciarPruebaSocial();
@@ -1371,6 +1595,8 @@
                     fidelidadClientes: fidelidadClientes,
                     codigosReferidos: codigosReferidos
                 }, { merge: true });
+
+                await sincronizarEspejoVIPPublico();
                 
                 document.getElementById('ventaForm').reset(); 
                 document.getElementById('codigoReferidoInput').value = '';
@@ -1558,7 +1784,6 @@
             document.getElementById('editVentaFolio').value = folio; document.getElementById('editVentaCliente').value = venta.cliente || ''; document.getElementById('editVentaWhatsApp').value = venta.whatsapp || ''; document.getElementById('editVentaCorreo').value = venta.correo || ''; document.getElementById('editVentaPass').value = venta.password || ''; document.getElementById('editVentaPerfil').value = venta.perfil || ''; document.getElementById('editVentaPin').value = venta.pin || ''; document.getElementById('editVentaEnlace').value = venta.enlace || ''; document.getElementById('textoEditandoVenta').textContent = `Folio: ${folio} | ${venta.servicio}`; document.getElementById('editVentaFidelidad').value = obtenerPuntosFidelidad(venta.whatsapp); 
             document.getElementById('editVentaGarantia').value = venta.notasGarantia || '';
             
-            // Cargar el switch de reembolso
             document.getElementById('editVentaReembolso').checked = venta.reembolsado === true;
 
             if(venta.fechaVencimiento && venta.fechaVencimiento.trim() !== "") { 
@@ -1616,6 +1841,7 @@
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', folio), nuevosDatos, { merge: true }); 
                 fidelidadClientes[nuevoWhatsApp] = Math.min(Math.max(nuevaFidelidad, 0), 5); 
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes }, { merge: true }); 
+                await sincronizarEspejoVIPPublico();
                 
                 if(esReembolso) {
                     mostrarToast("🛑 Venta marcada como REEMBOLSADA", "success");
@@ -1655,7 +1881,7 @@
             
             const miCodigo = codigosReferidos[v.whatsapp] || 'Aún no asignado';
             msg += `⭐ *PROGRAMA DE FIDELIDAD*\nProgreso: [ ${'★ '.repeat(puntos)}${'☆ '.repeat(faltan)}] (${puntos} de 5)\n${msjPremio}\n\n`;
-            msg += `🎁 *¡GANA MESES GRATIS!* 🎁\nComparte tu código de socio VIP: *${miCodigo}* con tus amigos. Si ellos compran y dan tu código, ¡te sumamos +1 Estrella automática a tu cuenta!\n\nCualquier duda, envíanos un mensaje por aquí. 🚀`;
+            msg += `🎁 *¡GANA MESES GRATIS!* 🎁\nComparte tu código de socio VIP: *${miCodigo}* con tus amigos. Si ellos compran y dan tu código, ¡te sumamos +1 Estrella automática! Puedes consultar tus estrellas en nuestro catálogo web.\n\nCualquier duda, envíanos un mensaje por aquí. 🚀`;
             
             document.getElementById('ticketWhatsAppNum').value = v.whatsapp.replace(/\D/g,''); document.getElementById('textoPreviewTicket').value = msg; document.getElementById('modalPreviewTicket').classList.remove('hidden');
         };
@@ -1685,6 +1911,7 @@
                     let batch2 = writeBatch(db); let count = 0; 
                     for(let v of resVentas) { if(v) { const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`; batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } } } 
                     if(count % 400 !== 0) await batch2.commit(); 
+                    await sincronizarEspejoVIPPublico();
                     window.cerrarModalRespaldo(); mostrarToast("✅ Respaldo subido a la nube", "success"); 
                 } catch(error) { console.error(error); mostrarToast("❌ Error al subir: Archivo corrupto", "error"); } 
             }; 
