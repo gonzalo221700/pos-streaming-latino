@@ -1037,7 +1037,8 @@
         // ARRANQUE INSTANTÁNEO DESDE CACHÉ LOCAL (0.1 SEGUNDOS)
         function arranqueInstantaneoCache() {
             renderizarSelectsCategorias();
-            if (localStorage.getItem('adminUnlocked') === 'true') return;
+            // Hemos eliminado la validación insegura por localStorage
+            // if (localStorage.getItem('adminUnlocked') === 'true') return;
             try {
                 const cacheConfig = localStorage.getItem('slmx_cache_config');
                 const cacheCat = localStorage.getItem('slmx_cache_catalogo');
@@ -1112,17 +1113,10 @@
             btn.disabled = true;
 
             try {
-                // Firebase hace el trabajo pesado y seguro
                 const userCredential = await signInWithEmailAndPassword(auth, correo, password);
-                const user = userCredential.user;
-
+                // ¡Firebase Auth se encargará del resto a través del onAuthStateChanged!
                 cerrarDobleCandado();
-                localStorage.setItem('adminUnlocked', 'true'); // Solo para UI
-                
-                mostrarPanelAdmin();
-                inicializarNubeAdmin(user.uid);
-                mostrarToast(`☁️ Bóveda CRM Desbloqueada`, "success");
-
+                mostrarToast(`☁️ Verificando acceso...`, "success");
             } catch (error) {
                 console.error("Error Auth:", error.code);
                 const modal = document.getElementById('modalDobleCandado').firstElementChild;
@@ -1138,23 +1132,23 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 if (user.isAnonymous) {
+                    // Es un cliente público
+                    localStorage.removeItem('adminUnlocked');
                     mostrarTiendaPublica();
-                    localStorage.removeItem('adminUnlocked'); // Limpiamos rastros falsos
                 } else {
+                    // Firebase CONFIRMA que eres tú (El Administrador)
                     currentUserId = user.uid;
-                    // Si Firebase dice que es real, mostramos CRM directo
-                    localStorage.setItem('adminUnlocked', 'true'); 
                     mostrarPanelAdmin();
                     inicializarNubeAdmin(user.uid);
                     suscribirCatalogoPublico();
                 }
             } else {
+                // Nadie está logueado
                 localStorage.removeItem('adminUnlocked');
                 mostrarTiendaPublica();
                 try { await signInAnonymously(auth); } catch (e) { console.warn("Modo público directo:", e); }
             }
         });
-
         window.cerrarSesionCompleta = () => {
             localStorage.removeItem('adminUnlocked');
             mostrarTiendaPublica();
