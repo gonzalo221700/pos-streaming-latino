@@ -101,7 +101,7 @@
 
         <!-- BARRA SUPERIOR ESTILO APP (TOP NAVBAR) -->
         <header class="sticky top-0 z-[100] bg-[#12161c]/95 backdrop-blur-md border-b border-[#1F2833] px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
-            <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-3">
+            <div class="w-full mx-auto flex items-center justify-between gap-3 px-1 lg:px-4">
                 
                 <!-- Izquierda: Botón Menú Móvil + Logo -->
                 <div class="flex items-center gap-3 shrink-0">
@@ -196,7 +196,7 @@
                 </div>
 
                 <!-- Grid de Tarjetas Estilo Kokoro Dark Neon -->
-                <div id="publicCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+                <div id="publicCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5"></div>
                 
                 <div id="emptyStore" class="hidden text-center p-10 bg-[#12161c] rounded-2xl border border-dashed border-gray-700 mt-6">
                     <p class="text-gray-400 text-base animate-pulse">Cargando catálogo de servicios...</p>
@@ -204,12 +204,12 @@
             </main>
         </div>
         
-        <!-- Burbuja de Prueba Social Automática -->
-        <div id="socialProofBubble" class="hidden fixed bottom-6 left-6 bg-[#1A222C]/95 border border-[#66FCF1] p-3.5 rounded-xl shadow-[0_0_25px_rgba(102,252,241,0.4)] z-50 flex items-center gap-4 backdrop-blur-md max-w-[300px] transform transition-all">
-            <div class="text-3xl bg-[#0B0C10] w-12 h-12 flex items-center justify-center rounded-full border border-gray-600 shadow-inner" id="socialProofIcon">🔥</div>
-            <div>
-                <p class="text-[10px] text-gray-400 font-bold tracking-wider uppercase mb-1" id="socialProofTime">Hace unos instantes</p>
-                <p class="text-[13px] text-white leading-tight font-medium" id="socialProofText"></p>
+        <!-- Burbuja de Prueba Social Automática (Reubicada sin tapar Sidebar ni Botones) -->
+        <div id="socialProofBubble" class="hidden fixed bottom-20 left-3 lg:bottom-6 lg:left-[280px] bg-[#12161c]/95 border border-[#66FCF1]/80 px-3 py-2.5 rounded-xl shadow-[0_0_20px_rgba(102,252,241,0.3)] z-40 flex items-center gap-3 backdrop-blur-md max-w-[240px] sm:max-w-[280px] pointer-events-none transform transition-all">
+            <div class="text-xl sm:text-2xl bg-[#0B0C10] w-9 h-9 sm:w-11 sm:h-11 shrink-0 flex items-center justify-center rounded-full border border-gray-700 shadow-inner" id="socialProofIcon">🔥</div>
+            <div class="min-w-0">
+                <p class="text-[9px] text-gray-400 font-bold tracking-wider uppercase mb-0.5 truncate" id="socialProofTime">Hace unos instantes</p>
+                <p class="text-[11px] sm:text-xs text-white leading-tight font-medium truncate" id="socialProofText"></p>
             </div>
         </div>
 
