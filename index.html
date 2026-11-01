@@ -498,28 +498,28 @@
                                     <input type="text" id="categoria" readonly class="p-2.5 rounded-md text-sm bg-[#0B0C10] text-gray-400 cursor-not-allowed font-semibold">
                                 </div>
 
-                                <!-- Datos Asignados -->
-                                <div class="flex flex-col md:col-span-2">
-                                    <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Correo (Asignado al Cliente)</label>
-                                    <input type="text" id="correoAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="ejemplo@correo.com">
+                                <!-- GRUPO: ACCESOS (Para Streaming y Música) -->
+                                <div id="grupoAccesos" class="md:col-span-5 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                    <div class="flex flex-col md:col-span-2">
+                                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Correo (Asignado al Cliente)</label>
+                                        <input type="text" id="correoAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="ejemplo@correo.com">
+                                    </div>
+                                    <div class="flex flex-col md:col-span-2">
+                                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Contraseña</label>
+                                        <input type="text" id="passAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Pass123">
+                                    </div>
+                                    <div class="flex flex-col md:col-span-1 hidden md:block"></div>
+                                    
+                                    <div class="flex flex-col md:col-span-2">
+                                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Nombre del Perfil (Opcional)</label>
+                                        <input type="text" id="perfilAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Ej. Pantalla 4">
+                                    </div>
+                                    <div class="flex flex-col md:col-span-2">
+                                        <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">PIN de Acceso (Opcional)</label>
+                                        <input type="text" id="pinAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Ej. 1234">
+                                    </div>
+                                    <div class="flex flex-col md:col-span-1 hidden md:block"></div>
                                 </div>
-                                <div class="flex flex-col md:col-span-2">
-                                    <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Contraseña</label>
-                                    <input type="text" id="passAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Pass123">
-                                </div>
-                                
-                                <div class="flex flex-col md:col-span-1 hidden md:block"></div>
-
-                                <div class="flex flex-col md:col-span-2">
-                                    <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Nombre del Perfil (Opcional)</label>
-                                    <input type="text" id="perfilAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Ej. Pantalla 4">
-                                </div>
-                                <div class="flex flex-col md:col-span-2">
-                                    <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">PIN de Acceso (Opcional)</label>
-                                    <input type="text" id="pinAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="Ej. 1234">
-                                </div>
-                                
-                                <div class="flex flex-col md:col-span-1 hidden md:block"></div>
 
                                 <!-- Referidos System -->
                                 <div class="flex flex-col md:col-span-2">
@@ -527,8 +527,9 @@
                                     <input type="text" id="codigoReferidoInput" class="p-2.5 rounded-md text-sm border-green-500 focus:border-green-400 bg-[#0B0C10] font-mono text-green-300" placeholder="Ej. SL-1234A (Opcional)">
                                 </div>
 
-                                <div class="flex flex-col md:col-span-2">
-                                    <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Invitación</label>
+                                <!-- GRUPO: ENLACE (Para IA y Gaming) -->
+                                <div id="grupoEnlace" class="hidden flex-col md:col-span-2">
+                                    <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Activación (Opcional)</label>
                                     <input type="url" id="enlaceAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="https://...">
                                 </div>
 
@@ -2056,12 +2057,31 @@
         if(servicioSelect) {
             servicioSelect.addEventListener('change', function() {
                 const servicio = this.value; modalidadSelect.innerHTML = '<option value="">-- Selecciona modalidad --</option>';
+                const grupoAccesos = document.getElementById('grupoAccesos');
+                const grupoEnlace = document.getElementById('grupoEnlace');
+                
                 if (catalogo[servicio]) {
-                    categoriaInput.value = catalogo[servicio].cat || 'Otros';
+                    const cat = catalogo[servicio].cat || 'Otros';
+                    categoriaInput.value = cat;
+                    
+                    // Lógica Mágica: Si es IA o Gaming, oculta accesos y muestra enlace.
+                    if (cat.includes('INTELIGENCIA') || cat.includes('GAMING')) {
+                        if(grupoAccesos) grupoAccesos.classList.add('hidden');
+                        if(grupoEnlace) { grupoEnlace.classList.remove('hidden'); grupoEnlace.classList.add('flex'); }
+                    } else {
+                        // Si es Streaming o Música, muestra accesos clásicos y oculta enlace.
+                        if(grupoAccesos) grupoAccesos.classList.remove('hidden');
+                        if(grupoEnlace) { grupoEnlace.classList.add('hidden'); grupoEnlace.classList.remove('flex'); }
+                    }
+
                     const mods = catalogo[servicio].mods || {};
                     for (const mod in mods) { const option = document.createElement('option'); option.value = mod; option.textContent = mod; modalidadSelect.appendChild(option); }
                     if(Object.keys(mods).length > 0) { modalidadSelect.selectedIndex = 1; modalidadSelect.dispatchEvent(new Event('change')); }
-                } else { categoriaInput.value = ""; document.getElementById('costo').value = ""; precioInput.value = ""; gananciaInput.value = "0.00"; }
+                } else { 
+                    categoriaInput.value = ""; document.getElementById('costo').value = ""; precioInput.value = ""; gananciaInput.value = "0.00"; 
+                    if(grupoAccesos) grupoAccesos.classList.remove('hidden');
+                    if(grupoEnlace) { grupoEnlace.classList.add('hidden'); grupoEnlace.classList.remove('flex'); }
+                }
             });
         }
 
