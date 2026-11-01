@@ -730,7 +730,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDocs, getDoc, collection, query, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         // IMPORTANTE: TUS LLAVES REALES DE FIREBASE (No Borrar)
@@ -1096,33 +1096,42 @@
             });
         }
 
-        // LOGIN SILENCIOSO DE GOOGLE
+        // LOGIN SEGURO CON FIREBASE AUTH
         window.verificarDobleCandado = async () => {
-            const u = document.getElementById('candadoUser').value; const p = document.getElementById('candadoPass').value;
-            if(u === 'Gonzalo cab' && p === 'Aliencab1172200') {
+            const correo = document.getElementById('candadoUser').value.trim(); 
+            const password = document.getElementById('candadoPass').value.trim();
+
+            if(!correo || !password) {
+                mostrarToast("Ingresa usuario y contraseña", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btnVerificarLocal');
+            const txtOriginal = btn.textContent;
+            btn.textContent = "VERIFICANDO...";
+            btn.disabled = true;
+
+            try {
+                // Firebase hace el trabajo pesado y seguro
+                const userCredential = await signInWithEmailAndPassword(auth, correo, password);
+                const user = userCredential.user;
+
                 cerrarDobleCandado();
-                localStorage.setItem('adminUnlocked', 'true');
+                localStorage.setItem('adminUnlocked', 'true'); // Solo para UI
                 
-                if (auth.currentUser && !auth.currentUser.isAnonymous) {
-                    mostrarPanelAdmin();
-                    inicializarNubeAdmin(auth.currentUser.uid);
-                    mostrarToast(`☁️ Bóveda CRM Desbloqueada`, "success");
-                } else {
-                    document.getElementById('loadingScreen').style.display = 'flex'; 
-                    document.getElementById('loadingScreen').style.opacity = '1';
-                    const provider = new GoogleAuthProvider();
-                    try {
-                        await signInWithPopup(auth, provider);
-                    } catch (error) {
-                        ocultarPantallaCarga();
-                        localStorage.removeItem('adminUnlocked');
-                        mostrarToast("⚠️ Autenticación cancelada.", "error");
-                    }
-                }
-            } else {
+                mostrarPanelAdmin();
+                inicializarNubeAdmin(user.uid);
+                mostrarToast(`☁️ Bóveda CRM Desbloqueada`, "success");
+
+            } catch (error) {
+                console.error("Error Auth:", error.code);
                 const modal = document.getElementById('modalDobleCandado').firstElementChild;
-                modal.classList.add('border-red-500'); setTimeout(() => modal.classList.remove('border-red-500'), 500);
+                modal.classList.add('border-red-500'); 
+                setTimeout(() => modal.classList.remove('border-red-500'), 500);
                 mostrarToast("Credenciales incorrectas", "error");
+            } finally {
+                btn.textContent = txtOriginal;
+                btn.disabled = false;
             }
         };
 
@@ -1130,20 +1139,18 @@
             if (user) {
                 if (user.isAnonymous) {
                     mostrarTiendaPublica();
+                    localStorage.removeItem('adminUnlocked'); // Limpiamos rastros falsos
                 } else {
                     currentUserId = user.uid;
-                    if (localStorage.getItem('adminUnlocked') === 'true') {
-                        mostrarPanelAdmin();
-                        inicializarNubeAdmin(user.uid);
-                        suscribirCatalogoPublico();
-                    } else {
-                        mostrarTiendaPublica();
-                    }
+                    // Si Firebase dice que es real, mostramos CRM directo
+                    localStorage.setItem('adminUnlocked', 'true'); 
+                    mostrarPanelAdmin();
+                    inicializarNubeAdmin(user.uid);
+                    suscribirCatalogoPublico();
                 }
             } else {
-                if (localStorage.getItem('adminUnlocked') !== 'true') {
-                    mostrarTiendaPublica();
-                }
+                localStorage.removeItem('adminUnlocked');
+                mostrarTiendaPublica();
                 try { await signInAnonymously(auth); } catch (e) { console.warn("Modo público directo:", e); }
             }
         });
