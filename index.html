@@ -588,7 +588,6 @@
                         </div>
 
                         <div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
-                            <div id="filtrosInventarioAdmin" class="mb-4 flex items-center gap-2 overflow-x-auto pb-2 select-none"></div>
                             <div class="overflow-x-auto">
                                 <table id="tablaVentas" class="w-full text-sm text-left">
                                     <thead>
@@ -2529,10 +2528,28 @@
         const inputNuevoCosto = document.getElementById('nuevoCosto'); if(inputNuevoCosto) inputNuevoCosto.addEventListener('input', actualizarConversionEnVivo);
         const slcMoneda = document.getElementById('monedaCosto'); if(slcMoneda) slcMoneda.addEventListener('change', actualizarConversionEnVivo);
     </script>
-    <!-- MÓDULO INDEPENDIENTE: ORGANIZADOR DE INVENTARIO POR CATEGORÍAS -->
+    <!-- MÓDULO INDEPENDIENTE: ORGANIZADOR EXCLUSIVO DE MI INVENTARIO -->
     <script>
         (function() {
             let categoriaActivaInventario = 'TODO';
+
+            // 1. Localizar exclusivamente la tabla de MI INVENTARIO
+            const tbodyTarget = document.getElementById('tablaInventarioCuerpo');
+            const seccionInventario = document.getElementById('vistaAdminInventario');
+            if (!tbodyTarget || !seccionInventario) return;
+
+            // 2. Crear o mover la barra de botones exactamente arriba de la tabla de Mi Inventario
+            let barraBotones = document.getElementById('filtrosInventarioAdmin');
+            if (!barraBotones) {
+                barraBotones = document.createElement('div');
+                barraBotones.id = 'filtrosInventarioAdmin';
+            }
+            barraBotones.className = 'mb-4 flex items-center gap-2 overflow-x-auto pb-2 select-none';
+
+            const contenedorTablaInventario = tbodyTarget.closest('.neon-border');
+            if (contenedorTablaInventario && contenedorTablaInventario.parentNode) {
+                contenedorTablaInventario.parentNode.insertBefore(barraBotones, contenedorTablaInventario);
+            }
 
             window.filtrarInventarioPorBoton = function(categoria) {
                 categoriaActivaInventario = categoria;
@@ -2540,17 +2557,12 @@
             };
 
             function aplicarFiltroYBotonesInventario() {
-                const tbody = document.getElementById('tablaInventarioCuerpo');
-                const barraBotones = document.getElementById('filtrosInventarioAdmin');
-                if (!tbody || !barraBotones) return;
-
-                const filas = Array.from(tbody.querySelectorAll('tr'));
+                const filas = Array.from(tbodyTarget.querySelectorAll('tr'));
                 const conteoPorCategoria = {};
                 let totalItems = 0;
 
-                // 1. Leer las categorías directamente de las filas que tu sistema ya dibujó
+                // 3. Contar el stock por categoría leyendo las filas del inventario
                 filas.forEach(fila => {
-                    if (fila.id === 'filaSinResultadosInv') return;
                     const celdaCategoria = fila.cells[0];
                     if (!celdaCategoria) return;
                     const catNombre = celdaCategoria.textContent.trim() || 'Otros';
@@ -2560,12 +2572,11 @@
 
                 const categoriasExistentes = Object.keys(conteoPorCategoria);
 
-                // Si la categoría seleccionada se quedó sin productos, regresar a TODO
                 if (categoriaActivaInventario !== 'TODO' && !conteoPorCategoria[categoriaActivaInventario]) {
                     categoriaActivaInventario = 'TODO';
                 }
 
-                // 2. Crear los botones en el borde superior
+                // 4. Pintar los botones en el borde superior de Mi Inventario
                 const esTodoActivo = categoriaActivaInventario === 'TODO';
                 let htmlBotones = `
                     <button type="button" onclick="filtrarInventarioPorBoton('TODO')" class="px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${esTodoActivo ? 'bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]' : 'bg-[#12161c] border-[#1F2833] text-gray-400 hover:border-[#66FCF1]/50 hover:text-white'}">
@@ -2589,9 +2600,8 @@
 
                 barraBotones.innerHTML = htmlBotones;
 
-                // 3. Mostrar únicamente el stock de la categoría seleccionada
+                // 5. Filtrar las filas de la tabla de inventario
                 filas.forEach(fila => {
-                    if (fila.id === 'filaSinResultadosInv') return;
                     const celdaCategoria = fila.cells[0];
                     if (!celdaCategoria) return;
                     const catNombre = celdaCategoria.textContent.trim() || 'Otros';
@@ -2604,15 +2614,12 @@
                 });
             }
 
-            // 4. Vigilar la tabla automáticamente cuando Firebase cargue o actualice productos
-            const tbodyTarget = document.getElementById('tablaInventarioCuerpo');
-            if (tbodyTarget) {
-                const observer = new MutationObserver(() => {
-                    aplicarFiltroYBotonesInventario();
-                });
-                observer.observe(tbodyTarget, { childList: true });
+            // 6. Actualizar automáticamente cuando Firebase cargue o modifique el inventario
+            const observer = new MutationObserver(() => {
                 aplicarFiltroYBotonesInventario();
-            }
+            });
+            observer.observe(tbodyTarget, { childList: true });
+            aplicarFiltroYBotonesInventario();
         })();
     </script>
 </body>
