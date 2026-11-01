@@ -81,6 +81,35 @@
         .toast-success { background-color: #166534; border: 1px solid #22c55e; }
         .toast-error { background-color: #991b1b; border: 1px solid #ef4444; }
         .toast.hiding { animation: fadeOutUp 0.3s ease-in forwards; }
+        /* EXPANSIÓN QUIRÚRGICA DE TEXTOS EN TARJETAS DEL CATÁLOGO PÚBLICO */
+        .store-card-item h3.truncate {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+            line-height: 1.3 !important;
+        }
+        .store-card-item p.line-clamp-2 {
+            display: block !important;
+            -webkit-line-clamp: unset !important;
+            overflow: visible !important;
+            white-space: pre-line !important;
+            line-height: 1.45 !important;
+        }
+        .store-card-item .plan-option-row {
+            align-items: flex-start !important;
+            padding-top: 0.6rem !important;
+            padding-bottom: 0.6rem !important;
+        }
+        .store-card-item .plan-option-row .plan-radio-dot {
+            margin-top: 0.15rem !important;
+        }
+        .store-card-item .plan-option-row span.truncate {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+            line-height: 1.3 !important;
+            word-break: break-word !important;
+        }
     </style>
 </head>
 <body class="min-h-screen relative">
