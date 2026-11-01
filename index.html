@@ -2064,12 +2064,12 @@
                     const cat = catalogo[servicio].cat || 'Otros';
                     categoriaInput.value = cat;
                     
-                    // Lógica Mágica: Si es IA o Gaming, oculta accesos y muestra enlace.
-                    if (cat.includes('INTELIGENCIA') || cat.includes('GAMING')) {
+                    // REGLA ESTRICTA: SOLO Gemini y Duolingo ocultan el correo y muestran el enlace. Todo lo demás se queda normal.
+                    const servMinusculas = servicio.toLowerCase();
+                    if (servMinusculas.includes('gemini') || servMinusculas.includes('duolingo')) {
                         if(grupoAccesos) grupoAccesos.classList.add('hidden');
                         if(grupoEnlace) { grupoEnlace.classList.remove('hidden'); grupoEnlace.classList.add('flex'); }
                     } else {
-                        // Si es Streaming o Música, muestra accesos clásicos y oculta enlace.
                         if(grupoAccesos) grupoAccesos.classList.remove('hidden');
                         if(grupoEnlace) { grupoEnlace.classList.add('hidden'); grupoEnlace.classList.remove('flex'); }
                     }
