@@ -126,6 +126,17 @@
             word-break: break-word !important;
         }
     </style>
+    <style>
+        /* ===== Punto 23: animaciones de la tienda (solo transform/opacity, nunca el panel admin) ===== */
+        @media (prefers-reduced-motion: no-preference) {
+            .anim-card { opacity: 0; transform: translateY(14px); }
+            .anim-card.anim-visible { opacity: 1; transform: translateY(0); }
+            #publicStore:not(.hidden) { animation: animEntradaVista .25s ease-out; }
+            .anim-btn { transition: transform .12s ease; }
+            .anim-btn:active { transform: scale(.95); }
+        }
+        @keyframes animEntradaVista { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body class="min-h-screen relative">
 
@@ -2032,7 +2043,7 @@
 
                 const botonAccionHtml = isAgotado
                     ? `<button disabled class="px-4 py-2.5 rounded-full bg-gray-800 border border-gray-700 text-gray-500 font-black uppercase tracking-wider text-[11px] cursor-not-allowed">AGOTADO</button>`
-                    : `<a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="btn-contratar-wa px-4 py-2.5 rounded-full bg-[#F50057] hover:bg-[#ff3377] text-white font-black uppercase tracking-wider text-[11px] shadow-[0_0_15px_rgba(245,0,87,0.4)] hover:shadow-[0_0_20px_rgba(245,0,87,0.7)] transition-all shrink-0">CONTRATAR</a>`;
+                    : `<a href="https://wa.me/${numeroVentasPublico}?text=${textoComprar}" target="_blank" class="btn-contratar-wa anim-btn px-4 py-2.5 rounded-full bg-[#F50057] hover:bg-[#ff3377] text-white font-black uppercase tracking-wider text-[11px] shadow-[0_0_15px_rgba(245,0,87,0.4)] hover:shadow-[0_0_20px_rgba(245,0,87,0.7)] transition-all shrink-0">CONTRATAR</a>`;
 
                 const cardBorder = isAgotado 
                     ? 'border-gray-800/60 opacity-75' 
@@ -2042,7 +2053,7 @@
                 const descHtml = datos.desc ? `<p class="text-[11px] text-gray-400 mt-1 line-clamp-2 leading-snug">${datos.desc}</p>` : '';
 
                 grid.innerHTML += `
-                    <div class="store-card-item group bg-[#12161c] border ${cardBorder} rounded-2xl overflow-hidden transition-all duration-300 shadow-lg flex flex-col hover:-translate-y-1">
+                    <div class="store-card-item anim-card group bg-[#12161c] border ${cardBorder} rounded-2xl overflow-hidden transition-all duration-300 shadow-lg flex flex-col hover:-translate-y-1">
                         <!-- Línea punteada superior estilo Kokoro en Neón -->
                         <div class="px-3 pt-2 flex justify-between items-center opacity-60">
                             <div class="w-full border-t-2 border-dotted ${isPopular ? 'border-[#F50057]' : 'border-[#66FCF1]/50'}"></div>
@@ -2091,6 +2102,7 @@
                 grid.innerHTML = `<div class="col-span-full text-center py-12 bg-[#12161c] rounded-2xl border border-gray-800"><p class="text-gray-400 text-base font-bold mb-3">No encontramos resultados para tu búsqueda.</p><button onclick="limpiarBusquedaTienda(); cambiarFiltroTienda('TODO');" class="px-5 py-2.5 rounded-xl bg-[#1F2833] border border-[#66FCF1] text-[#66FCF1] text-xs font-black uppercase tracking-wider">🏠 Volver al Inicio</button></div>`;
             }
 
+            prepararAnimacionTarjetas();
             iniciarPruebaSocial();
         }
 
@@ -2101,6 +2113,47 @@
         };
 
         // ===== PARTE 2: PRUEBA SOCIAL REAL (punto 19) =====
+        // ===== Punto 23: entrada suave de tarjetas al aparecer / hacer scroll =====
+        let observadorTarjetas = null;
+        function prepararAnimacionTarjetas() {
+            const grid = document.getElementById('publicCatalogGrid');
+            if (!grid) return;
+            try {
+            const tarjetas = grid.querySelectorAll('.store-card-item:not(.anim-lista)');
+            if (!tarjetas.length) return;
+            const reduceMotion = !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion || !('IntersectionObserver' in window)) {
+                tarjetas.forEach(t => { t.classList.add('anim-lista'); t.classList.remove('anim-card'); });
+                return;
+            }
+            if (!observadorTarjetas) {
+                observadorTarjetas = new IntersectionObserver((entradas) => {
+                    entradas.forEach(e => {
+                        if (e.isIntersecting) {
+                            const el = e.target;
+                            el.classList.add('anim-visible');
+                            observadorTarjetas.unobserve(el);
+                            setTimeout(() => { el.style.transitionDelay = '0ms'; }, 550);
+                        }
+                    });
+                }, { threshold: 0.08 });
+            }
+            let i = 0;
+            tarjetas.forEach(t => {
+                t.classList.add('anim-lista');
+                t.style.transitionDelay = (Math.min(i++, 8) * 35) + 'ms';
+                observadorTarjetas.observe(t);
+            });
+            // Red de seguridad: ninguna tarjeta se queda invisible pase lo que pase
+            setTimeout(() => {
+                grid.querySelectorAll('.anim-card:not(.anim-visible)').forEach(t => t.classList.add('anim-visible'));
+            }, 2500);
+            } catch (e) {
+                // Ante cualquier fallo, las tarjetas se muestran sin animación
+                grid.querySelectorAll('.store-card-item').forEach(t => { t.classList.remove('anim-card'); t.classList.add('anim-visible'); });
+            }
+        }
+
         function iniciarPruebaSocial() {
             if (burbujaActividadIniciada) return;
             burbujaActividadIniciada = true;
