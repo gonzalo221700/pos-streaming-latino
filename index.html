@@ -137,6 +137,41 @@
         }
         @keyframes animEntradaVista { from { opacity: 0; } to { opacity: 1; } }
     </style>
+    <style>
+        /* ===== Punto 24: capa de temporada Día de Muertos / Halloween (solo tienda) ===== */
+        .decor-temporada, .fantasmas-temporada { display: none; }
+        body.temporada-muertos .decor-temporada, body.temporada-muertos .fantasmas-temporada { display: block; }
+        .decor-temporada { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+        .papel-picado { position: absolute; top: 5px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 8px; }
+        .papel-picado svg { width: 21px; height: 28px; transform-origin: top center; flex: none; }
+        .calavera-pista { position: absolute; top: 2px; left: 0; width: 100%; height: 30px; }
+        .calavera-corredora { position: absolute; top: 0; left: 0; width: 100%; height: 28px; opacity: 0; }
+        .calavera-corredora svg { width: 27px; height: 27px; display: block; }
+        .calavera-corredora.viaje-b svg { margin-left: auto; transform: scaleX(-1); }
+        .flor-esquina { position: absolute; top: 6px; width: 24px; height: 24px; }
+        .fantasmas-temporada { position: fixed; inset: 0; pointer-events: none; z-index: 30; overflow: hidden; }
+        .fantasma { position: absolute; top: 0; left: 0; opacity: 0; will-change: transform, opacity; }
+        .fantasma.uno { width: 46px; }
+        .fantasma.dos { width: 34px; }
+        @media (prefers-reduced-motion: no-preference) {
+            .papel-picado svg { animation: papelMecer 3.6s ease-in-out infinite alternate; }
+            .papel-picado svg:nth-child(2n) { animation-delay: -0.9s; }
+            .papel-picado svg:nth-child(3n) { animation-delay: -1.8s; }
+            .papel-picado svg:nth-child(4n) { animation-delay: -2.6s; }
+            .flor-esquina { animation: papelMecer 4.4s ease-in-out infinite alternate; }
+            .calavera-corredora.viaje-a { animation: calaveraViajeA 30s linear infinite; }
+            .calavera-corredora.viaje-b { animation: calaveraViajeB 39s linear infinite; animation-delay: 10s; }
+            .fantasma .fantasma-flota { animation: fantasmaFlota 3.2s ease-in-out infinite alternate; }
+            .fantasma.uno { animation: fantasmaCruceA 54s linear infinite; animation-delay: 4s; }
+            .fantasma.dos { animation: fantasmaCruceB 67s linear infinite; animation-delay: 25s; }
+        }
+        @keyframes papelMecer { from { transform: rotate(2.6deg); } to { transform: rotate(-2.6deg); } }
+        @keyframes calaveraViajeA { 0% { transform: translateX(-45px); opacity: 0; } 4% { opacity: 1; } 90% { opacity: 1; } 98%, 100% { transform: translateX(100%); opacity: 0; } }
+        @keyframes calaveraViajeB { 0% { transform: translateX(100%); opacity: 0; } 4% { opacity: 1; } 90% { opacity: 1; } 98%, 100% { transform: translateX(-45px); opacity: 0; } }
+        @keyframes fantasmaCruceA { 0% { transform: translate(-12vw, 10vh); opacity: 0; } 3% { opacity: 0.88; } 26% { transform: translate(106vw, 5vh); opacity: 0.88; } 29%, 100% { transform: translate(106vw, 5vh); opacity: 0; } }
+        @keyframes fantasmaCruceB { 0% { transform: translate(106vw, 21vh); opacity: 0; } 3% { opacity: 0.7; } 24% { transform: translate(-14vw, 14vh); opacity: 0.7; } 27%, 100% { transform: translate(-14vw, 14vh); opacity: 0; } }
+        @keyframes fantasmaFlota { from { transform: translateY(-5px) rotate(-2deg); } to { transform: translateY(6px) rotate(2deg); } }
+    </style>
 </head>
 <body class="min-h-screen relative">
 
@@ -148,6 +183,11 @@
     </div>
 
     <div id="publicStore" class="hidden min-h-screen bg-[#0B0C10] text-[#C5C6C7] relative flex flex-col">
+        <!-- Punto 24: dos fantasmitas discretos de temporada -->
+        <div class="fantasmas-temporada" aria-hidden="true">
+            <div class="fantasma uno"><div class="fantasma-flota"><svg viewBox="0 0 48 52" aria-hidden="true"><path d="M24 3c-10 0-16 8-16 17v26l5-5 5 5 6-5 6 5 5-5 5 5V20c0-9-6-17-16-17Z" fill="rgba(255,255,255,0.92)" stroke="rgba(144,164,174,0.7)" stroke-width="1.4"/><ellipse cx="18" cy="21" rx="2.2" ry="3.1" fill="#263238"/><ellipse cx="30" cy="21" rx="2.2" ry="3.1" fill="#263238"/><ellipse cx="24" cy="28.5" rx="2.4" ry="3.2" fill="#263238"/><circle cx="12.5" cy="27" r="2.5" fill="#F8BBD0" opacity="0.85"/><circle cx="35.5" cy="27" r="2.5" fill="#F8BBD0" opacity="0.85"/></svg></div></div>
+            <div class="fantasma dos"><div class="fantasma-flota" style="animation-delay:-1.4s"><svg viewBox="0 0 48 52" aria-hidden="true"><path d="M24 3c-10 0-16 8-16 17v26l5-5 5 5 6-5 6 5 5-5 5 5V20c0-9-6-17-16-17Z" fill="rgba(255,255,255,0.92)" stroke="rgba(144,164,174,0.7)" stroke-width="1.4"/><ellipse cx="18" cy="21" rx="2.2" ry="3.1" fill="#263238"/><ellipse cx="30" cy="21" rx="2.2" ry="3.1" fill="#263238"/><ellipse cx="24" cy="28.5" rx="2.4" ry="3.2" fill="#263238"/><circle cx="12.5" cy="27" r="2.5" fill="#F8BBD0" opacity="0.85"/><circle cx="35.5" cy="27" r="2.5" fill="#F8BBD0" opacity="0.85"/></svg></div></div>
+        </div>
         
         <!-- Barra Marquesina Neón 3D Fija (Sticky Header) -->
         <div id="promoBar" class="hidden sticky top-0 w-full py-2.5 z-[110] transition-all duration-500 shadow-xl">
@@ -233,6 +273,16 @@
                 <!-- Encabezado de Sección y Mensaje de Bienvenida -->
                 <div class="mb-6 bg-[#12161c]/90 border border-[#1F2833] rounded-2xl p-4 md:p-6 shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#66FCF1] via-[#a855f7] to-[#F50057]"></div>
+                    <!-- Punto 24: decoración de temporada en el encabezado -->
+                    <div class="decor-temporada" aria-hidden="true">
+                        <div class="papel-picado"><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#F50057"/><g fill="rgba(0,0,0,0.20)"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.9"/><circle cx="15" cy="12" r="1.9"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#FF9800"/><g fill="rgba(0,0,0,0.20)"><circle cx="12" cy="6" r="2.2"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="13" r="1.4"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#8E24AA"/><g fill="rgba(0,0,0,0.20)"><rect x="10" y="4" width="4" height="4" transform="rotate(45 12 6)"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="15" r="1.5"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#43A047"/><g fill="rgba(0,0,0,0.20)"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.9"/><circle cx="15" cy="12" r="1.9"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#FDD835"/><g fill="rgba(0,0,0,0.20)"><circle cx="12" cy="6" r="2.2"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="13" r="1.4"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#29B6F6"/><g fill="rgba(0,0,0,0.20)"><rect x="10" y="4" width="4" height="4" transform="rotate(45 12 6)"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="15" r="1.5"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#F50057"/><g fill="rgba(0,0,0,0.20)"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.9"/><circle cx="15" cy="12" r="1.9"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#FF9800"/><g fill="rgba(0,0,0,0.20)"><circle cx="12" cy="6" r="2.2"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="13" r="1.4"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#8E24AA"/><g fill="rgba(0,0,0,0.20)"><rect x="10" y="4" width="4" height="4" transform="rotate(45 12 6)"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="15" r="1.5"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#43A047"/><g fill="rgba(0,0,0,0.20)"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.9"/><circle cx="15" cy="12" r="1.9"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#FDD835"/><g fill="rgba(0,0,0,0.20)"><circle cx="12" cy="6" r="2.2"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="13" r="1.4"/></g></svg><svg viewBox="0 0 24 32" fill="none" aria-hidden="true"><path d="M0 0h24v20q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0q-3 4.5-6 0Z" fill="#29B6F6"/><g fill="rgba(0,0,0,0.20)"><rect x="10" y="4" width="4" height="4" transform="rotate(45 12 6)"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="12" cy="15" r="1.5"/></g></svg></div>
+                        <div class="calavera-pista">
+                            <div class="calavera-corredora viaje-a"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3C13 3 6 11 6 21c0 7 3 11 6 13v7q0 4 4 4h16q4 0 4-4v-7c3-2 6-6 6-13 0-10-7-18-18-18Z" fill="#FFF8E7" stroke="#37474F" stroke-width="1.4"/><circle cx="16" cy="22" r="5.6" fill="#FF7043"/><circle cx="16" cy="22" r="2.8" fill="#263238"/><circle cx="32" cy="22" r="5.6" fill="#FF7043"/><circle cx="32" cy="22" r="2.8" fill="#263238"/><path d="M24 27.5 21.4 33h5.2Z" fill="#E53935"/><path d="M18 38.5v5M24 38.5v5M30 38.5v5" stroke="#90A4AE" stroke-width="1.6"/><g fill="#EC407A"><circle cx="24" cy="6.8" r="2"/><circle cx="20.6" cy="9.6" r="2"/><circle cx="27.4" cy="9.6" r="2"/><circle cx="21.6" cy="13" r="2"/><circle cx="26.4" cy="13" r="2"/></g><circle cx="24" cy="10" r="1.9" fill="#FDD835"/><circle cx="9.5" cy="30" r="2.1" fill="none" stroke="#AB47BC" stroke-width="1.2"/><circle cx="38.5" cy="30" r="2.1" fill="none" stroke="#AB47BC" stroke-width="1.2"/></svg></div>
+                            <div class="calavera-corredora viaje-b"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3C13 3 6 11 6 21c0 7 3 11 6 13v7q0 4 4 4h16q4 0 4-4v-7c3-2 6-6 6-13 0-10-7-18-18-18Z" fill="#FFF8E7" stroke="#37474F" stroke-width="1.4"/><circle cx="16" cy="22" r="5.6" fill="#FF7043"/><circle cx="16" cy="22" r="2.8" fill="#263238"/><circle cx="32" cy="22" r="5.6" fill="#FF7043"/><circle cx="32" cy="22" r="2.8" fill="#263238"/><path d="M24 27.5 21.4 33h5.2Z" fill="#E53935"/><path d="M18 38.5v5M24 38.5v5M30 38.5v5" stroke="#90A4AE" stroke-width="1.6"/><g fill="#EC407A"><circle cx="24" cy="6.8" r="2"/><circle cx="20.6" cy="9.6" r="2"/><circle cx="27.4" cy="9.6" r="2"/><circle cx="21.6" cy="13" r="2"/><circle cx="26.4" cy="13" r="2"/></g><circle cx="24" cy="10" r="1.9" fill="#FDD835"/><circle cx="9.5" cy="30" r="2.1" fill="none" stroke="#AB47BC" stroke-width="1.2"/><circle cx="38.5" cy="30" r="2.1" fill="none" stroke="#AB47BC" stroke-width="1.2"/></svg></div>
+                        </div>
+                        <div class="flor-esquina" style="left:10px"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(0 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(45 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(90 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(135 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(180 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(225 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(270 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(315 20 20)"/><circle cx="20" cy="20" r="6.5" fill="#F57C00"/><circle cx="20" cy="20" r="3.4" fill="#FFCA28"/></svg></div>
+                        <div class="flor-esquina" style="right:10px"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(0 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(45 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(90 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(135 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(180 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(225 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(270 20 20)"/><ellipse cx="20" cy="10.5" rx="5" ry="8.5" fill="#FB8C00" transform="rotate(315 20 20)"/><circle cx="20" cy="20" r="6.5" fill="#F57C00"/><circle cx="20" cy="20" r="3.4" fill="#FFCA28"/></svg></div>
+                    </div>
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div>
                             <h1 id="tituloCategoriaActiva" class="text-2xl md:text-3xl font-black text-white uppercase tracking-widest neon-text-cyan">
@@ -366,6 +416,16 @@
             </select>
             <textarea id="inputPromoText" rows="2" class="w-full p-3 rounded bg-[#1A222C] text-white border border-[#66FCF1] text-sm font-bold resize-none" placeholder="Ej. 🔥 OFERTA: Netflix a mitad de precio 🔥"></textarea>
             
+            <div class="border-t border-gray-700 my-4 pt-2"></div>
+
+            <label class="text-xs text-[#FF9800] mb-1 font-bold uppercase block">🎃 Decoración de Temporada (Día de Muertos / Halloween)</label>
+            <p class="text-[10px] text-gray-500 mb-2">Calaveritas y papel picado en el encabezado del catálogo, con dos fantasmitas discretos. Solo se ve en la tienda, nunca en este panel.</p>
+            <select id="inputTemaTemporada" class="w-full p-3 mb-3 rounded bg-[#0B0C10] text-white border border-[#FF9800] text-sm font-bold focus:border-[#45A29E]">
+                <option value="auto">Automático por fechas (15 oct – 10 nov)</option>
+                <option value="muertos">Siempre encendido</option>
+                <option value="off">Apagado</option>
+            </select>
+
             <button onclick="guardarPromoTienda()" class="w-full mt-6 bg-[#F50057] hover:bg-red-600 text-white font-black py-3 rounded uppercase tracking-wider shadow-[0_0_15px_rgba(245,0,87,0.4)]">Publicar Cambios en Vivo</button>
         </div>
     </div>
@@ -1336,6 +1396,18 @@
             }
         }
 
+        // Punto 24: enciende la capa de temporada según el panel (o por fechas en automático)
+        function aplicarTemaTemporada(modo) {
+            let activa = false;
+            if (modo === 'muertos') activa = true;
+            else if (modo !== 'off') {
+                const hoy = new Date();
+                const mes = hoy.getMonth() + 1, dia = hoy.getDate();
+                activa = (mes === 10 && dia >= 15) || (mes === 11 && dia <= 10);
+            }
+            document.body.classList.toggle('temporada-muertos', activa);
+        }
+
         function aplicarConfigPublicaUI(data) {
             if(!data) return;
             if (Array.isArray(data.categorias) && data.categorias.length > 0) {
@@ -1375,6 +1447,10 @@
                 const inputPromo = document.getElementById('inputPromoText');
                 if(inputPromo) inputPromo.value = '';
             }
+            // Punto 24: aplicar la decoración de temporada guardada
+            aplicarTemaTemporada(data.temaTemporada || 'auto');
+            const inputTemp = document.getElementById('inputTemaTemporada');
+            if (inputTemp) inputTemp.value = data.temaTemporada || 'auto';
         }
 
         // ARRANQUE INSTANTÁNEO DESDE CACHÉ LOCAL (0.1 SEGUNDOS)
@@ -2325,11 +2401,13 @@
             const promoTexto = document.getElementById('inputPromoText').value.trim();
             const promoTema = document.getElementById('inputPromoTheme').value;
             const welcomeTexto = document.getElementById('inputWelcomeText').value.trim();
+            const temaTemporada = (document.getElementById('inputTemaTemporada') || {}).value || 'auto';
             
             await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { 
                 promo: promoTexto, 
                 promoTheme: promoTema,
-                welcomeMsg: welcomeTexto
+                welcomeMsg: welcomeTexto,
+                temaTemporada: temaTemporada
             }, { merge: true });
             
             mostrarToast("Textos e interfaz publicados en vivo", "success");
