@@ -993,7 +993,65 @@
         const appIdentifier = 'streaming-latino'; 
         
         let currentUserId = null;
-        let unsubVentas, unsubCatalogo, unsubMeta, unsubConfig, unsubVIPPublico;
+        // ===== PARTE 1: CATÁLOGO PÚBLICO LIMPIO + INVENTARIO PRIVADO =====
+        function limpiarDatosPublicos(datos) {
+            if (!datos) return datos;
+            const limpio = { ...datos, mods: {} };
+            for (const [m, pr] of Object.entries(datos.mods || {})) {
+                limpio.mods[m] = { p: (pr && pr.p) || 0 };
+            }
+            return limpio;
+        }
+
+        function aplicarCatalogoPrivado() {
+            for (const [serv, datosPriv] of Object.entries(catalogoPrivado)) {
+                if (!catalogo[serv] || !datosPriv || !datosPriv.mods) continue;
+                for (const [m, pr] of Object.entries(datosPriv.mods)) {
+                    if (catalogo[serv].mods && catalogo[serv].mods[m] && pr) {
+                        catalogo[serv].mods[m].c = pr.c || 0;
+                        catalogo[serv].mods[m].prov = pr.prov || '';
+                    }
+                }
+            }
+        }
+
+        async function guardarProductoCompleto(serv) {
+            if (!currentUserId) return;
+            const batch = writeBatch(db);
+            batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), limpiarDatosPublicos(catalogo[serv]));
+            batch.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo_privado', serv), catalogo[serv]);
+            await batch.commit();
+        }
+
+        async function eliminarProductoCompleto(serv) {
+            if (!currentUserId) return;
+            const batch = writeBatch(db);
+            batch.delete(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv));
+            batch.delete(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo_privado', serv));
+            await batch.commit();
+        }
+
+        async function migrarCatalogoPrivado(uid) {
+            try {
+                const snap = await getDocs(collection(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo'));
+                const batch = writeBatch(db);
+                let cambios = 0;
+                snap.forEach(d => {
+                    const datos = d.data();
+                    const tienePrivados = Object.values(datos.mods || {}).some(pr => pr && (pr.c !== undefined || pr.prov !== undefined));
+                    if (tienePrivados) {
+                        batch.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo_privado', d.id), datos);
+                        batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', d.id), limpiarDatosPublicos(datos));
+                        cambios++;
+                    }
+                });
+                if (cambios > 0) {
+                    await batch.commit();
+                    mostrarToast("🔒 Inventario protegido: costos y proveedores ahora son privados", "success");
+                }
+            } catch (e) { console.error("Migración catálogo:", e); }
+        }
+        let unsubVentas, unsubCatalogo, unsubMeta, unsubConfig, unsubVIPPublico, unsubCatalogoPrivado;
         
         const CATEGORIAS_BASE = [
             "🍿 CINE Y SERIES",
@@ -1140,7 +1198,9 @@
                             if (datos && (datos.cat || '').trim() === categoriaOriginalRenombrar.trim()) {
                                 datos.cat = nuevoNombre;
                                 const servRef = doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv);
-                                batch.set(servRef, datos);
+                                batch.set(servRef, limpiarDatosPublicos(datos));
+                                const servPrivRef = doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo_privado', serv);
+                                batch.set(servPrivRef, datos);
                             }
                         }
 
@@ -1284,7 +1344,7 @@
             // if (localStorage.getItem('adminUnlocked') === 'true') return;
             try {
                 const cacheConfig = localStorage.getItem('slmx_cache_config');
-                const cacheCat = localStorage.getItem('slmx_cache_catalogo');
+                const cacheCat = localStorage.getItem('slmx_cache_catalogo_v2');
                 const cacheVIP = localStorage.getItem('slmx_cache_vip');
                 if (cacheConfig) aplicarConfigPublicaUI(JSON.parse(cacheConfig));
                 if (cacheVIP) directorioVIPPublico = JSON.parse(cacheVIP) || {};
@@ -1492,7 +1552,8 @@
             if(unsubCatalogo) unsubCatalogo();
             unsubCatalogo = onSnapshot(query(catRef), (snap) => {
                 catalogo = {};
-                snap.forEach(d => { catalogo[d.id] = d.data(); });
+                snap.forEach(d => { catalogo[d.id] = limpiarDatosPublicos(d.data()); });
+                aplicarCatalogoPrivado();
                 ocultarPantallaCarga();
                 renderizarSelectsCategorias();
                 
@@ -1503,7 +1564,7 @@
                         renderizarSelectServicios(); 
                         renderizarTablaInventario(); 
                         actualizarListaProveedores();
-                        localStorage.setItem('slmx_cache_catalogo', JSON.stringify(catalogo));
+                        localStorage.setItem('slmx_cache_catalogo_v2', JSON.stringify(Object.fromEntries(Object.entries(catalogo).map(([s, d]) => [s, limpiarDatosPublicos(d)]))));
                     } catch(e) { console.error(e); }
                 } else {
                     document.getElementById('emptyStore').classList.remove('hidden');
@@ -1557,6 +1618,17 @@
         }
 
         async function inicializarNubeAdmin(uid) {
+            await migrarCatalogoPrivado(uid);
+
+            const privCatRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo_privado');
+            if (unsubCatalogoPrivado) unsubCatalogoPrivado();
+            unsubCatalogoPrivado = onSnapshot(privCatRef, (snap) => {
+                catalogoPrivado = {};
+                snap.forEach(d => { catalogoPrivado[d.id] = d.data(); });
+                aplicarCatalogoPrivado();
+                try { if (currentUserId) renderizarTablaInventario(); renderizarSelectServicios(); actualizarListaProveedores(); } catch(e) { console.error(e); }
+            }, (error) => console.error(error));
+
             const configRef = doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global');
             unsubMeta = onSnapshot(configRef, (docSnap) => {
                 if(docSnap.exists()) { 
@@ -1582,12 +1654,15 @@
             const pubCatRef = collection(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo');
             const pubSnap = await getDocs(pubCatRef);
             if(pubSnap.empty) {
-                const privCatRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo');
-                const privSnap = await getDocs(privCatRef);
-                if(!privSnap.empty) {
+                const legacyCatRef = collection(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo');
+                const legacySnap = await getDocs(legacyCatRef);
+                if(!legacySnap.empty) {
                     mostrarToast("Rescatando tu catálogo atrapado...", "success");
                     const batch = writeBatch(db);
-                    privSnap.forEach(d => { batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', d.id), d.data()); });
+                    legacySnap.forEach(d => {
+                        batch.set(doc(db, 'artifacts', appIdentifier, 'users', uid, 'catalogo_privado', d.id), d.data());
+                        batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', d.id), limpiarDatosPublicos(d.data()));
+                    });
                     await batch.commit();
                 }
             }
@@ -2318,8 +2393,7 @@
                 catalogo[serv].imgBase64 = await comprimirImagen(fileInput.files[0]);
             }
 
-            await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); 
-            mostrarToast("☁️ Producto Guardado", "success"); 
+            await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', 
             btnGuardar.textContent = originalText; btnGuardar.disabled = false;
             cerrarModalCatalogo();
         });
@@ -2377,23 +2451,21 @@
                 catalogo[servNuevo].badge = badge;
                 if (nuevaImg) catalogo[servNuevo].imgBase64 = nuevaImg;
 
-                const batch = writeBatch(db);
-                batch.delete(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig));
-                batch.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servNuevo), catalogo[servNuevo]);
-                await batch.commit();
+                await eliminarProductoCompleto(servOrig);
+                await guardarProductoCompleto(servNuevo);
             } else {
                 catalogo[servOrig].cat = catNueva;
                 catalogo[servOrig].mods[mod] = { prov: document.getElementById('editProveedor').value.trim(), c: parseFloat(document.getElementById('editCosto').value) || 0, p: parseFloat(document.getElementById('editPrecio').value) || 0 }; 
                 catalogo[servOrig].desc = desc;
                 catalogo[servOrig].badge = badge;
                 if (nuevaImg) catalogo[servOrig].imgBase64 = nuevaImg;
-                await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', servOrig), catalogo[servOrig]); 
+                await guardarProductoCompleto(servOrig); 
             }
             
             mostrarToast("☁️ Cambios guardados exitosamente", "success"); cerrarModalEditar(); 
         };
 
-        window.eliminarProducto = async (serv, mod) => { if(!currentUserId) return; if(catalogo[serv] && catalogo[serv].mods) { delete catalogo[serv].mods[mod]; if (Object.keys(catalogo[serv].mods).length === 0) { delete catalogo[serv]; await deleteDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv)); } else { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', serv), catalogo[serv]); } mostrarToast("🗑️ Producto eliminado", "success"); } };
+        window.eliminarProducto = async (serv, mod) => { if(!currentUserId) return; if(catalogo[serv] && catalogo[serv].mods) { delete catalogo[serv].mods[mod]; if (Object.keys(catalogo[serv].mods).length === 0) { delete catalogo[serv]; delete catalogoPrivado[serv]; await eliminarProductoCompleto(serv); } else { await guardarProductoCompleto(serv); } mostrarToast("🗑️ Producto eliminado", "success"); } };
 
         window.abrirModalVistaPrevia = (folio) => {
             const venta = ventas.find(v => v.folio === folio); if(!venta) return;
@@ -2497,7 +2569,7 @@
         window.calcularGananciaComboManual = () => { const c = parseFloat(document.getElementById('comboCostoTotal').textContent) || 0; const p = parseFloat(document.getElementById('comboPrecioOferta').value) || 0; const gan = p - c; const el = document.getElementById('comboGanancia'); el.value = `$${gan.toFixed(2)}`; el.className = `w-full p-2.5 mt-1 rounded-md text-sm font-mono font-bold bg-[#0B0C10] cursor-not-allowed ${gan < 0 ? 'text-red-500 border-red-500' : 'text-[#a855f7]'}`; };
         window.guardarComboRapido = (nombre, c, p) => { guardarComboEnBd(nombre, c, p); window.cerrarModalCombos(); };
         window.guardarComboManual = () => { const checks = document.querySelectorAll('.combo-check:checked'); if(checks.length < 2) { mostrarToast("Selecciona al menos 2", "error"); return; } const oferta = parseFloat(document.getElementById('comboPrecioOferta').value); if(!oferta) return; let nombres = []; checks.forEach(chk => { nombres.push(chk.dataset.id.split('|')[0]); }); guardarComboEnBd("Combo: " + nombres.join(' + '), parseFloat(document.getElementById('comboCostoTotal').textContent) || 0, oferta); window.cerrarModalCombos(); };
-        async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; const safeNombre = nombre.replace(/\//g, '-'); if (!catalogo[safeNombre]) catalogo[safeNombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {}, badge: 'oferta' }; catalogo[safeNombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeNombre), catalogo[safeNombre]); mostrarToast("☁️ Combo Público Creado", "success"); }
+        async function guardarComboEnBd(nombre, costo, precio) { if(!currentUserId) return; const safeNombre = nombre.replace(/\//g, '-'); if (!catalogo[safeNombre]) catalogo[safeNombre] = { cat: "🎁 COMBOS Y PROMOCIONES", mods: {}, badge: 'oferta' }; catalogo[safeNombre].mods["Paquete Especial"] = { c: costo, p: precio, prov: "Múltiples" }; await guardarProductoCompleto(safeNombre); mostrarToast("☁️ Combo Público Creado", "success"); }
 
         window.enviarTicket = (folio) => {
             const v = ventas.find(x => x.folio === folio); if(!v || !v.whatsapp) { mostrarToast("No hay número de WhatsApp registrado", "error"); return; }
@@ -2540,7 +2612,7 @@
                     const batch1 = writeBatch(db); 
                     batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { contadorFolio: resContador, fidelidadClientes: resFidelidad, codigosReferidos: resCodigos }, { merge: true }); 
                     batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { categorias: listaCategorias }, { merge: true });
-                    for(let serv in resCatalogo) { if(resCatalogo[serv]) { const safeServ = serv.toString().replace(/\//g, '-'); if(!resCatalogo[serv].cat) resCatalogo[serv].cat = "🍿 Otros"; batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeServ), resCatalogo[serv]); } } 
+                    for(let serv in resCatalogo) { if(resCatalogo[serv]) { const safeServ = serv.toString().replace(/\//g, '-'); if(!resCatalogo[serv].cat) resCatalogo[serv].cat = "🍿 Otros"; batch1.set(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'catalogo', safeServ), limpiarDatosPublicos(resCatalogo[serv])); batch1.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'catalogo_privado', safeServ), resCatalogo[serv]); } } 
                     await batch1.commit(); 
                     let batch2 = writeBatch(db); let count = 0; 
                     for(let v of resVentas) { if(v) { const safeFolio = v.folio ? v.folio.toString().replace(/\//g, '-') : `V-OLD-${count}`; batch2.set(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', safeFolio), v); count++; if(count % 400 === 0) { await batch2.commit(); batch2 = writeBatch(db); } } } 
