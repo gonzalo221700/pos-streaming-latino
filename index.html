@@ -1562,7 +1562,7 @@
                     try { 
                         renderizarTiendaPublica(); 
                         renderizarSelectServicios(); 
-                        renderizarTablaInventario(); 
+                        if (currentUserId) renderizarTablaInventario(); 
                         actualizarListaProveedores();
                         localStorage.setItem('slmx_cache_catalogo_v2', JSON.stringify(Object.fromEntries(Object.entries(catalogo).map(([s, d]) => [s, limpiarDatosPublicos(d)]))));
                     } catch(e) { console.error(e); }
