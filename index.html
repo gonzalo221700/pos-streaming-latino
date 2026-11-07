@@ -1304,6 +1304,7 @@
         let contadorFolio = 1;
         let fidelidadClientes = {};
         let codigosReferidos = {}; 
+        let premiosPendientes = {};
         let directorioVIPPublico = {};
         let codigoVIPConsultadoActual = '';
         let currentUsdtRate = 20.00; 
@@ -1907,7 +1908,8 @@
                     const nombreCompleto = ventaCliente ? ventaCliente.cliente.trim() : 'Socio VIP';
                     mapaSeguro[codigo.toUpperCase()] = {
                         nombre: nombreCompleto,
-                        puntos: puntos
+                        puntos: puntos,
+                        premios: premiosPendientes[wp] || 0
                     };
                 }
 
@@ -1938,6 +1940,11 @@
                     contadorFolio = d.contadorFolio || 1; 
                     fidelidadClientes = d.fidelidadClientes || {}; 
                     codigosReferidos = d.codigosReferidos || {};
+                    premiosPendientes = d.premiosPendientes || {};
+                    // Migración: quien YA tenía 5 estrellas conserva su premio como PENDIENTE y su ciclo reinicia
+                    let migroPremio = false;
+                    for (const wpM of Object.keys(fidelidadClientes)) { if (fidelidadClientes[wpM] === 5 && premiosPendientes[wpM] === undefined) { premiosPendientes[wpM] = 1; fidelidadClientes[wpM] = 0; migroPremio = true; } }
+                    if (migroPremio) { try { setDoc(doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes, premiosPendientes: premiosPendientes }, { merge: true }); } catch (e) {} }
                     sincronizarEspejoVIPPublico();
                 }
             }, (error) => console.error(error));
@@ -2091,8 +2098,9 @@
             document.getElementById('vipEstrellasContenedor').innerHTML = starsHtml;
 
             const btnReclamar = document.getElementById('btnReclamarPremioVIP');
-            if (puntos >= 5) {
-                document.getElementById('vipTextoProgreso').innerHTML = `<span class="text-yellow-400 font-black">🎉 ¡FELICIDADES! Tienes 5 de 5 Estrellas.</span><br>¡Ya ganaste tu MES GRATIS o recompensa VIP!`;
+            const premiosSocio = parseInt(datosSocio.premios) || 0;
+            if (puntos >= 5 || premiosSocio > 0) {
+                document.getElementById('vipTextoProgreso').innerHTML = premiosSocio > 0 ? `<span class="text-yellow-400 font-black">🎁 ¡TIENES UN MES GRATIS POR RECLAMAR!</span><br>Ganaste tu premio de 5 estrellas${premiosSocio > 1 ? ` (x${premiosSocio})` : ''}. Tus estrellas ya empezaron una nueva vuelta.` : `<span class="text-yellow-400 font-black">🎉 ¡FELICIDADES! Tienes 5 de 5 Estrellas.</span><br>¡Ya ganaste tu MES GRATIS o recompensa VIP!`;
                 const msgReclamo = encodeURIComponent(`👋 ¡Hola! Mi código de socio VIP es *${raw}* (${datosSocio.nombre}) y acabo de completar mis *5 Estrellas ⭐*. ¡Quiero reclamar mi beneficio!`);
                 btnReclamar.href = `https://wa.me/${numeroVentasPublico}?text=${msgReclamo}`;
                 btnReclamar.classList.remove('hidden');
@@ -3070,6 +3078,11 @@
             const costo = parseFloat(document.getElementById('confCosto').value) || 0; const precio = parseFloat(document.getElementById('confPrecio').value) || 0; const prov = document.getElementById('confProveedor').value.trim() || 'Sin asignar';
             const folioNuevo = `V-${contadorFolio.toString().padStart(4, '0')}`;
             const nuevaVenta = { folio: folioNuevo, fecha, ...ventaPendiente, proveedor: prov, costo, precio, ganancia: precio - costo };
+            // CORRECCIÓN (2 estrellas) + PREMIO: los puntos se calculan ANTES de guardar la venta,
+            // porque la lista de ventas todavía no incluye esta compra (antes se contaba doble).
+            const wpCalcPremio = ventaPendiente.whatsapp;
+            const ptsAntesDeGuardar = wpCalcPremio ? obtenerPuntosFidelidad(wpCalcPremio) : 0;
+            if (wpCalcPremio && ptsAntesDeGuardar + 1 === 5) nuevaVenta.completoPremio = true;
             
             try {
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', folioNuevo), nuevaVenta);
@@ -3093,8 +3106,11 @@
                         }
                     }
 
-                    let ptsActuales = obtenerPuntosFidelidad(wp); let nuevosPts = ptsActuales + 1; if (nuevosPts > 5) nuevosPts = 1; 
-                    fidelidadClientes[wp] = nuevosPts; 
+                    let nuevosPts = ptsAntesDeGuardar + 1; if (nuevosPts > 5) nuevosPts = 1;
+                    // Al completar las 5 estrellas: el premio queda registrado como PENDIENTE
+                    // y las estrellas se REINICIAN para su siguiente vuelta.
+                    if (nuevosPts === 5) { premiosPendientes[wp] = (premiosPendientes[wp] || 0) + 1; fidelidadClientes[wp] = 0; }
+                    else { fidelidadClientes[wp] = nuevosPts; }
                     
                     if (nuevosPts === 5) { 
                         document.getElementById('textoPremio').innerHTML = `El número <b>${wp}</b> (${ventaPendiente.cliente}) acaba de realizar su compra #5.<br><br><b>¡Es momento de regalarle un mes gratis o aplicar su recompensa!</b>`; 
@@ -3108,7 +3124,8 @@
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { 
                     contadorFolio: contadorFolio, 
                     fidelidadClientes: fidelidadClientes,
-                    codigosReferidos: codigosReferidos
+                    codigosReferidos: codigosReferidos,
+                    premiosPendientes: premiosPendientes
                 }, { merge: true });
 
                 await sincronizarEspejoVIPPublico();
@@ -3492,13 +3509,14 @@
 
         window.enviarTicket = (folio) => {
             const v = ventas.find(x => x.folio === folio); if(!v || !v.whatsapp) { mostrarToast("No hay número de WhatsApp registrado", "error"); return; }
-            let puntos = obtenerPuntosFidelidad(v.whatsapp); let faltan = 5 - puntos; 
+            let puntos = obtenerPuntosFidelidad(v.whatsapp); let faltan = 5 - puntos; if (v.completoPremio) { puntos = 5; faltan = 0; } 
             let msjPremio = faltan === 0 ? "🎉 ¡Felicidades! Has completado tus 5 compras.\n¡Tienes un *MES GRATIS* en tu próxima renovación o cuenta nueva! 🎉" : `¡Te faltan ${faltan} compras para tu MES GRATIS! 🎁`;
             let msg = v.esRenovacion
                 ? `🔁 *¡RENOVACIÓN LISTA, ${v.cliente}!* 🎉\nTu cuenta y tu perfil se conservan; solo se extendió tu servicio.\n*STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU RENOVACIÓN*\n🔖 Folio: ${v.folio}\n📅 Fecha: ${v.fecha}\n`
                 : `👋 ¡Hola *${v.cliente}*!\nGracias por tu preferencia en *STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU COMPRA*\n🔖 Folio: ${v.folio}\n📅 Fecha de compra: ${v.fecha}\n`;
             if (v.fechaVencimiento) { const diasV = v.vencimientoTimestamp ? Math.ceil((v.vencimientoTimestamp - Date.now()) / 86400000) : null; const extraV = diasV === null ? '' : (diasV > 0 ? ` (en ${diasV} día${diasV === 1 ? '' : 's'})` : (diasV === 0 ? ' (¡vence HOY!)' : ` (venció hace ${Math.abs(diasV)} días)`)); msg += `⏳ *Vencimiento:* ${fechaEnLetrasTicket(v.fechaVencimiento)}${extraV}\n`; }
             msg += `\n📺 *Servicio:* ${v.servicio}\n🍿 *Modalidad:* ${v.modalidad}\n💰 *Total pagado:* $${(v.precio || 0).toFixed(2)} MXN\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            if (v.completoPremio) { msg += `🎁🎉 *¡GANASTE UN MES GRATIS!* 🎉🎁\nCompletaste tus *5 ESTRELLAS* ⭐⭐⭐⭐⭐\nTu premio queda guardado a tu nombre: pídelo en tu próxima renovación o en una cuenta nueva, enseñando este ticket.\n━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
             let accesos = '';
             if (v.correo) accesos += `📧 Correo: ${v.correo}\n`; if (v.password) accesos += `🔑 Pass: ${v.password}\n`; if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`; if (v.pin) accesos += `📍 PIN: ${v.pin}\n`; if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
             if(accesos !== '') { msg += `🔐 *DATOS DE ACCESO*\n${accesos}━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
