@@ -3552,7 +3552,11 @@
             } else {
                 msg = `👋 ¡Hola *${v.cliente}*! Te escribo de *STREAMING LATINO MX* 🍿\n\n⏰ Tu plan de ${datos} está por vencer. Renuévalo por *$${(v.precio || 0).toFixed(2)} MXN* y conservas tu perfil.\n\n🛒 ${tienda}\n¿Te lo renuevo? 🙌`;
             }
-            window.open(`https://wa.me/52${num}?text=${encodeURIComponent(msg)}`, '_blank');
+            // CORRECCIÓN (pedida por Gonzalo): la alerta también abre en la VISTA PREVIA de siempre,
+            // editable y con el número precargado; WhatsApp se abre recién al tocar Enviar.
+            document.getElementById('ticketWhatsAppNum').value = num;
+            document.getElementById('textoPreviewTicket').value = msg;
+            document.getElementById('modalPreviewTicket').classList.remove('hidden');
         };
 
         window.abrirModalRespaldo = () => { document.getElementById('modalRespaldo').classList.remove('hidden'); };
