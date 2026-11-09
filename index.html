@@ -3721,100 +3721,6 @@
         
         const inputNuevoCosto = document.getElementById('nuevoCosto'); if(inputNuevoCosto) inputNuevoCosto.addEventListener('input', actualizarConversionEnVivo);
         const slcMoneda = document.getElementById('monedaCosto'); if(slcMoneda) slcMoneda.addEventListener('change', actualizarConversionEnVivo);
-    </script>
-    <!-- MÓDULO INDEPENDIENTE: ORGANIZADOR EXCLUSIVO DE MI INVENTARIO -->
-    <script>
-        (function() {
-            let categoriaActivaInventario = 'TODO';
-
-            // 1. Localizar exclusivamente la tabla de MI INVENTARIO
-            const tbodyTarget = document.getElementById('tablaInventarioCuerpo');
-            const seccionInventario = document.getElementById('vistaAdminInventario');
-            if (!tbodyTarget || !seccionInventario) return;
-
-            // 2. Crear o mover la barra de botones exactamente arriba de la tabla de Mi Inventario
-            let barraBotones = document.getElementById('filtrosInventarioAdmin');
-            if (!barraBotones) {
-                barraBotones = document.createElement('div');
-                barraBotones.id = 'filtrosInventarioAdmin';
-            }
-            barraBotones.className = 'mb-4 flex items-center gap-2 overflow-x-auto pb-2 select-none';
-
-            const contenedorTablaInventario = tbodyTarget.closest('.neon-border');
-            if (contenedorTablaInventario && contenedorTablaInventario.parentNode) {
-                contenedorTablaInventario.parentNode.insertBefore(barraBotones, contenedorTablaInventario);
-            }
-
-            window.filtrarInventarioPorBoton = function(categoria) {
-                categoriaActivaInventario = categoria;
-                aplicarFiltroYBotonesInventario();
-            };
-
-            function aplicarFiltroYBotonesInventario() {
-                const filas = Array.from(tbodyTarget.querySelectorAll('tr'));
-                const conteoPorCategoria = {};
-                let totalItems = 0;
-
-                // 3. Contar el stock por categoría leyendo las filas del inventario
-                filas.forEach(fila => {
-                    const celdaCategoria = fila.cells[0];
-                    if (!celdaCategoria) return;
-                    const catNombre = celdaCategoria.textContent.trim() || 'Otros';
-                    conteoPorCategoria[catNombre] = (conteoPorCategoria[catNombre] || 0) + 1;
-                    totalItems++;
-                });
-
-                const categoriasExistentes = Object.keys(conteoPorCategoria);
-
-                if (categoriaActivaInventario !== 'TODO' && !conteoPorCategoria[categoriaActivaInventario]) {
-                    categoriaActivaInventario = 'TODO';
-                }
-
-                // 4. Pintar los botones en el borde superior de Mi Inventario
-                const esTodoActivo = categoriaActivaInventario === 'TODO';
-                let htmlBotones = `
-                    <button type="button" onclick="filtrarInventarioPorBoton('TODO')" class="px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${esTodoActivo ? 'bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]' : 'bg-[#12161c] border-[#1F2833] text-gray-400 hover:border-[#66FCF1]/50 hover:text-white'}">
-                        <span>📦 Todos</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono ${esTodoActivo ? 'bg-[#66FCF1] text-[#0B0C10]' : 'bg-[#0B0C10] text-[#66FCF1]'}">${totalItems}</span>
-                    </button>
-                `;
-
-                categoriasExistentes.forEach(cat => {
-                    const cantidad = conteoPorCategoria[cat];
-                    const esActivo = categoriaActivaInventario === cat;
-                    const catCodificada = encodeURIComponent(cat);
-
-                    htmlBotones += `
-                        <button type="button" onclick="filtrarInventarioPorBoton(decodeURIComponent('${catCodificada}'))" class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${esActivo ? 'bg-[#1A222C] border-[#F50057] text-white shadow-[0_0_12px_rgba(245,0,87,0.3)]' : 'bg-[#12161c] border-[#1F2833] text-gray-400 hover:border-[#a855f7]/60 hover:text-white'}">
-                            <span>${cat}</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-black ${esActivo ? 'bg-[#F50057] text-white' : 'bg-[#0B0C10] text-gray-400'}">${cantidad}</span>
-                        </button>
-                    `;
-                });
-
-                barraBotones.innerHTML = htmlBotones;
-
-                // 5. Filtrar las filas de la tabla de inventario
-                filas.forEach(fila => {
-                    const celdaCategoria = fila.cells[0];
-                    if (!celdaCategoria) return;
-                    const catNombre = celdaCategoria.textContent.trim() || 'Otros';
-
-                    if (categoriaActivaInventario === 'TODO' || catNombre === categoriaActivaInventario) {
-                        fila.style.display = '';
-                    } else {
-                        fila.style.display = 'none';
-                    }
-                });
-            }
-
-            // 6. Actualizar automáticamente cuando Firebase cargue o modifique el inventario
-            const observer = new MutationObserver(() => {
-                aplicarFiltroYBotonesInventario();
-            });
-            observer.observe(tbodyTarget, { childList: true });
-            aplicarFiltroYBotonesInventario();
-        })();
 
         // ===== RULETA VIP · configuración, rueda del cliente y control en el CRM =====
         const RULETA_PALETA = ['#1db954', '#c81e1e', '#1e5acd', '#963ccd', '#00a5d7', '#0d9673', '#466ee6', '#f07814'];
@@ -4083,6 +3989,101 @@
             document.getElementById('textoPreviewTicket').value = msg;
             document.getElementById('modalPreviewTicket').classList.remove('hidden');
         };
+
+    </script>
+    <!-- MÓDULO INDEPENDIENTE: ORGANIZADOR EXCLUSIVO DE MI INVENTARIO -->
+    <script>
+        (function() {
+            let categoriaActivaInventario = 'TODO';
+
+            // 1. Localizar exclusivamente la tabla de MI INVENTARIO
+            const tbodyTarget = document.getElementById('tablaInventarioCuerpo');
+            const seccionInventario = document.getElementById('vistaAdminInventario');
+            if (!tbodyTarget || !seccionInventario) return;
+
+            // 2. Crear o mover la barra de botones exactamente arriba de la tabla de Mi Inventario
+            let barraBotones = document.getElementById('filtrosInventarioAdmin');
+            if (!barraBotones) {
+                barraBotones = document.createElement('div');
+                barraBotones.id = 'filtrosInventarioAdmin';
+            }
+            barraBotones.className = 'mb-4 flex items-center gap-2 overflow-x-auto pb-2 select-none';
+
+            const contenedorTablaInventario = tbodyTarget.closest('.neon-border');
+            if (contenedorTablaInventario && contenedorTablaInventario.parentNode) {
+                contenedorTablaInventario.parentNode.insertBefore(barraBotones, contenedorTablaInventario);
+            }
+
+            window.filtrarInventarioPorBoton = function(categoria) {
+                categoriaActivaInventario = categoria;
+                aplicarFiltroYBotonesInventario();
+            };
+
+            function aplicarFiltroYBotonesInventario() {
+                const filas = Array.from(tbodyTarget.querySelectorAll('tr'));
+                const conteoPorCategoria = {};
+                let totalItems = 0;
+
+                // 3. Contar el stock por categoría leyendo las filas del inventario
+                filas.forEach(fila => {
+                    const celdaCategoria = fila.cells[0];
+                    if (!celdaCategoria) return;
+                    const catNombre = celdaCategoria.textContent.trim() || 'Otros';
+                    conteoPorCategoria[catNombre] = (conteoPorCategoria[catNombre] || 0) + 1;
+                    totalItems++;
+                });
+
+                const categoriasExistentes = Object.keys(conteoPorCategoria);
+
+                if (categoriaActivaInventario !== 'TODO' && !conteoPorCategoria[categoriaActivaInventario]) {
+                    categoriaActivaInventario = 'TODO';
+                }
+
+                // 4. Pintar los botones en el borde superior de Mi Inventario
+                const esTodoActivo = categoriaActivaInventario === 'TODO';
+                let htmlBotones = `
+                    <button type="button" onclick="filtrarInventarioPorBoton('TODO')" class="px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${esTodoActivo ? 'bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]' : 'bg-[#12161c] border-[#1F2833] text-gray-400 hover:border-[#66FCF1]/50 hover:text-white'}">
+                        <span>📦 Todos</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono ${esTodoActivo ? 'bg-[#66FCF1] text-[#0B0C10]' : 'bg-[#0B0C10] text-[#66FCF1]'}">${totalItems}</span>
+                    </button>
+                `;
+
+                categoriasExistentes.forEach(cat => {
+                    const cantidad = conteoPorCategoria[cat];
+                    const esActivo = categoriaActivaInventario === cat;
+                    const catCodificada = encodeURIComponent(cat);
+
+                    htmlBotones += `
+                        <button type="button" onclick="filtrarInventarioPorBoton(decodeURIComponent('${catCodificada}'))" class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 shrink-0 ${esActivo ? 'bg-[#1A222C] border-[#F50057] text-white shadow-[0_0_12px_rgba(245,0,87,0.3)]' : 'bg-[#12161c] border-[#1F2833] text-gray-400 hover:border-[#a855f7]/60 hover:text-white'}">
+                            <span>${cat}</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-black ${esActivo ? 'bg-[#F50057] text-white' : 'bg-[#0B0C10] text-gray-400'}">${cantidad}</span>
+                        </button>
+                    `;
+                });
+
+                barraBotones.innerHTML = htmlBotones;
+
+                // 5. Filtrar las filas de la tabla de inventario
+                filas.forEach(fila => {
+                    const celdaCategoria = fila.cells[0];
+                    if (!celdaCategoria) return;
+                    const catNombre = celdaCategoria.textContent.trim() || 'Otros';
+
+                    if (categoriaActivaInventario === 'TODO' || catNombre === categoriaActivaInventario) {
+                        fila.style.display = '';
+                    } else {
+                        fila.style.display = 'none';
+                    }
+                });
+            }
+
+            // 6. Actualizar automáticamente cuando Firebase cargue o modifique el inventario
+            const observer = new MutationObserver(() => {
+                aplicarFiltroYBotonesInventario();
+            });
+            observer.observe(tbodyTarget, { childList: true });
+            aplicarFiltroYBotonesInventario();
+        })();
 
     </script>
 </body>
