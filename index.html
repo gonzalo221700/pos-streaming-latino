@@ -1274,6 +1274,12 @@
             </label>
             <div class="rounded-2xl border-2 border-yellow-400/70 bg-[#1a1608] p-3.5 mb-4">
                 <p class="text-[11px] font-black uppercase tracking-widest text-yellow-400 mb-3">🎯 Premio ganador · siempre cae este</p>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-cyan-300 mb-1">📦 Elegir desde mi inventario (automático)</label>
+                <div class="grid grid-cols-2 gap-3 mb-1">
+                    <select id="ganProductoSel" onchange="alElegirProductoRuleta()" class="w-full bg-[#0B0C10] border border-cyan-500/40 rounded-lg px-3 py-2.5 text-sm text-white"></select>
+                    <select id="ganModalidadSel" onchange="alElegirModalidadRuleta()" class="w-full bg-[#0B0C10] border border-cyan-500/40 rounded-lg px-3 py-2.5 text-sm text-white"></select>
+                </div>
+                <p class="text-[10px] leading-snug text-gray-500 mb-3">Al elegir un producto se llenan solos el servicio, la modalidad, la duración y el nombre en la rueda. Todo queda editable a mano.</p>
                 <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Nombre en la rueda</label>
                 <input type="text" id="ganNombre" maxlength="14" oninput="actualizarPreviewGanador()" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm font-black text-white uppercase mb-3" placeholder="SPOTIFY">
                 <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Servicio</label>
@@ -3866,17 +3872,105 @@
             const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
             set('ganNombre', ruletaEdit.ganador.nombre); set('ganServicio', ruletaEdit.ganador.servicio); set('ganModalidad', ruletaEdit.ganador.modalidad); set('ganDuracion', ruletaEdit.ganador.duracion);
             window.actualizarPreviewGanador();
+            llenarSelectoresInventarioRuleta();
             const cont = document.getElementById('ruletaNombresEditor'); if (!cont) return;
             const ganadorNom = String(ruletaEdit.ganador.nombre || '').toUpperCase();
             cont.innerHTML = ruletaEdit.nombres.map((nom, i) => `
                 <div class="nombre-row flex items-center gap-2 bg-[#0B0C10] border ${String(nom).toUpperCase() === ganadorNom ? 'border-yellow-400' : 'border-gray-800'} rounded-xl px-3 py-2">
                     <span class="w-3.5 h-3.5 rounded-full shrink-0" style="background:${RULETA_PALETA[i % RULETA_PALETA.length]}"></span>
-                    <input type="text" class="nom-input flex-1 min-w-0 bg-transparent text-sm font-black text-white uppercase outline-none" maxlength="14" value="${String(nom).replace(/"/g, '&quot;')}">
+                    <input type="text" oninput="alEscribirNombreRueda(this)" class="nom-input flex-1 min-w-0 bg-transparent text-sm font-black text-white uppercase outline-none" maxlength="14" value="${String(nom).replace(/"/g, '&quot;')}">
                     ${String(nom).toUpperCase() === ganadorNom ? '<span class="text-[10px] font-black bg-yellow-400 text-black px-2 py-1 rounded-md shrink-0">GANADOR</span>' : `<button type="button" onclick="hacerGanadorNombreRuleta(${i})" class="text-[10px] font-black uppercase text-yellow-400 border border-yellow-500/50 px-2 py-1 rounded-md shrink-0">🎯 Ganador</button>`}
                     <button type="button" onclick="eliminarNombreRuletaEditor(${i})" class="text-red-400 hover:text-red-300 font-black px-1 shrink-0">✕</button>
                 </div>`).join('');
         }
-        window.hacerGanadorNombreRuleta = (i) => { sincronizarEditorRuleta(); const nom = ruletaEdit.nombres[i]; if (nom) { ruletaEdit.ganador.nombre = nom; const el = document.getElementById('ganNombre'); if (el) el.value = nom; } renderEditorRuleta(); };
+        // ----- Premio Ganador AUTOMÁTICO desde el inventario (catálogo) -----
+        function normalizarNombreRueda(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+        function productoParaNombreRueda(nom) {
+            const objetivo = normalizarNombreRueda(nom); if (!objetivo) return null;
+            const claves = Object.keys(catalogo || {}).filter(k => catalogo[k] && catalogo[k].mods && Object.keys(catalogo[k].mods).length);
+            const directa = claves.find(k => { const nk = normalizarNombreRueda(k); return nk === objetivo || nk.includes(objetivo) || objetivo.includes(nk); });
+            if (directa) return directa;
+            const primera = objetivo.split(' ')[0];
+            return claves.find(k => normalizarNombreRueda(k).startsWith(primera)) || null;
+        }
+        function duracionDesdeModalidad(mod) {
+            const m = String(mod || '').toUpperCase();
+            const match = m.match(/(\d+)\s*(MESES|MES|AÑOS|AÑO|SEMANAS|SEMANA|DÍAS|DÍAS|DIAS|DIA)/);
+            if (match) return match[0].toLowerCase().replace('dias', 'días').replace('dia', 'día');
+            if (/PERMANENTE/.test(m)) return 'Permanente';
+            return '';
+        }
+        function modalidadSinDuracion(mod) {
+            const limpio = String(mod || '').toUpperCase().replace(/(\d+)\s*(MESES|MES|AÑOS|AÑO|SEMANAS|SEMANA|DÍAS|DÍAS|DIAS|DIA)/g, '').replace(/PERMANENTE/g, '').replace(/[-·]/g, ' ').replace(/\s+/g, ' ').trim();
+            return limpio ? limpio.charAt(0).toUpperCase() + limpio.slice(1).toLowerCase() : '';
+        }
+        function nombreCortoRueda(servicio) {
+            const s = String(servicio || '').toUpperCase().trim();
+            if (s.length <= 14) return s;
+            const primera = s.split(' ')[0];
+            return (primera.length >= 3 ? primera : s.slice(0, 14)).slice(0, 14);
+        }
+        function aplicarPremioDesdeInventario(servicio, modalidad) {
+            if (!servicio || !catalogo[servicio]) return false;
+            const mods = Object.keys(catalogo[servicio].mods || {});
+            const mod = modalidad && mods.includes(modalidad) ? modalidad : mods[0];
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+            set('ganServicio', servicio);
+            set('ganNombre', nombreCortoRueda(servicio));
+            const selP = document.getElementById('ganProductoSel'); if (selP) selP.value = servicio;
+            llenarModalidadesRuleta(servicio);
+            if (mod) {
+                const selM = document.getElementById('ganModalidadSel'); if (selM) selM.value = mod;
+                set('ganModalidad', modalidadSinDuracion(mod) || '1 cuenta');
+                const dur = duracionDesdeModalidad(mod); if (dur) set('ganDuracion', dur);
+            }
+            window.actualizarPreviewGanador();
+            return true;
+        }
+        function llenarModalidadesRuleta(servicio) {
+            const selM = document.getElementById('ganModalidadSel'); if (!selM) return;
+            const mods = servicio && catalogo[servicio] ? Object.keys(catalogo[servicio].mods || {}) : [];
+            selM.innerHTML = mods.length ? mods.map(m => `<option value="${String(m).replace(/"/g, '&quot;')}">${m}</option>`).join('') : '<option value="">—</option>';
+        }
+        function llenarSelectoresInventarioRuleta() {
+            const selP = document.getElementById('ganProductoSel'); if (!selP || !ruletaEdit) return;
+            const servicios = Object.keys(catalogo || {}).filter(s => catalogo[s] && catalogo[s].mods && Object.keys(catalogo[s].mods).length);
+            selP.innerHTML = '<option value="">— Elegir producto… —</option>' + servicios.map(s => `<option value="${String(s).replace(/"/g, '&quot;')}">${s}</option>`).join('');
+            const actual = (ruletaEdit.ganador.servicio && catalogo[ruletaEdit.ganador.servicio]) ? ruletaEdit.ganador.servicio : productoParaNombreRueda(ruletaEdit.ganador.nombre);
+            if (actual) { selP.value = actual; llenarModalidadesRuleta(actual); } else { llenarModalidadesRuleta(''); }
+        }
+        function asegurarGanadorEnNombres() {
+            const nom = String(ruletaEdit.ganador.nombre || '').toUpperCase(); if (!nom) return;
+            if (!ruletaEdit.nombres.some(n => String(n).toUpperCase() === nom)) {
+                if (ruletaEdit.nombres.length < 8) ruletaEdit.nombres.push(nom); else ruletaEdit.nombres[0] = nom;
+            }
+        }
+        window.alElegirProductoRuleta = () => { const s = document.getElementById('ganProductoSel').value; if (!s) return; sincronizarEditorRuleta(); aplicarPremioDesdeInventario(s); sincronizarEditorRuleta(); asegurarGanadorEnNombres(); renderEditorRuleta(); };
+        window.alElegirModalidadRuleta = () => { const s = document.getElementById('ganProductoSel').value; const m = document.getElementById('ganModalidadSel').value; if (!s || !m) return; sincronizarEditorRuleta(); aplicarPremioDesdeInventario(s, m); sincronizarEditorRuleta(); asegurarGanadorEnNombres(); renderEditorRuleta(); };
+        window.alEscribirNombreRueda = (input) => {
+            if (!ruletaEdit) return;
+            const filas = [...document.querySelectorAll('#ruletaNombresEditor .nombre-row')];
+            const idx = filas.indexOf(input.closest('.nombre-row')); if (idx < 0) return;
+            const nombreViejo = String(ruletaEdit.nombres[idx] || '').toUpperCase();
+            sincronizarEditorRuleta();
+            if (nombreViejo && nombreViejo === String(ruletaEdit.ganador.nombre || '').toUpperCase()) {
+                ruletaEdit.ganador.nombre = input.value.trim().toUpperCase();
+                const el = document.getElementById('ganNombre'); if (el) el.value = ruletaEdit.ganador.nombre;
+                window.actualizarPreviewGanador();
+            }
+        };
+        window.hacerGanadorNombreRuleta = (i) => {
+            sincronizarEditorRuleta();
+            const nom = ruletaEdit.nombres[i]; if (!nom) return;
+            ruletaEdit.ganador.nombre = nom;
+            const elN = document.getElementById('ganNombre'); if (elN) elN.value = nom;
+            // AUTOMÁTICO: si el nombre es un producto de tu inventario, el premio completo se llena solo
+            const serv = productoParaNombreRueda(nom);
+            if (serv) { aplicarPremioDesdeInventario(serv); if (elN) elN.value = nom; }
+            else { const elS = document.getElementById('ganServicio'); if (elS) elS.value = nom; window.actualizarPreviewGanador(); }
+            sincronizarEditorRuleta();
+            renderEditorRuleta();
+        };
         window.agregarNombreRuletaEditor = () => { sincronizarEditorRuleta(); if (ruletaEdit.nombres.length >= 8) { mostrarToast('Máximo 8 nombres en la rueda', 'error'); return; } ruletaEdit.nombres.push('NUEVO'); renderEditorRuleta(); };
         window.eliminarNombreRuletaEditor = (i) => { sincronizarEditorRuleta(); if (ruletaEdit.nombres.length <= 2) { mostrarToast('La rueda necesita al menos 2 nombres', 'error'); return; } ruletaEdit.nombres.splice(i, 1); renderEditorRuleta(); };
         window.guardarRuletaAdmin = async () => {
