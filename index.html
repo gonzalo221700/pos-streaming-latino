@@ -227,6 +227,19 @@
         @keyframes fantasmaCruceB { 0% { transform: translate(106vw, 21vh); opacity: 0; } 3% { opacity: 0.7; } 24% { transform: translate(-14vw, 14vh); opacity: 0.7; } 27%, 100% { transform: translate(-14vw, 14vh); opacity: 0; } }
         @keyframes fantasmaFlota { from { transform: translateY(-5px) rotate(-2deg); } to { transform: translateY(6px) rotate(2deg); } }
     </style>
+
+    <style>
+        .focoRuleta { position:absolute; width:13px; height:13px; border-radius:9999px; background:#6e5412; transform:translate(-50%,-50%); animation:focoParpadeo .8s ease-in-out infinite alternate; }
+        @keyframes focoParpadeo { from { background:#6e5412; box-shadow:none; } to { background:#ffe25c; box-shadow:0 0 12px 3px rgba(250,204,21,.85); } }
+        .focosFestejo .focoRuleta { animation-duration:.28s; }
+        @keyframes rebotePuntero { 0%,100% { transform:translateX(-50%) rotate(0deg); } 50% { transform:translateX(-50%) rotate(-16deg); } }
+        .punteroGirando { animation:rebotePuntero .22s ease-in-out infinite; transform-origin:50% 0; }
+        .confetiRuleta { position:absolute; top:-12px; width:9px; height:13px; border-radius:2px; pointer-events:none; animation:caidaConfeti 3.1s ease-in forwards; }
+        @keyframes caidaConfeti { to { transform:translateY(430px) rotate(560deg); opacity:.15; } }
+        #ruletaGiro { transition:transform 5.6s cubic-bezier(.12,.8,.08,1); }
+        .ruleta-etiqueta { position:absolute; inset:0; pointer-events:none; }
+        .ruleta-etiqueta span { position:absolute; left:50%; top:9px; transform:translateX(-50%); width:96px; text-align:center; font-weight:900; font-size:11px; letter-spacing:.02em; color:#fff; text-transform:uppercase; text-shadow:0 1px 4px rgba(0,0,0,.65); line-height:1.05; }
+    </style>
 </head>
 <body class="min-h-screen relative">
 
@@ -422,8 +435,12 @@
 
                 <!-- Botón especial cuando llega a 5 estrellas -->
                 <a id="btnReclamarPremioVIP" href="#" target="_blank" class="hidden w-full mb-3 bg-gradient-to-r from-yellow-500 to-amber-400 hover:from-yellow-400 hover:to-amber-300 text-black font-black py-3 rounded-lg uppercase tracking-wider text-xs shadow-[0_0_20px_rgba(250,204,21,0.6)] flex items-center justify-center gap-2 animate-bounce">
-                    🎁 ¡Reclamar mi Mes Gratis por WhatsApp!
+                    🎁 ¡Reclamar mi premio por WhatsApp!
                 </a>
+                <button type="button" id="btnRuletaVIP" onclick="abrirRuletaVIP()" class="hidden w-full mb-3 bg-gradient-to-r from-pink-600 via-rose-500 to-amber-400 hover:brightness-110 text-white font-black py-3.5 rounded-lg uppercase tracking-wider text-sm shadow-[0_0_25px_rgba(245,0,87,0.55)] items-center justify-center gap-2">
+                    🎡 ¡GIRAR LA RULETA VIP!
+                </button>
+                <div id="vipRuletaBox" class="hidden mb-3 bg-[#0d2417] border border-green-500/60 rounded-xl p-3 text-center"></div>
 
                 <!-- NUEVA IMPLEMENTACIÓN · Punto 3: historial de compras del socio -->
                 <div id="vipHistorialBox" class="hidden border-t border-gray-800 pt-3 mt-3 text-left">
@@ -612,6 +629,10 @@
                                 <button type="button" id="btnNavAdminPorVencer" onclick="cambiarVistaAdmin('porvencer')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white">
                                     <span class="flex items-center gap-2.5"><span class="text-sm">⏰</span> Por Vencer</span>
                                     <span id="contadorPorVencer" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-[#1A222C] text-yellow-400">0</span>
+                                </button>
+                                <button type="button" id="btnNavAdminPremios" onclick="cambiarVistaAdmin('premios')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800 text-gray-400 hover:bg-[#1A222C]">
+                                    <span class="flex items-center gap-2.5"><span class="text-sm">🎡</span> Premios Ruleta</span>
+                                    <span id="contadorPremios" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-[#1A222C] text-yellow-400">0</span>
                                 </button>
                                 <button type="button" id="btnNavAdminInventario" onclick="cambiarVistaAdmin('inventario')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white">
                                     <span class="flex items-center gap-2.5"><span class="text-sm">📦</span> Mi Inventario</span>
@@ -850,6 +871,17 @@
                             <p class="text-xs text-gray-400 mt-0.5">Clientes que vencen en los próximos 7 días y vencidos de los últimos 30 días. Avísales y renueva en 1 clic.</p>
                         </div>
                         <div id="listaPorVencer" class="space-y-2"></div>
+                    </section>
+
+                    <section id="vistaAdminPremios" class="hidden w-full">
+                        <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2"><span>🎡</span> Premios por entregar</h2>
+                                <p class="text-xs text-gray-400 mt-0.5">Socios con giros de la Ruleta VIP: registra el premio que ganaron (descuenta del cupo) y marca la entrega.</p>
+                            </div>
+                            <button type="button" onclick="abrirModalRuletaAdmin()" class="pink-btn text-xs font-black px-4 py-2.5 rounded-lg uppercase tracking-wider shrink-0">⚙️ Configurar Ruleta VIP</button>
+                        </div>
+                        <div id="listaPremios" class="space-y-2"></div>
                     </section>
 
                     <section id="vistaAdminInventario" class="hidden w-full">
@@ -1203,6 +1235,50 @@
         <button type="button" onclick="menuWaAccion('alerta')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1A222C] text-sm font-bold text-white">⏰ Alerta de vencimiento del plan</button>
     </div>
 
+
+    <!-- ===== RULETA VIP · Modal del cliente ===== -->
+    <div id="modalRuletaVIP" class="fixed inset-0 modal-bg z-[99995] hidden flex items-center justify-center p-4">
+        <div class="bg-[#12161c] border-2 border-pink-500/70 p-5 rounded-2xl shadow-[0_0_35px_rgba(245,0,87,0.35)] w-full max-w-md relative text-center max-h-[92vh] overflow-y-auto overscroll-contain">
+            <button type="button" onclick="cerrarRuletaVIP()" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-gray-800/80 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center transition-colors z-20"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-amber-300 uppercase tracking-widest mb-1">🎡 Ruleta de Premios VIP</h2>
+            <p class="text-xs text-gray-400 mb-3">¡Todos los giros ganan premio! La flecha se detiene en tu premio.</p>
+            <div id="ruletaEscenario" class="relative mx-auto" style="width:324px;height:324px;max-width:88vw;">
+                <div id="ruletaPuntero" class="absolute left-1/2 top-0 z-20" style="transform:translateX(-50%); width:0; height:0; border-left:15px solid transparent; border-right:15px solid transparent; border-top:26px solid #FACC15; filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));"></div>
+                <div id="ruletaGiro" class="absolute rounded-full shadow-[0_0_35px_rgba(0,0,0,0.55)]" style="width:296px;height:296px;left:14px;top:14px;">
+                    <div id="ruletaEtiquetas" class="absolute inset-0"></div>
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-[#0B0C10] border-4 border-yellow-400 flex items-center justify-center text-2xl shadow-lg">⭐</div>
+                </div>
+                <div id="ruletaFocos" class="absolute inset-0 pointer-events-none z-10"></div>
+                <div id="ruletaConfeti" class="absolute inset-0 overflow-hidden pointer-events-none z-30"></div>
+            </div>
+            <p id="ruletaGirosTxt" class="text-xs font-bold text-yellow-300 mt-2"></p>
+            <button type="button" id="btnGirarRuleta" onclick="girarRuletaVIP()" class="mt-2 w-full bg-gradient-to-r from-pink-600 via-rose-500 to-amber-400 hover:brightness-110 text-white font-black py-3.5 rounded-xl uppercase tracking-widest text-sm shadow-[0_0_25px_rgba(245,0,87,0.5)] disabled:opacity-50 disabled:cursor-not-allowed">🎡 ¡Girar!</button>
+            <div id="ruletaResultado" class="hidden mt-3 bg-[#0d2417] border border-green-500/60 rounded-xl p-3">
+                <p class="text-green-400 font-black text-lg">🎉 ¡GANASTE!</p>
+                <p id="ruletaPremioTxt" class="text-white font-bold text-sm mt-0.5"></p>
+                <a id="btnReclamarRuleta" href="#" target="_blank" class="mt-2.5 w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-black py-3 rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i> Reclamar mi premio</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RULETA VIP · Editor del CRM ===== -->
+    <div id="modalRuletaAdmin" class="fixed inset-0 modal-bg z-[99995] hidden flex items-center justify-center p-4">
+        <div class="bg-[#12161c] border border-gray-700 p-6 rounded-2xl w-full max-w-2xl relative max-h-[92vh] overflow-y-auto overscroll-contain">
+            <button type="button" onclick="cerrarModalRuletaAdmin()" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-gray-800/80 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center transition-colors z-20"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-lg font-black text-white uppercase tracking-wider mb-1">🎡 Ruleta VIP · Premios</h2>
+            <p class="text-xs text-gray-400 mb-4">Tú pones los premios y su cupo: la ruleta sortea solo entre los que quedan (cuando uno se agota, deja de caer). Máximo 8 segmentos.</p>
+            <label class="flex items-center gap-2.5 bg-[#0B0C10] border border-gray-800 rounded-xl px-3.5 py-3 mb-3 cursor-pointer">
+                <input type="checkbox" id="ruletaActivo" class="w-4 h-4 accent-pink-500">
+                <span class="text-sm font-bold text-gray-200">Ruleta activa en la tienda</span>
+            </label>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-1">Premio de respaldo (cuando se acabe el cupo de todos)</label>
+            <input type="text" id="ruletaRespaldo" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white mb-4" placeholder="Ej. Premio sorpresa de Streaming Latino MX">
+            <div id="ruletaPremiosEditor" class="space-y-2 mb-3"></div>
+            <button type="button" onclick="agregarPremioRuletaEditor()" class="w-full border border-dashed border-gray-600 hover:border-pink-400 text-gray-300 hover:text-white text-xs font-black uppercase tracking-wider py-2.5 rounded-lg transition-colors mb-4">➕ Agregar premio</button>
+            <button type="button" onclick="guardarRuletaAdmin()" class="w-full pink-btn font-black py-3 rounded-xl uppercase tracking-widest text-sm">💾 Guardar Ruleta</button>
+        </div>
+    </div>
+
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
@@ -1305,6 +1381,8 @@
         let fidelidadClientes = {};
         let codigosReferidos = {}; 
         let premiosPendientes = {};
+        let ruletaRegistro = {};
+        let ruletaConfig = null;
         let directorioVIPPublico = {};
         let codigoVIPConsultadoActual = '';
         let currentUsdtRate = 20.00; 
@@ -1580,6 +1658,7 @@
                 if(inputWel) inputWel.value = welcomeText;
             }
             try { aplicarAnunciosYHero(data); } catch (e) { console.error(e); }
+            try { aplicarRuletaConfig(data); } catch (e) { console.error(e); }
             if(data.promo && data.promo.trim() !== '') {
                 const promoBar = document.getElementById('promoBar');
                 const promoText = document.getElementById('promoText');
@@ -1656,22 +1735,26 @@
             const vHist = document.getElementById('vistaAdminHistorial');
             const vInv = document.getElementById('vistaAdminInventario');
             const vPorV = document.getElementById('vistaAdminPorVencer');
+            const vPrem = document.getElementById('vistaAdminPremios');
 
             const bVenta = document.getElementById('btnNavAdminVenta');
             const bHist = document.getElementById('btnNavAdminHistorial');
             const bInv = document.getElementById('btnNavAdminInventario');
             const bPorV = document.getElementById('btnNavAdminPorVencer');
+            const bPrem = document.getElementById('btnNavAdminPremios');
 
             if (vVenta) vVenta.classList.add('hidden');
             if (vHist) vHist.classList.add('hidden');
             if (vInv) vInv.classList.add('hidden');
             if (vPorV) vPorV.classList.add('hidden');
+            if (vPrem) vPrem.classList.add('hidden');
 
             const claseInactiva = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white";
             if (bVenta) bVenta.className = claseInactiva;
             if (bHist) bHist.className = claseInactiva;
             if (bInv) bInv.className = claseInactiva;
             if (bPorV) bPorV.className = claseInactiva;
+            if (bPrem) bPrem.className = claseInactiva;
 
             if (vista === 'historial') {
                 if (vHist) vHist.classList.remove('hidden');
@@ -1680,6 +1763,10 @@
                 if (vPorV) vPorV.classList.remove('hidden');
                 if (bPorV) bPorV.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]";
                 try { renderPorVencer(); } catch (e) {}
+            } else if (vista === 'premios') {
+                if (vPrem) vPrem.classList.remove('hidden');
+                if (bPrem) bPrem.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-yellow-500/60 text-white shadow-lg";
+                try { renderPremios(); } catch (e) {}
             } else if (vista === 'inventario') {
                 if (vInv) vInv.classList.remove('hidden');
                 if (bInv) bInv.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]";
@@ -1941,6 +2028,7 @@
                     fidelidadClientes = d.fidelidadClientes || {}; 
                     codigosReferidos = d.codigosReferidos || {};
                     premiosPendientes = d.premiosPendientes || {};
+                    ruletaRegistro = d.ruletaRegistro || {};
                     // Migración: quien YA tenía 5 estrellas conserva su premio como PENDIENTE y su ciclo reinicia
                     let migroPremio = false;
                     for (const wpM of Object.keys(fidelidadClientes)) { if (fidelidadClientes[wpM] === 5 && premiosPendientes[wpM] === undefined) { premiosPendientes[wpM] = 1; fidelidadClientes[wpM] = 0; migroPremio = true; } }
@@ -1960,6 +2048,7 @@
                     sincronizarActividadDesdeVentas();
                     sincronizarDestacadosDesdeVentas();
                     sincronizarHistorialesVIP();
+                    try { actualizarContadorPremios(); } catch (e) {}
                     if (window.restaurarBorradorPOS) restaurarBorradorPOS();
                 } catch(e) { console.error(e); }
             }, (error) => console.error(error));
@@ -2100,8 +2189,8 @@
             const btnReclamar = document.getElementById('btnReclamarPremioVIP');
             const premiosSocio = parseInt(datosSocio.premios) || 0;
             if (puntos >= 5 || premiosSocio > 0) {
-                document.getElementById('vipTextoProgreso').innerHTML = premiosSocio > 0 ? `<span class="text-yellow-400 font-black">🎁 ¡TIENES UN MES GRATIS POR RECLAMAR!</span><br>Ganaste tu premio de 5 estrellas${premiosSocio > 1 ? ` (x${premiosSocio})` : ''}. Tus estrellas ya empezaron una nueva vuelta.` : `<span class="text-yellow-400 font-black">🎉 ¡FELICIDADES! Tienes 5 de 5 Estrellas.</span><br>¡Ya ganaste tu MES GRATIS o recompensa VIP!`;
-                const msgReclamo = encodeURIComponent(`👋 ¡Hola! Mi código de socio VIP es *${raw}* (${datosSocio.nombre}) y acabo de completar mis *5 Estrellas ⭐*. ¡Quiero reclamar mi beneficio!`);
+                document.getElementById('vipTextoProgreso').innerHTML = premiosSocio > 0 ? `<span class="text-yellow-400 font-black">🎡 ¡TIENES GIROS EN LA RULETA VIP!</span><br>Ganaste giros de la Ruleta VIP con tus 5 estrellas${premiosSocio > 1 ? ` (x${premiosSocio})` : ''}. Tus estrellas ya empezaron una nueva vuelta.` : `<span class="text-yellow-400 font-black">🎉 ¡FELICIDADES! Tienes 5 de 5 Estrellas.</span><br>¡Ya ganaste tu GIRO en la RULETA VIP!`;
+                const msgReclamo = encodeURIComponent(`👋 ¡Hola! Mi código de socio VIP es *${raw}* (${datosSocio.nombre}) y acabo de completar mis *5 Estrellas ⭐*. ¡Quiero reclamar mi premio de la *RULETA VIP*! 🎡`);
                 btnReclamar.href = `https://wa.me/${numeroVentasPublico}?text=${msgReclamo}`;
                 btnReclamar.classList.remove('hidden');
             } else {
@@ -2115,12 +2204,14 @@
                 const box = document.getElementById('vipHistorialBox');
                 const listaEl = document.getElementById('vipHistorialLista');
                 if (box && listaEl) {
+                    window._ultimoEspejoHist = { codigo: raw, data: histSnap.exists() ? histSnap.data() : null };
                     if (histSnap.exists() && Array.isArray(histSnap.data().compras) && histSnap.data().compras.length > 0) {
                         listaEl.innerHTML = histSnap.data().compras.map(c => `<div class="flex items-center justify-between gap-2 bg-[#12161c] border border-gray-800 rounded-lg px-2.5 py-1.5"><div class="min-w-0"><p class="text-[11px] font-bold text-white truncate">${escaparTextoActividad(c.s)} <span class="text-gray-400 font-semibold">· ${escaparTextoActividad(c.m)}</span></p><p class="text-[10px] text-gray-500 font-mono">${escaparTextoActividad(c.d)} · Folio ${escaparTextoActividad(c.f)}</p></div><span class="text-[11px] font-mono font-black text-[#66FCF1] shrink-0">$${(c.p || 0).toFixed(2)}</span></div>`).join('');
                         box.classList.remove('hidden');
                     } else { box.classList.add('hidden'); }
                 }
             } catch (e) { console.error("Historial VIP:", e); }
+            try { window._refrescarRuletaVIP(datosSocio); } catch (e) { console.error("Ruleta VIP:", e); }
 
             const urlTienda = window.location.origin + window.location.pathname;
             const textoInvitar = encodeURIComponent(`🍿 ¡Hola! Te recomiendo *Streaming Latino MX*, tienen Netflix, Spotify, Max y más al mejor precio.\n\n🎁 Da mi código VIP *${raw}* cuando compres para que te atiendan de lujo:\n👉 ${urlTienda}`);
@@ -2567,8 +2658,8 @@
                     const compras = [...lista]
                         .sort((x, y) => (fechaVentaADate(y.fecha) || 0) - (fechaVentaADate(x.fecha) || 0))
                         .map(v => ({ f: v.folio || '', s: v.servicio || '', m: v.modalidad || '', p: v.precio || 0, d: v.fecha || '' }));
-                    const payload = { compras, actualizado: new Date().toISOString() };
-                    const firma = JSON.stringify(compras);
+                    const payload = { compras, actualizado: new Date().toISOString(), ruleta: { giros: premiosPendientes[wp] || 0, premios: (ruletaRegistro[wp] || []).map(r => ({ premio: r.premio, descripcion: r.descripcion, fecha: r.fecha, estado: r.estado })) } };
+                    const firma = JSON.stringify({ c: compras, r: payload.ruleta });
                     if (firmasHistorialVIP[codigo] === firma) continue;
                     firmasHistorialVIP[codigo] = firma;
                     await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', `historial_${codigo}`), payload, { merge: true });
@@ -3113,7 +3204,7 @@
                     else { fidelidadClientes[wp] = nuevosPts; }
                     
                     if (nuevosPts === 5) { 
-                        document.getElementById('textoPremio').innerHTML = `El número <b>${wp}</b> (${ventaPendiente.cliente}) acaba de realizar su compra #5.<br><br><b>¡Es momento de regalarle un mes gratis o aplicar su recompensa!</b>`; 
+                        document.getElementById('textoPremio').innerHTML = `El número <b>${wp}</b> (${ventaPendiente.cliente}) acaba de realizar su compra #5.<br><br><b>¡Ganó 1 giro en la RULETA DE PREMIOS VIP! Invítalo a entrar a la tienda a girarla 🎡</b>`; 
                         document.getElementById('modalPremio').classList.remove('hidden'); 
                         premioActivado = true;
                     } 
@@ -3125,7 +3216,8 @@
                     contadorFolio: contadorFolio, 
                     fidelidadClientes: fidelidadClientes,
                     codigosReferidos: codigosReferidos,
-                    premiosPendientes: premiosPendientes
+                    premiosPendientes: premiosPendientes,
+                    ruletaRegistro: ruletaRegistro
                 }, { merge: true });
 
                 await sincronizarEspejoVIPPublico();
@@ -3510,13 +3602,13 @@
         window.enviarTicket = (folio) => {
             const v = ventas.find(x => x.folio === folio); if(!v || !v.whatsapp) { mostrarToast("No hay número de WhatsApp registrado", "error"); return; }
             let puntos = obtenerPuntosFidelidad(v.whatsapp); let faltan = 5 - puntos; if (v.completoPremio) { puntos = 5; faltan = 0; } 
-            let msjPremio = faltan === 0 ? "🎉 ¡Felicidades! Has completado tus 5 compras.\n¡Tienes un *MES GRATIS* en tu próxima renovación o cuenta nueva! 🎉" : `¡Te faltan ${faltan} compras para tu MES GRATIS! 🎁`;
+            let msjPremio = faltan === 0 ? "🎉 ¡Felicidades! Has completado tus 5 compras.\n¡Tienes *1 GIRO en la RULETA DE PREMIOS VIP* 🎡! Entra a la tienda, consulta tu código de socio y gira: ¡todos los giros ganan premio!" : `¡Te faltan ${faltan} compras para girar la *RULETA VIP*! 🎡`;
             let msg = v.esRenovacion
                 ? `🔁 *¡RENOVACIÓN LISTA, ${v.cliente}!* 🎉\nTu cuenta y tu perfil se conservan; solo se extendió tu servicio.\n*STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU RENOVACIÓN*\n🔖 Folio: ${v.folio}\n📅 Fecha: ${v.fecha}\n`
                 : `👋 ¡Hola *${v.cliente}*!\nGracias por tu preferencia en *STREAMING LATINO MX* 🍿\n\n━━━━━━━━━━━━━━━━━━━━━━\n📄 *DETALLES DE TU COMPRA*\n🔖 Folio: ${v.folio}\n📅 Fecha de compra: ${v.fecha}\n`;
             if (v.fechaVencimiento) { const diasV = v.vencimientoTimestamp ? Math.ceil((v.vencimientoTimestamp - Date.now()) / 86400000) : null; const extraV = diasV === null ? '' : (diasV > 0 ? ` (en ${diasV} día${diasV === 1 ? '' : 's'})` : (diasV === 0 ? ' (¡vence HOY!)' : ` (venció hace ${Math.abs(diasV)} días)`)); msg += `⏳ *Vencimiento:* ${fechaEnLetrasTicket(v.fechaVencimiento)}${extraV}\n`; }
             msg += `\n📺 *Servicio:* ${v.servicio}\n🍿 *Modalidad:* ${v.modalidad}\n💰 *Total pagado:* $${(v.precio || 0).toFixed(2)} MXN\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-            if (v.completoPremio) { msg += `🎁🎉 *¡GANASTE UN MES GRATIS!* 🎉🎁\nCompletaste tus *5 ESTRELLAS* ⭐⭐⭐⭐⭐\nTu premio queda guardado a tu nombre: pídelo en tu próxima renovación o en una cuenta nueva, enseñando este ticket.\n━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
+            if (v.completoPremio) { msg += `🎡🎉 *¡COMPLETASTE TUS 5 ESTRELLAS!* 🎉🎡\nGanaste *1 GIRO EN LA RULETA DE PREMIOS VIP* ⭐⭐⭐⭐⭐\nEntra a la tienda, consulta tu código de socio y gira la ruleta: ¡todos los giros ganan premio! Tu giro queda guardado a tu nombre.\n━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
             let accesos = '';
             if (v.correo) accesos += `📧 Correo: ${v.correo}\n`; if (v.password) accesos += `🔑 Pass: ${v.password}\n`; if (v.perfil) accesos += `👤 Perfil: ${v.perfil}\n`; if (v.pin) accesos += `📍 PIN: ${v.pin}\n`; if (v.enlace) accesos += `🔗 Enlace: ${v.enlace}\n`;
             if(accesos !== '') { msg += `🔐 *DATOS DE ACCESO*\n${accesos}━━━━━━━━━━━━━━━━━━━━━━\n\n`; }
@@ -3707,6 +3799,265 @@
             observer.observe(tbodyTarget, { childList: true });
             aplicarFiltroYBotonesInventario();
         })();
+
+        // ===== RULETA VIP · configuración, rueda del cliente y control en el CRM =====
+        const RULETA_PALETA = ['#1db954', '#c81e1e', '#1e5acd', '#963ccd', '#00a5d7', '#0d9673', '#466ee6', '#f07814'];
+        const RULETA_DEFAULT = { activo: true, respaldo: 'Premio sorpresa de Streaming Latino MX', premios: [
+            { nombre: 'SPOTIFY', descripcion: 'Spotify Premium · 1 mes', restantes: 5, activo: true, color: '#1db954' },
+            { nombre: 'NETFLIX', descripcion: 'Netflix · 1 perfil por 1 mes', restantes: 3, activo: true, color: '#c81e1e' },
+            { nombre: 'DISNEY+', descripcion: 'Disney+ · 1 mes', restantes: 3, activo: true, color: '#1e5acd' },
+            { nombre: 'VIX', descripcion: 'ViX Premium · 1 mes', restantes: 4, activo: true, color: '#963ccd' }
+        ] };
+        ruletaConfig = JSON.parse(JSON.stringify(RULETA_DEFAULT));
+        let ruletaGirando = false;
+        let ruletaRotacion = 0;
+        let ruletaSegmentosActuales = [];
+        window._ruletaCtx = null;
+
+        function aplicarRuletaConfig(data) {
+            if (data && data.ruleta && Array.isArray(data.ruleta.premios)) {
+                ruletaConfig = { activo: data.ruleta.activo !== false, respaldo: data.ruleta.respaldo || RULETA_DEFAULT.respaldo, premios: data.ruleta.premios };
+            }
+            if (codigoVIPConsultadoActual && directorioVIPPublico[codigoVIPConsultadoActual]) {
+                try { window._refrescarRuletaVIP(directorioVIPPublico[codigoVIPConsultadoActual]); } catch (e) {}
+            }
+        }
+
+        function poolRuleta() { return (ruletaConfig.premios || []).filter(p => p && p.activo !== false && (parseInt(p.restantes) || 0) > 0); }
+        function segmentosRuleta() {
+            const pool = poolRuleta();
+            if (pool.length) return pool.map(p => ({ nombre: p.nombre || 'PREMIO', descripcion: p.descripcion || p.nombre || 'Premio', restantes: parseInt(p.restantes) || 0, color: p.color || '#555' }));
+            return [{ nombre: 'PREMIO', descripcion: ruletaConfig.respaldo || 'Premio sorpresa', restantes: 1, color: '#b8860b', respaldo: true }];
+        }
+        function localesRuleta(codigo) { try { return JSON.parse(localStorage.getItem('slmx_ruleta_' + codigo) || '[]'); } catch (e) { return []; } }
+        function guardarLocalRuleta(codigo, lista) { try { localStorage.setItem('slmx_ruleta_' + codigo, JSON.stringify(lista)); } catch (e) {} }
+        function mensajeReclamoRuleta(codigo, nombre, premioTxt, fecha) {
+            return encodeURIComponent(`🎡 ¡Hola! Soy *${nombre}* (código de socio *${codigo}*).\nGiré la *RULETA DE PREMIOS VIP* y gané: *${premioTxt}*${fecha ? ` (${fecha})` : ''}.\n¡Quiero reclamar mi premio! 🎁`);
+        }
+
+        window._refrescarRuletaVIP = (datosSocio) => {
+            const codigo = codigoVIPConsultadoActual;
+            if (!codigo || !datosSocio) return;
+            window._ruletaCtx = { codigo, nombre: datosSocio.nombre || 'Socio' };
+            const espejo = (window._ultimoEspejoHist && window._ultimoEspejoHist.codigo === codigo) ? window._ultimoEspejoHist.data : null;
+            const girosTotales = espejo && espejo.ruleta ? (parseInt(espejo.ruleta.giros) || 0) : (parseInt(datosSocio.premios) || 0);
+            const registrados = espejo && espejo.ruleta && Array.isArray(espejo.ruleta.premios) ? espejo.ruleta.premios : [];
+            let locales = localesRuleta(codigo);
+            if (registrados.length >= locales.length && locales.length > 0) { locales = []; guardarLocalRuleta(codigo, locales); }
+            const disponibles = Math.max(0, girosTotales - registrados.length - locales.length);
+            window._ruletaCtx.disponibles = disponibles;
+            const btn = document.getElementById('btnRuletaVIP');
+            const btnReclamar = document.getElementById('btnReclamarPremioVIP');
+            const box = document.getElementById('vipRuletaBox');
+            if (btn) {
+                if (ruletaConfig.activo && disponibles > 0) { btn.classList.remove('hidden'); btn.classList.add('flex'); btn.innerHTML = `🎡 ¡GIRAR LA RULETA VIP! (${disponibles} giro${disponibles > 1 ? 's' : ''})`; }
+                else { btn.classList.add('hidden'); btn.classList.remove('flex'); }
+            }
+            if (btnReclamar && ruletaConfig.activo && girosTotales > 0) { btnReclamar.classList.add('hidden'); }
+            const porReclamar = [...registrados.filter(r => r.estado === 'girado').map(r => ({ premio: r.descripcion || r.premio, fecha: r.fecha || '' })), ...locales.map(l => ({ premio: l.descripcion || l.premio, fecha: l.fecha || '' }))];
+            if (box) {
+                if (porReclamar.length) {
+                    const ult = porReclamar[porReclamar.length - 1];
+                    box.innerHTML = `<p class="text-green-400 font-black text-sm">🎉 ¡Ya ganaste en la ruleta!</p><p class="text-white font-bold text-sm mt-0.5">${ult.premio}</p><a href="https://wa.me/${numeroVentasPublico}?text=${mensajeReclamoRuleta(codigo, window._ruletaCtx.nombre, ult.premio, ult.fecha)}" target="_blank" class="mt-2 w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-black py-2.5 rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> Reclamar mi premio</a>`;
+                    box.classList.remove('hidden');
+                } else { box.classList.add('hidden'); box.innerHTML = ''; }
+            }
+        };
+
+        window.abrirRuletaVIP = () => {
+            if (!window._ruletaCtx || !(window._ruletaCtx.disponibles > 0)) { mostrarToast('No tienes giros disponibles', 'error'); return; }
+            ruletaSegmentosActuales = segmentosRuleta();
+            const n = ruletaSegmentosActuales.length, paso = 360 / n;
+            const grad = ruletaSegmentosActuales.map((sg, i) => `${sg.color} ${i * paso}deg ${(i + 1) * paso}deg`).join(', ');
+            const giro = document.getElementById('ruletaGiro');
+            giro.style.transition = 'none'; giro.style.transform = `rotate(${ruletaRotacion}deg)`;
+            giro.style.background = `conic-gradient(from 0deg, ${grad})`;
+            document.getElementById('ruletaEtiquetas').innerHTML = ruletaSegmentosActuales.map((sg, i) => `<div class="ruleta-etiqueta" style="transform:rotate(${i * paso + paso / 2}deg)"><span>${String(sg.nombre).replace(/</g, '')}</span></div>`).join('');
+            const focos = document.getElementById('ruletaFocos');
+            focos.classList.remove('focosFestejo');
+            let focosHtml = '';
+            for (let i = 0; i < 20; i++) { const a = (i * 18) * Math.PI / 180; const x = 162 + Math.cos(a) * 156, y = 162 + Math.sin(a) * 156; focosHtml += `<span class="focoRuleta" style="left:${x}px;top:${y}px;animation-delay:${(i * 0.045).toFixed(3)}s"></span>`; }
+            focos.innerHTML = focosHtml;
+            document.getElementById('ruletaResultado').classList.add('hidden');
+            document.getElementById('ruletaGirosTxt').textContent = `Tienes ${window._ruletaCtx.disponibles} giro${window._ruletaCtx.disponibles > 1 ? 's' : ''} disponible${window._ruletaCtx.disponibles > 1 ? 's' : ''}`;
+            const btn = document.getElementById('btnGirarRuleta'); btn.disabled = false; btn.textContent = '🎡 ¡Girar!';
+            document.getElementById('modalRuletaVIP').classList.remove('hidden');
+        };
+        window.cerrarRuletaVIP = () => { if (ruletaGirando) return; document.getElementById('modalRuletaVIP').classList.add('hidden'); };
+
+        window.girarRuletaVIP = () => {
+            if (ruletaGirando || !ruletaSegmentosActuales.length) return;
+            if (!window._ruletaCtx || !(window._ruletaCtx.disponibles > 0)) { mostrarToast('Ya no tienes giros disponibles', 'error'); return; }
+            ruletaGirando = true;
+            const btn = document.getElementById('btnGirarRuleta'); btn.disabled = true; btn.textContent = 'Girando…';
+            document.getElementById('ruletaPuntero').classList.add('punteroGirando');
+            const segs = ruletaSegmentosActuales, n = segs.length, paso = 360 / n;
+            const totalPeso = segs.reduce((a, sg) => a + Math.max(1, sg.restantes || 1), 0);
+            let r = Math.random() * totalPeso, ganador = 0;
+            for (let i = 0; i < n; i++) { r -= Math.max(1, segs[i].restantes || 1); if (r <= 0) { ganador = i; break; } }
+            const centro = ganador * paso + paso / 2;
+            const jitter = (Math.random() * 2 - 1) * Math.max(0, paso / 2 - 7);
+            const base = ruletaRotacion + 360 * 5;
+            const delta = ((-centro - jitter - base) % 360 + 360) % 360;
+            ruletaRotacion = base + delta;
+            const giro = document.getElementById('ruletaGiro');
+            giro.style.transition = ''; giro.style.transform = `rotate(${ruletaRotacion}deg)`;
+            setTimeout(() => {
+                ruletaGirando = false;
+                document.getElementById('ruletaPuntero').classList.remove('punteroGirando');
+                document.getElementById('ruletaFocos').classList.add('focosFestejo');
+                const sg = segs[ganador];
+                const fecha = new Date().toLocaleDateString('es-MX');
+                const lista = localesRuleta(window._ruletaCtx.codigo);
+                lista.push({ premio: sg.nombre, descripcion: sg.descripcion, fecha, respaldo: !!sg.respaldo });
+                guardarLocalRuleta(window._ruletaCtx.codigo, lista);
+                window._ruletaCtx.disponibles = Math.max(0, window._ruletaCtx.disponibles - 1);
+                document.getElementById('ruletaPremioTxt').textContent = sg.descripcion;
+                document.getElementById('btnReclamarRuleta').href = `https://wa.me/${numeroVentasPublico}?text=${mensajeReclamoRuleta(window._ruletaCtx.codigo, window._ruletaCtx.nombre, sg.descripcion, fecha)}`;
+                document.getElementById('ruletaResultado').classList.remove('hidden');
+                document.getElementById('ruletaGirosTxt').textContent = window._ruletaCtx.disponibles > 0 ? `Te queda${window._ruletaCtx.disponibles > 1 ? 'n' : ''} ${window._ruletaCtx.disponibles} giro${window._ruletaCtx.disponibles > 1 ? 's' : ''} más` : 'Ya usaste tus giros: ¡reclama tu premio!';
+                btn.textContent = window._ruletaCtx.disponibles > 0 ? '🎡 ¡Girar de nuevo!' : 'Sin giros';
+                btn.disabled = !(window._ruletaCtx.disponibles > 0);
+                const cont = document.getElementById('ruletaConfeti'); cont.innerHTML = '';
+                const colores = ['#F50057', '#66FCF1', '#FACC15', '#22c55e', '#963ccd', '#f07814'];
+                for (let i = 0; i < 42; i++) { const c = document.createElement('span'); c.className = 'confetiRuleta'; c.style.left = (Math.random() * 96) + '%'; c.style.background = colores[i % colores.length]; c.style.animationDelay = (Math.random() * 0.5).toFixed(2) + 's'; cont.appendChild(c); }
+                setTimeout(() => { cont.innerHTML = ''; }, 3800);
+                try { window._refrescarRuletaVIP(directorioVIPPublico[window._ruletaCtx.codigo]); } catch (e) {}
+            }, 5900);
+        };
+
+        // ----- Editor de premios (CRM) -----
+        let ruletaEdit = null;
+        window.abrirModalRuletaAdmin = () => { ruletaEdit = JSON.parse(JSON.stringify(ruletaConfig)); renderEditorRuleta(); document.getElementById('modalRuletaAdmin').classList.remove('hidden'); };
+        window.cerrarModalRuletaAdmin = () => { document.getElementById('modalRuletaAdmin').classList.add('hidden'); };
+        function sincronizarEditorRuleta() {
+            if (!ruletaEdit) return;
+            ruletaEdit.activo = document.getElementById('ruletaActivo').checked;
+            ruletaEdit.respaldo = document.getElementById('ruletaRespaldo').value.trim();
+            ruletaEdit.premios = [...document.querySelectorAll('#ruletaPremiosEditor .ruleta-row')].map(fila => ({
+                nombre: fila.querySelector('.rul-nombre').value.trim().toUpperCase() || 'PREMIO',
+                descripcion: fila.querySelector('.rul-desc').value.trim(),
+                restantes: Math.max(0, parseInt(fila.querySelector('.rul-rest').value) || 0),
+                activo: fila.querySelector('.rul-activo').checked,
+                color: fila.querySelector('.rul-color').value
+            }));
+        }
+        function renderEditorRuleta() {
+            document.getElementById('ruletaActivo').checked = ruletaEdit.activo !== false;
+            document.getElementById('ruletaRespaldo').value = ruletaEdit.respaldo || '';
+            document.getElementById('ruletaPremiosEditor').innerHTML = ruletaEdit.premios.map((p, i) => `
+                <div class="ruleta-row bg-[#0B0C10] border border-gray-800 rounded-xl p-3 grid grid-cols-2 sm:grid-cols-[1fr_1.4fr_86px_104px_30px_30px] gap-2 items-center">
+                    <input type="text" class="rul-nombre bg-[#12161c] border border-gray-700 rounded-lg px-2.5 py-2 text-xs font-black text-white uppercase" maxlength="14" placeholder="NOMBRE EN RUEDA" value="${String(p.nombre || '').replace(/"/g, '&quot;')}">
+                    <input type="text" class="rul-desc bg-[#12161c] border border-gray-700 rounded-lg px-2.5 py-2 text-xs text-white" placeholder="Premio completo (lo que gana)" value="${String(p.descripcion || '').replace(/"/g, '&quot;')}">
+                    <input type="number" min="0" class="rul-rest bg-[#12161c] border border-gray-700 rounded-lg px-2.5 py-2 text-xs text-white" title="Cupo restante" value="${parseInt(p.restantes) || 0}">
+                    <select class="rul-color bg-[#12161c] border border-gray-700 rounded-lg px-2 py-2 text-xs text-white">${RULETA_PALETA.map(c => `<option value="${c}" ${p.color === c ? 'selected' : ''}>■ Color</option>`).join('')}</select>
+                    <label class="flex items-center justify-center" title="Activo en la rueda"><input type="checkbox" class="rul-activo w-4 h-4 accent-pink-500" ${p.activo !== false ? 'checked' : ''}></label>
+                    <button type="button" onclick="eliminarPremioRuletaEditor(${i})" class="text-red-400 hover:text-red-300 font-black" title="Quitar premio">✕</button>
+                </div>`).join('') || '<p class="text-xs text-gray-500 text-center py-2">Sin premios: agrega el primero.</p>';
+        }
+        window.agregarPremioRuletaEditor = () => { sincronizarEditorRuleta(); if (ruletaEdit.premios.length >= 8) { mostrarToast('Máximo 8 premios en la rueda', 'error'); return; } ruletaEdit.premios.push({ nombre: 'PREMIO', descripcion: '', restantes: 3, activo: true, color: RULETA_PALETA[ruletaEdit.premios.length % RULETA_PALETA.length] }); renderEditorRuleta(); };
+        window.eliminarPremioRuletaEditor = (i) => { sincronizarEditorRuleta(); ruletaEdit.premios.splice(i, 1); renderEditorRuleta(); };
+        window.guardarRuletaAdmin = async () => {
+            sincronizarEditorRuleta();
+            ruletaEdit.premios.forEach(p => { if (!p.descripcion) p.descripcion = p.nombre; });
+            ruletaConfig = JSON.parse(JSON.stringify(ruletaEdit));
+            try { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { ruleta: ruletaConfig }, { merge: true }); mostrarToast('🎡 Ruleta guardada', 'success'); }
+            catch (e) { console.error(e); mostrarToast('No se pudo guardar la ruleta', 'error'); }
+            cerrarModalRuletaAdmin();
+        };
+
+        // ----- Vista Premios por entregar (CRM) -----
+        function nombreClienteDeWP(wp) { const v = [...ventas].reverse().find(x => x.whatsapp === wp); return v ? (v.cliente || wp) : wp; }
+        function sociosConPremios() {
+            const out = [];
+            const wps = new Set([...Object.keys(codigosReferidos || {}), ...Object.keys(premiosPendientes || {}), ...Object.keys(ruletaRegistro || {})]);
+            wps.forEach(wp => {
+                const pend = parseInt(premiosPendientes[wp]) || 0;
+                const reg = ruletaRegistro[wp] || [];
+                if (pend > 0 || reg.some(r => r.estado !== 'entregado')) out.push({ wp, codigo: codigosReferidos[wp] || '—', nombre: nombreClienteDeWP(wp), pend, reg });
+            });
+            return out;
+        }
+        window.actualizarContadorPremios = () => {
+            const el = document.getElementById('contadorPremios'); if (!el) return;
+            let total = 0;
+            sociosConPremios().forEach(s => { total += Math.max(0, s.pend - s.reg.length) + s.reg.filter(r => r.estado === 'girado').length; });
+            el.textContent = total;
+        };
+        async function persistirRuletaRegistro() { if (!currentUserId) return; try { await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { ruletaRegistro }, { merge: true }); } catch (e) { console.error(e); } }
+        window.renderPremios = () => {
+            actualizarContadorPremios();
+            const cont = document.getElementById('listaPremios'); if (!cont) return;
+            const lista = sociosConPremios();
+            window._premiosVista = lista;
+            if (!lista.length) { cont.innerHTML = '<p class="text-sm text-gray-500 bg-[#12161c] border border-gray-800 rounded-xl px-4 py-6 text-center">Sin premios pendientes. Cuando un socio complete 5 estrellas, su giro aparecerá aquí. 🎡</p>'; return; }
+            const opcionesPool = (ruletaConfig.premios || []).map((p, i) => ({ p, i })).filter(x => x.p.activo !== false && (parseInt(x.p.restantes) || 0) > 0);
+            cont.innerHTML = lista.map((s, vi) => {
+                const sinGirar = Math.max(0, s.pend - s.reg.length);
+                const regs = s.reg.map((r, ri) => `
+                    <div class="flex flex-wrap items-center gap-2 bg-[#0B0C10] border ${r.estado === 'entregado' ? 'border-gray-800 opacity-60' : 'border-green-500/40'} rounded-lg px-3 py-2">
+                        <span class="text-xs font-black text-white">🎁 ${r.descripcion || r.premio}</span>
+                        <span class="text-[10px] text-gray-500">giró: ${r.fecha || '—'}</span>
+                        <span class="text-[10px] font-black uppercase ${r.estado === 'entregado' ? 'text-gray-400' : 'text-amber-400'}">${r.estado === 'entregado' ? '✔ Entregado' : 'Por entregar'}</span>
+                        ${r.estado !== 'entregado' ? `<button type="button" onclick="marcarPremioEntregado(${vi}, ${ri})" class="ml-auto text-[10px] font-black uppercase bg-green-600 hover:bg-green-500 text-white px-2.5 py-1.5 rounded-md">✔ Marcar entregado</button>` : ''}
+                    </div>`).join('');
+                return `
+                <div class="bg-[#12161c] border border-gray-800 rounded-xl p-3.5">
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
+                        <span class="text-sm font-black text-white">${s.nombre}</span>
+                        <span class="text-[11px] text-yellow-400 font-mono font-bold">${s.codigo}</span>
+                        <span class="text-[11px] text-gray-500">${s.wp}</span>
+                        <span class="text-[11px] text-gray-400 ml-auto">⭐ ${fidelidadClientes[s.wp] || 0} de 5 · Giros sin girar: <b class="text-white">${sinGirar}</b></span>
+                        <button type="button" onclick="felicitarPremioRuleta(${vi})" class="text-[10px] font-black uppercase bg-[#128C7E] hover:bg-[#1eb85a] text-white px-2.5 py-1.5 rounded-md">💬 Felicitar</button>
+                    </div>
+                    ${sinGirar > 0 ? `<div class="flex flex-wrap items-center gap-2 mb-2">
+                        <select id="selGiro_${vi}" class="flex-1 min-w-[180px] bg-[#0B0C10] border border-gray-700 rounded-lg px-2.5 py-2 text-xs text-white">
+                            ${opcionesPool.map(x => `<option value="${x.i}">${x.p.nombre} · quedan ${x.p.restantes}</option>`).join('')}
+                            <option value="respaldo">RESPALDO · ${ruletaConfig.respaldo || 'Premio sorpresa'}</option>
+                        </select>
+                        <button type="button" onclick="registrarGiroRuleta(${vi})" class="text-[10px] font-black uppercase bg-pink-600 hover:bg-pink-500 text-white px-3 py-2 rounded-md">🎡 Registrar giro</button>
+                        <span class="text-[10px] text-gray-500">Cuando el socio te mande su reclamo, registra aquí el premio que ganó.</span>
+                    </div>` : ''}
+                    <div class="space-y-1.5">${regs}</div>
+                </div>`;
+            }).join('');
+        };
+        window.registrarGiroRuleta = async (vi) => {
+            const s = (window._premiosVista || [])[vi]; if (!s) return;
+            const sel = document.getElementById('selGiro_' + vi); if (!sel) return;
+            let entrada;
+            if (sel.value === 'respaldo') { entrada = { premio: 'RESPALDO', descripcion: ruletaConfig.respaldo || 'Premio sorpresa' }; }
+            else {
+                const p = ruletaConfig.premios[parseInt(sel.value)]; if (!p) return;
+                if ((parseInt(p.restantes) || 0) <= 0) { mostrarToast('Ese premio ya no tiene cupo', 'error'); return; }
+                p.restantes = (parseInt(p.restantes) || 0) - 1;
+                entrada = { premio: p.nombre, descripcion: p.descripcion || p.nombre };
+                try { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { ruleta: ruletaConfig }, { merge: true }); } catch (e) { console.error(e); }
+            }
+            (ruletaRegistro[s.wp] = ruletaRegistro[s.wp] || []).push({ premio: entrada.premio, descripcion: entrada.descripcion, fecha: new Date().toLocaleDateString('es-MX'), estado: 'girado' });
+            await persistirRuletaRegistro();
+            try { await sincronizarHistorialesVIP(); } catch (e) {}
+            mostrarToast('🎡 Giro registrado: ' + entrada.descripcion, 'success');
+            renderPremios();
+        };
+        window.marcarPremioEntregado = async (vi, ri) => {
+            const s = (window._premiosVista || [])[vi]; if (!s) return;
+            const r = (ruletaRegistro[s.wp] || [])[ri]; if (!r) return;
+            r.estado = 'entregado'; r.fechaEntrega = new Date().toLocaleDateString('es-MX');
+            await persistirRuletaRegistro();
+            try { await sincronizarHistorialesVIP(); } catch (e) {}
+            mostrarToast('✔ Premio entregado', 'success');
+            renderPremios();
+        };
+        window.felicitarPremioRuleta = (vi) => {
+            const s = (window._premiosVista || [])[vi]; if (!s) return;
+            const url = window.location.origin + window.location.pathname;
+            const msg = `🎡🎉 ¡FELICIDADES, ${s.nombre}! Completaste tus *5 ESTRELLAS* ⭐⭐⭐⭐⭐ y ganaste *1 GIRO en la RULETA DE PREMIOS VIP* de *Streaming Latino MX* 🍿\n\nEntra a la tienda 👉 ${url}\nToca ⭐ *Mis Estrellas VIP*, escribe tu código *${s.codigo}* y gira la ruleta: ¡todos los giros ganan premio! 🎁`;
+            document.getElementById('ticketWhatsAppNum').value = String(s.wp).replace(/\D/g, '');
+            document.getElementById('textoPreviewTicket').value = msg;
+            document.getElementById('modalPreviewTicket').classList.remove('hidden');
+        };
+
     </script>
 </body>
 </html>
