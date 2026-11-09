@@ -877,11 +877,12 @@
                         <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                                 <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2"><span>🎡</span> Premios por entregar</h2>
-                                <p class="text-xs text-gray-400 mt-0.5">Socios con giros de la Ruleta VIP: registra el premio que ganaron (descuenta del cupo) y marca la entrega.</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Socios con giros de la Ruleta VIP: cuando te reclamen, registra su premio (siempre es el Premio Ganador) y marca la entrega. Abajo queda el historial de entregados.</p>
                             </div>
                             <button type="button" onclick="abrirModalRuletaAdmin()" class="pink-btn text-xs font-black px-4 py-2.5 rounded-lg uppercase tracking-wider shrink-0">⚙️ Configurar Ruleta VIP</button>
                         </div>
                         <div id="listaPremios" class="space-y-2"></div>
+                        <div id="listaPremiosEntregados" class="space-y-2 mt-6"></div>
                     </section>
 
                     <section id="vistaAdminInventario" class="hidden w-full">
@@ -1265,16 +1266,29 @@
     <div id="modalRuletaAdmin" class="fixed inset-0 modal-bg z-[99995] hidden flex items-center justify-center p-4">
         <div class="bg-[#12161c] border border-gray-700 p-6 rounded-2xl w-full max-w-2xl relative max-h-[92vh] overflow-y-auto overscroll-contain">
             <button type="button" onclick="cerrarModalRuletaAdmin()" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-gray-800/80 hover:bg-red-600 text-gray-300 hover:text-white flex items-center justify-center transition-colors z-20"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="text-lg font-black text-white uppercase tracking-wider mb-1">🎡 Ruleta VIP · Premios</h2>
-            <p class="text-xs text-gray-400 mb-4">Tú pones los premios y su cupo: la ruleta sortea solo entre los que quedan (cuando uno se agota, deja de caer). Máximo 8 segmentos.</p>
-            <label class="flex items-center gap-2.5 bg-[#0B0C10] border border-gray-800 rounded-xl px-3.5 py-3 mb-3 cursor-pointer">
+            <h2 class="text-lg font-black text-white uppercase tracking-wider mb-1">🎡 Ruleta VIP · Premio Ganador</h2>
+            <p class="text-xs text-gray-400 mb-4">Un solo <b class="text-yellow-400">Premio Ganador</b> (el que SIEMPRE cae) y los nombres que giran en la rueda como señuelo. Tú controlas el premio; el cliente vive el giro.</p>
+            <label class="flex items-center gap-2.5 bg-[#0B0C10] border border-gray-800 rounded-xl px-3.5 py-3 mb-4 cursor-pointer">
                 <input type="checkbox" id="ruletaActivo" class="w-4 h-4 accent-pink-500">
                 <span class="text-sm font-bold text-gray-200">Ruleta activa en la tienda</span>
             </label>
-            <label class="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-1">Premio de respaldo (cuando se acabe el cupo de todos)</label>
-            <input type="text" id="ruletaRespaldo" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white mb-4" placeholder="Ej. Premio sorpresa de Streaming Latino MX">
-            <div id="ruletaPremiosEditor" class="space-y-2 mb-3"></div>
-            <button type="button" onclick="agregarPremioRuletaEditor()" class="w-full border border-dashed border-gray-600 hover:border-pink-400 text-gray-300 hover:text-white text-xs font-black uppercase tracking-wider py-2.5 rounded-lg transition-colors mb-4">➕ Agregar premio</button>
+            <div class="rounded-2xl border-2 border-yellow-400/70 bg-[#1a1608] p-3.5 mb-4">
+                <p class="text-[11px] font-black uppercase tracking-widest text-yellow-400 mb-3">🎯 Premio ganador · siempre cae este</p>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Nombre en la rueda</label>
+                <input type="text" id="ganNombre" maxlength="14" oninput="actualizarPreviewGanador()" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm font-black text-white uppercase mb-3" placeholder="SPOTIFY">
+                <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Servicio</label>
+                <input type="text" id="ganServicio" oninput="actualizarPreviewGanador()" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white mb-3" placeholder="Spotify Premium">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div><label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Modalidad</label>
+                    <input type="text" id="ganModalidad" oninput="actualizarPreviewGanador()" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white" placeholder="1 cuenta"></div>
+                    <div><label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Duración</label>
+                    <input type="text" id="ganDuracion" oninput="actualizarPreviewGanador()" class="w-full bg-[#0B0C10] border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white" placeholder="1 mes"></div>
+                </div>
+                <p class="text-xs font-bold text-green-400 bg-[#0d2417] border border-green-500/40 rounded-lg px-3 py-2">Se entrega: <span id="ganPreview">—</span></p>
+            </div>
+            <p class="text-[11px] font-black uppercase tracking-widest text-cyan-300 mb-2">🎡 Nombres en la rueda (señuelo · solo giran)</p>
+            <div id="ruletaNombresEditor" class="space-y-2 mb-3"></div>
+            <button type="button" onclick="agregarNombreRuletaEditor()" class="w-full border border-dashed border-gray-600 hover:border-pink-400 text-gray-300 hover:text-white text-xs font-black uppercase tracking-wider py-2.5 rounded-lg transition-colors mb-4">➕ Agregar nombre</button>
             <button type="button" onclick="guardarRuletaAdmin()" class="w-full pink-btn font-black py-3 rounded-xl uppercase tracking-widest text-sm">💾 Guardar Ruleta</button>
         </div>
     </div>
@@ -2031,7 +2045,7 @@
                     ruletaRegistro = d.ruletaRegistro || {};
                     // Migración: quien YA tenía 5 estrellas conserva su premio como PENDIENTE y su ciclo reinicia
                     let migroPremio = false;
-                    for (const wpM of Object.keys(fidelidadClientes)) { if (fidelidadClientes[wpM] === 5 && premiosPendientes[wpM] === undefined) { premiosPendientes[wpM] = 1; fidelidadClientes[wpM] = 0; migroPremio = true; } }
+                    for (const wpM of Object.keys(fidelidadClientes)) { if (fidelidadClientes[wpM] === 5) { premiosPendientes[wpM] = (premiosPendientes[wpM] || 0) + 1; fidelidadClientes[wpM] = 0; migroPremio = true; } }
                     if (migroPremio) { try { setDoc(doc(db, 'artifacts', appIdentifier, 'users', uid, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes, premiosPendientes: premiosPendientes }, { merge: true }); } catch (e) {} }
                     sincronizarEspejoVIPPublico();
                 }
@@ -3527,8 +3541,10 @@
 
             try { 
                 await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'ventas', folio), nuevosDatos, { merge: true }); 
-                fidelidadClientes[nuevoWhatsApp] = Math.min(Math.max(nuevaFidelidad, 0), 5); 
-                await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes }, { merge: true }); 
+                // Fidelidad editada a mano: si llega a 5, nace el giro de la RULETA VIP y el ciclo reinicia (igual que en la compra #5)
+                if (Math.min(Math.max(nuevaFidelidad, 0), 5) === 5) { premiosPendientes[nuevoWhatsApp] = (premiosPendientes[nuevoWhatsApp] || 0) + 1; fidelidadClientes[nuevoWhatsApp] = 0; }
+                else { fidelidadClientes[nuevoWhatsApp] = Math.min(Math.max(nuevaFidelidad, 0), 5); }
+                await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes, premiosPendientes: premiosPendientes }, { merge: true });
                 await sincronizarEspejoVIPPublico();
                 
                 if(esReembolso) {
@@ -3802,33 +3818,36 @@
 
         // ===== RULETA VIP · configuración, rueda del cliente y control en el CRM =====
         const RULETA_PALETA = ['#1db954', '#c81e1e', '#1e5acd', '#963ccd', '#00a5d7', '#0d9673', '#466ee6', '#f07814'];
-        const RULETA_DEFAULT = { activo: true, respaldo: 'Premio sorpresa de Streaming Latino MX', premios: [
-            { nombre: 'SPOTIFY', descripcion: 'Spotify Premium · 1 mes', restantes: 5, activo: true, color: '#1db954' },
-            { nombre: 'NETFLIX', descripcion: 'Netflix · 1 perfil por 1 mes', restantes: 3, activo: true, color: '#c81e1e' },
-            { nombre: 'DISNEY+', descripcion: 'Disney+ · 1 mes', restantes: 3, activo: true, color: '#1e5acd' },
-            { nombre: 'VIX', descripcion: 'ViX Premium · 1 mes', restantes: 4, activo: true, color: '#963ccd' }
-        ] };
+        const RULETA_DEFAULT = { activo: true,
+            ganador: { nombre: 'SPOTIFY', servicio: 'Spotify Premium', modalidad: '1 cuenta', duracion: '1 mes' },
+            nombres: ['SPOTIFY', 'NETFLIX', 'DISNEY+', 'VIX', 'CANVA', 'CHATGPT', 'GEMINI', 'CRUNCHY'] };
         ruletaConfig = JSON.parse(JSON.stringify(RULETA_DEFAULT));
         let ruletaGirando = false;
         let ruletaRotacion = 0;
         let ruletaSegmentosActuales = [];
         window._ruletaCtx = null;
 
+        function textoPremioDe(g) { return [g && g.servicio, g && g.modalidad, g && g.duracion].map(x => (x || '').trim()).filter(Boolean).join(' · '); }
+        function premioTextoGanador() { const g = ruletaConfig.ganador || {}; return textoPremioDe(g) || g.nombre || 'Premio'; }
+        function segmentosNombres() { const base = (ruletaConfig.nombres || []).map(n => String(n || '').trim()).filter(Boolean); return base.length ? base.slice(0, 8) : [...RULETA_DEFAULT.nombres]; }
+        function indiceGanador() { const nombres = segmentosNombres(); const objetivo = String((ruletaConfig.ganador || {}).nombre || '').trim().toUpperCase(); const i = nombres.findIndex(n => n.toUpperCase() === objetivo); return i >= 0 ? i : 0; }
+        function segmentosRuleta() { return segmentosNombres().map((nombre, i) => ({ nombre, descripcion: premioTextoGanador(), color: RULETA_PALETA[i % RULETA_PALETA.length] })); }
+
         function aplicarRuletaConfig(data) {
-            if (data && data.ruleta && Array.isArray(data.ruleta.premios)) {
-                ruletaConfig = { activo: data.ruleta.activo !== false, respaldo: data.ruleta.respaldo || RULETA_DEFAULT.respaldo, premios: data.ruleta.premios };
+            const r = data && data.ruleta;
+            if (r) {
+                if (r.ganador && Array.isArray(r.nombres)) {
+                    ruletaConfig = { activo: r.activo !== false, ganador: { nombre: r.ganador.nombre || 'SPOTIFY', servicio: r.ganador.servicio || '', modalidad: r.ganador.modalidad || '', duracion: r.ganador.duracion || '' }, nombres: r.nombres };
+                } else if (Array.isArray(r.premios) && r.premios.length) {
+                    const p0 = r.premios[0];
+                    ruletaConfig = { activo: r.activo !== false, ganador: { nombre: p0.nombre || 'SPOTIFY', servicio: p0.descripcion || p0.nombre || '', modalidad: '', duracion: '' }, nombres: r.premios.map(p => p.nombre).filter(Boolean) };
+                }
             }
             if (codigoVIPConsultadoActual && directorioVIPPublico[codigoVIPConsultadoActual]) {
                 try { window._refrescarRuletaVIP(directorioVIPPublico[codigoVIPConsultadoActual]); } catch (e) {}
             }
         }
 
-        function poolRuleta() { return (ruletaConfig.premios || []).filter(p => p && p.activo !== false && (parseInt(p.restantes) || 0) > 0); }
-        function segmentosRuleta() {
-            const pool = poolRuleta();
-            if (pool.length) return pool.map(p => ({ nombre: p.nombre || 'PREMIO', descripcion: p.descripcion || p.nombre || 'Premio', restantes: parseInt(p.restantes) || 0, color: p.color || '#555' }));
-            return [{ nombre: 'PREMIO', descripcion: ruletaConfig.respaldo || 'Premio sorpresa', restantes: 1, color: '#b8860b', respaldo: true }];
-        }
         function localesRuleta(codigo) { try { return JSON.parse(localStorage.getItem('slmx_ruleta_' + codigo) || '[]'); } catch (e) { return []; } }
         function guardarLocalRuleta(codigo, lista) { try { localStorage.setItem('slmx_ruleta_' + codigo, JSON.stringify(lista)); } catch (e) {} }
         function mensajeReclamoRuleta(codigo, nombre, premioTxt, fecha) {
@@ -3840,7 +3859,7 @@
             if (!codigo || !datosSocio) return;
             window._ruletaCtx = { codigo, nombre: datosSocio.nombre || 'Socio' };
             const espejo = (window._ultimoEspejoHist && window._ultimoEspejoHist.codigo === codigo) ? window._ultimoEspejoHist.data : null;
-            const girosTotales = espejo && espejo.ruleta ? (parseInt(espejo.ruleta.giros) || 0) : (parseInt(datosSocio.premios) || 0);
+            const girosTotales = parseInt(datosSocio.premios) || 0; // fuente viva: el directorio VIP (premiosPendientes); el espejo historial solo aporta los giros ya registrados
             const registrados = espejo && espejo.ruleta && Array.isArray(espejo.ruleta.premios) ? espejo.ruleta.premios : [];
             let locales = localesRuleta(codigo);
             if (registrados.length >= locales.length && locales.length > 0) { locales = []; guardarLocalRuleta(codigo, locales); }
@@ -3892,9 +3911,7 @@
             const btn = document.getElementById('btnGirarRuleta'); btn.disabled = true; btn.textContent = 'Girando…';
             document.getElementById('ruletaPuntero').classList.add('punteroGirando');
             const segs = ruletaSegmentosActuales, n = segs.length, paso = 360 / n;
-            const totalPeso = segs.reduce((a, sg) => a + Math.max(1, sg.restantes || 1), 0);
-            let r = Math.random() * totalPeso, ganador = 0;
-            for (let i = 0; i < n; i++) { r -= Math.max(1, segs[i].restantes || 1); if (r <= 0) { ganador = i; break; } }
+            const ganador = indiceGanador(); // SIEMPRE cae en el Premio Ganador
             const centro = ganador * paso + paso / 2;
             const jitter = (Math.random() * 2 - 1) * Math.max(0, paso / 2 - 7);
             const base = ruletaRotacion + 360 * 5;
@@ -3926,44 +3943,52 @@
             }, 5900);
         };
 
-        // ----- Editor de premios (CRM) -----
+        // ----- Editor de la ruleta (CRM): Premio Ganador + nombres señuelo -----
         let ruletaEdit = null;
         window.abrirModalRuletaAdmin = () => { ruletaEdit = JSON.parse(JSON.stringify(ruletaConfig)); renderEditorRuleta(); document.getElementById('modalRuletaAdmin').classList.remove('hidden'); };
         window.cerrarModalRuletaAdmin = () => { document.getElementById('modalRuletaAdmin').classList.add('hidden'); };
+        function leerGanadorDelEditor() { const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; return { nombre: (v('ganNombre') || 'PREMIO').toUpperCase(), servicio: v('ganServicio'), modalidad: v('ganModalidad'), duracion: v('ganDuracion') }; }
+        window.actualizarPreviewGanador = () => { const el = document.getElementById('ganPreview'); if (el) el.textContent = textoPremioDe(leerGanadorDelEditor()) || '—'; };
         function sincronizarEditorRuleta() {
             if (!ruletaEdit) return;
-            ruletaEdit.activo = document.getElementById('ruletaActivo').checked;
-            ruletaEdit.respaldo = document.getElementById('ruletaRespaldo').value.trim();
-            ruletaEdit.premios = [...document.querySelectorAll('#ruletaPremiosEditor .ruleta-row')].map(fila => ({
-                nombre: fila.querySelector('.rul-nombre').value.trim().toUpperCase() || 'PREMIO',
-                descripcion: fila.querySelector('.rul-desc').value.trim(),
-                restantes: Math.max(0, parseInt(fila.querySelector('.rul-rest').value) || 0),
-                activo: fila.querySelector('.rul-activo').checked,
-                color: fila.querySelector('.rul-color').value
-            }));
+            const chk = document.getElementById('ruletaActivo'); ruletaEdit.activo = chk ? chk.checked : true;
+            ruletaEdit.ganador = leerGanadorDelEditor();
+            ruletaEdit.nombres = [...document.querySelectorAll('#ruletaNombresEditor .nombre-row .nom-input')].map(i => i.value.trim().toUpperCase()).filter(Boolean);
         }
         function renderEditorRuleta() {
-            document.getElementById('ruletaActivo').checked = ruletaEdit.activo !== false;
-            document.getElementById('ruletaRespaldo').value = ruletaEdit.respaldo || '';
-            document.getElementById('ruletaPremiosEditor').innerHTML = ruletaEdit.premios.map((p, i) => `
-                <div class="ruleta-row bg-[#0B0C10] border border-gray-800 rounded-xl p-3 grid grid-cols-2 sm:grid-cols-[1fr_1.4fr_86px_104px_30px_30px] gap-2 items-center">
-                    <input type="text" class="rul-nombre bg-[#12161c] border border-gray-700 rounded-lg px-2.5 py-2 text-xs font-black text-white uppercase" maxlength="14" placeholder="NOMBRE EN RUEDA" value="${String(p.nombre || '').replace(/"/g, '&quot;')}">
-                    <input type="text" class="rul-desc bg-[#12161c] border border-gray-700 rounded-lg px-2.5 py-2 text-xs text-white" placeholder="Premio completo (lo que gana)" value="${String(p.descripcion || '').replace(/"/g, '&quot;')}">
-                    <input type="number" min="0" class="rul-rest bg-[#12161c] border border-gray-700 rounded-lg px-2.5 py-2 text-xs text-white" title="Cupo restante" value="${parseInt(p.restantes) || 0}">
-                    <select class="rul-color bg-[#12161c] border border-gray-700 rounded-lg px-2 py-2 text-xs text-white">${RULETA_PALETA.map(c => `<option value="${c}" ${p.color === c ? 'selected' : ''}>■ Color</option>`).join('')}</select>
-                    <label class="flex items-center justify-center" title="Activo en la rueda"><input type="checkbox" class="rul-activo w-4 h-4 accent-pink-500" ${p.activo !== false ? 'checked' : ''}></label>
-                    <button type="button" onclick="eliminarPremioRuletaEditor(${i})" class="text-red-400 hover:text-red-300 font-black" title="Quitar premio">✕</button>
-                </div>`).join('') || '<p class="text-xs text-gray-500 text-center py-2">Sin premios: agrega el primero.</p>';
+            const chk = document.getElementById('ruletaActivo'); if (chk) chk.checked = ruletaEdit.activo !== false;
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+            set('ganNombre', ruletaEdit.ganador.nombre); set('ganServicio', ruletaEdit.ganador.servicio); set('ganModalidad', ruletaEdit.ganador.modalidad); set('ganDuracion', ruletaEdit.ganador.duracion);
+            window.actualizarPreviewGanador();
+            const cont = document.getElementById('ruletaNombresEditor'); if (!cont) return;
+            const ganadorNom = String(ruletaEdit.ganador.nombre || '').toUpperCase();
+            cont.innerHTML = ruletaEdit.nombres.map((nom, i) => `
+                <div class="nombre-row flex items-center gap-2 bg-[#0B0C10] border ${String(nom).toUpperCase() === ganadorNom ? 'border-yellow-400' : 'border-gray-800'} rounded-xl px-3 py-2">
+                    <span class="w-3.5 h-3.5 rounded-full shrink-0" style="background:${RULETA_PALETA[i % RULETA_PALETA.length]}"></span>
+                    <input type="text" class="nom-input flex-1 min-w-0 bg-transparent text-sm font-black text-white uppercase outline-none" maxlength="14" value="${String(nom).replace(/"/g, '&quot;')}">
+                    ${String(nom).toUpperCase() === ganadorNom ? '<span class="text-[10px] font-black bg-yellow-400 text-black px-2 py-1 rounded-md shrink-0">GANADOR</span>' : `<button type="button" onclick="hacerGanadorNombreRuleta(${i})" class="text-[10px] font-black uppercase text-yellow-400 border border-yellow-500/50 px-2 py-1 rounded-md shrink-0">🎯 Ganador</button>`}
+                    <button type="button" onclick="eliminarNombreRuletaEditor(${i})" class="text-red-400 hover:text-red-300 font-black px-1 shrink-0">✕</button>
+                </div>`).join('');
         }
-        window.agregarPremioRuletaEditor = () => { sincronizarEditorRuleta(); if (ruletaEdit.premios.length >= 8) { mostrarToast('Máximo 8 premios en la rueda', 'error'); return; } ruletaEdit.premios.push({ nombre: 'PREMIO', descripcion: '', restantes: 3, activo: true, color: RULETA_PALETA[ruletaEdit.premios.length % RULETA_PALETA.length] }); renderEditorRuleta(); };
-        window.eliminarPremioRuletaEditor = (i) => { sincronizarEditorRuleta(); ruletaEdit.premios.splice(i, 1); renderEditorRuleta(); };
+        window.hacerGanadorNombreRuleta = (i) => { sincronizarEditorRuleta(); const nom = ruletaEdit.nombres[i]; if (nom) { ruletaEdit.ganador.nombre = nom; const el = document.getElementById('ganNombre'); if (el) el.value = nom; } renderEditorRuleta(); };
+        window.agregarNombreRuletaEditor = () => { sincronizarEditorRuleta(); if (ruletaEdit.nombres.length >= 8) { mostrarToast('Máximo 8 nombres en la rueda', 'error'); return; } ruletaEdit.nombres.push('NUEVO'); renderEditorRuleta(); };
+        window.eliminarNombreRuletaEditor = (i) => { sincronizarEditorRuleta(); if (ruletaEdit.nombres.length <= 2) { mostrarToast('La rueda necesita al menos 2 nombres', 'error'); return; } ruletaEdit.nombres.splice(i, 1); renderEditorRuleta(); };
         window.guardarRuletaAdmin = async () => {
-            sincronizarEditorRuleta();
-            ruletaEdit.premios.forEach(p => { if (!p.descripcion) p.descripcion = p.nombre; });
-            ruletaConfig = JSON.parse(JSON.stringify(ruletaEdit));
-            try { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { ruleta: ruletaConfig }, { merge: true }); mostrarToast('🎡 Ruleta guardada', 'success'); }
-            catch (e) { console.error(e); mostrarToast('No se pudo guardar la ruleta', 'error'); }
-            cerrarModalRuletaAdmin();
+            try {
+                sincronizarEditorRuleta();
+                if (ruletaEdit.nombres.length < 2) { mostrarToast('La rueda necesita al menos 2 nombres', 'error'); return; }
+                if (!ruletaEdit.nombres.some(n => n.toUpperCase() === String(ruletaEdit.ganador.nombre).toUpperCase())) { ruletaEdit.nombres[0] = ruletaEdit.ganador.nombre; }
+                if (!textoPremioDe(ruletaEdit.ganador)) { ruletaEdit.ganador.servicio = ruletaEdit.ganador.nombre; }
+                const aGuardar = JSON.parse(JSON.stringify(ruletaEdit));
+                await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { ruleta: aGuardar }, { merge: true });
+                const verif = await getDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'));
+                const guardado = verif.exists() ? (verif.data() || {}).ruleta : null;
+                if (guardado && guardado.ganador && guardado.ganador.nombre === aGuardar.ganador.nombre) {
+                    ruletaConfig = JSON.parse(JSON.stringify(aGuardar));
+                    mostrarToast('🎡 Ruleta guardada y verificada en la nube', 'success');
+                    cerrarModalRuletaAdmin();
+                } else { mostrarToast('La nube no confirmó el guardado; inténtalo de nuevo', 'error'); }
+            } catch (e) { console.error(e); mostrarToast('No se pudo guardar la ruleta: ' + (e && e.message ? e.message : 'error'), 'error'); }
         };
 
         // ----- Vista Premios por entregar (CRM) -----
@@ -3974,7 +3999,7 @@
             wps.forEach(wp => {
                 const pend = parseInt(premiosPendientes[wp]) || 0;
                 const reg = ruletaRegistro[wp] || [];
-                if (pend > 0 || reg.some(r => r.estado !== 'entregado')) out.push({ wp, codigo: codigosReferidos[wp] || '—', nombre: nombreClienteDeWP(wp), pend, reg });
+                if (Math.max(0, pend - reg.length) > 0 || reg.some(r => r.estado === 'girado')) out.push({ wp, codigo: codigosReferidos[wp] || '—', nombre: nombreClienteDeWP(wp), pend, reg });
             });
             return out;
         }
@@ -3990,50 +4015,51 @@
             const cont = document.getElementById('listaPremios'); if (!cont) return;
             const lista = sociosConPremios();
             window._premiosVista = lista;
-            if (!lista.length) { cont.innerHTML = '<p class="text-sm text-gray-500 bg-[#12161c] border border-gray-800 rounded-xl px-4 py-6 text-center">Sin premios pendientes. Cuando un socio complete 5 estrellas, su giro aparecerá aquí. 🎡</p>'; return; }
-            const opcionesPool = (ruletaConfig.premios || []).map((p, i) => ({ p, i })).filter(x => x.p.activo !== false && (parseInt(x.p.restantes) || 0) > 0);
-            cont.innerHTML = lista.map((s, vi) => {
-                const sinGirar = Math.max(0, s.pend - s.reg.length);
-                const regs = s.reg.map((r, ri) => `
-                    <div class="flex flex-wrap items-center gap-2 bg-[#0B0C10] border ${r.estado === 'entregado' ? 'border-gray-800 opacity-60' : 'border-green-500/40'} rounded-lg px-3 py-2">
+            if (!lista.length) { cont.innerHTML = '<p class="text-sm text-gray-500 bg-[#12161c] border border-gray-800 rounded-xl px-4 py-6 text-center">Sin premios pendientes. Cuando un socio complete 5 estrellas, su giro aparecerá aquí. 🎡</p>'; }
+            else {
+                cont.innerHTML = lista.map((s, vi) => {
+                    const sinGirar = Math.max(0, s.pend - s.reg.length);
+                    const regs = s.reg.map((r, ri) => `
+                        <div class="flex flex-wrap items-center gap-2 bg-[#0B0C10] border ${r.estado === 'entregado' ? 'border-gray-800 opacity-60' : 'border-green-500/40'} rounded-lg px-3 py-2">
+                            <span class="text-xs font-black text-white">🎁 ${r.descripcion || r.premio}</span>
+                            <span class="text-[10px] text-gray-500">giró: ${r.fecha || '—'}</span>
+                            <span class="text-[10px] font-black uppercase ${r.estado === 'entregado' ? 'text-gray-400' : 'text-amber-400'}">${r.estado === 'entregado' ? '✔ Entregado' : 'Por entregar'}</span>
+                            ${r.estado !== 'entregado' ? `<button type="button" onclick="marcarPremioEntregado(${vi}, ${ri})" class="ml-auto text-[10px] font-black uppercase bg-green-600 hover:bg-green-500 text-white px-2.5 py-1.5 rounded-md">✔ Marcar entregado</button>` : ''}
+                        </div>`).join('');
+                    return `
+                    <div class="bg-[#12161c] border border-gray-800 rounded-xl p-3.5">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
+                            <span class="text-sm font-black text-white">${s.nombre}</span>
+                            <span class="text-[11px] text-yellow-400 font-mono font-bold">${s.codigo}</span>
+                            <span class="text-[11px] text-gray-500">${s.wp}</span>
+                            <span class="text-[11px] text-gray-400 ml-auto">⭐ ${fidelidadClientes[s.wp] || 0} de 5 · Giros sin girar: <b class="text-white">${sinGirar}</b></span>
+                            <button type="button" onclick="felicitarPremioRuleta(${vi})" class="text-[10px] font-black uppercase bg-[#128C7E] hover:bg-[#1eb85a] text-white px-2.5 py-1.5 rounded-md">💬 Felicitar</button>
+                        </div>
+                        ${sinGirar > 0 ? `<div class="flex flex-wrap items-center gap-2 mb-2 bg-[#0B0C10] border border-yellow-500/30 rounded-lg px-3 py-2.5">
+                            <span class="text-xs text-gray-300">Si ya giró, su premio es el <b class="text-yellow-400">Premio Ganador</b>: <b class="text-white">${premioTextoGanador()}</b></span>
+                            <button type="button" onclick="registrarGiroRuleta(${vi})" class="ml-auto text-[10px] font-black uppercase bg-pink-600 hover:bg-pink-500 text-white px-3 py-2 rounded-md">🎡 Registrar giro</button>
+                        </div>` : ''}
+                        <div class="space-y-1.5">${regs}</div>
+                    </div>`;
+                }).join('');
+            }
+            // Historial de entregados (no desaparece)
+            const contEnt = document.getElementById('listaPremiosEntregados');
+            if (contEnt) {
+                const entregados = [];
+                Object.entries(ruletaRegistro || {}).forEach(([wp, regs]) => { (regs || []).forEach(r => { if (r.estado === 'entregado') entregados.push({ wp, codigo: codigosReferidos[wp] || '—', nombre: nombreClienteDeWP(wp), ...r }); }); });
+                entregados.reverse();
+                contEnt.innerHTML = '<h3 class="text-sm font-black text-gray-300 uppercase tracking-wider pt-2">🗂️ Historial de entregados</h3>' + (entregados.length ? entregados.slice(0, 40).map(r => `
+                    <div class="flex flex-wrap items-center gap-2 bg-[#12161c] border border-gray-800 rounded-xl px-3.5 py-2.5 opacity-80">
                         <span class="text-xs font-black text-white">🎁 ${r.descripcion || r.premio}</span>
-                        <span class="text-[10px] text-gray-500">giró: ${r.fecha || '—'}</span>
-                        <span class="text-[10px] font-black uppercase ${r.estado === 'entregado' ? 'text-gray-400' : 'text-amber-400'}">${r.estado === 'entregado' ? '✔ Entregado' : 'Por entregar'}</span>
-                        ${r.estado !== 'entregado' ? `<button type="button" onclick="marcarPremioEntregado(${vi}, ${ri})" class="ml-auto text-[10px] font-black uppercase bg-green-600 hover:bg-green-500 text-white px-2.5 py-1.5 rounded-md">✔ Marcar entregado</button>` : ''}
-                    </div>`).join('');
-                return `
-                <div class="bg-[#12161c] border border-gray-800 rounded-xl p-3.5">
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
-                        <span class="text-sm font-black text-white">${s.nombre}</span>
-                        <span class="text-[11px] text-yellow-400 font-mono font-bold">${s.codigo}</span>
-                        <span class="text-[11px] text-gray-500">${s.wp}</span>
-                        <span class="text-[11px] text-gray-400 ml-auto">⭐ ${fidelidadClientes[s.wp] || 0} de 5 · Giros sin girar: <b class="text-white">${sinGirar}</b></span>
-                        <button type="button" onclick="felicitarPremioRuleta(${vi})" class="text-[10px] font-black uppercase bg-[#128C7E] hover:bg-[#1eb85a] text-white px-2.5 py-1.5 rounded-md">💬 Felicitar</button>
-                    </div>
-                    ${sinGirar > 0 ? `<div class="flex flex-wrap items-center gap-2 mb-2">
-                        <select id="selGiro_${vi}" class="flex-1 min-w-[180px] bg-[#0B0C10] border border-gray-700 rounded-lg px-2.5 py-2 text-xs text-white">
-                            ${opcionesPool.map(x => `<option value="${x.i}">${x.p.nombre} · quedan ${x.p.restantes}</option>`).join('')}
-                            <option value="respaldo">RESPALDO · ${ruletaConfig.respaldo || 'Premio sorpresa'}</option>
-                        </select>
-                        <button type="button" onclick="registrarGiroRuleta(${vi})" class="text-[10px] font-black uppercase bg-pink-600 hover:bg-pink-500 text-white px-3 py-2 rounded-md">🎡 Registrar giro</button>
-                        <span class="text-[10px] text-gray-500">Cuando el socio te mande su reclamo, registra aquí el premio que ganó.</span>
-                    </div>` : ''}
-                    <div class="space-y-1.5">${regs}</div>
-                </div>`;
-            }).join('');
+                        <span class="text-[11px] text-gray-400">${r.nombre} · <span class="text-yellow-400 font-mono">${r.codigo}</span></span>
+                        <span class="text-[10px] text-gray-500 ml-auto">giró: ${r.fecha || '—'} · entregado: ${r.fechaEntrega || '—'}</span>
+                    </div>`).join('') : '<p class="text-xs text-gray-500 bg-[#12161c] border border-gray-800 rounded-xl px-4 py-4 text-center">Todavía no entregas premios de la ruleta.</p>');
+            }
         };
         window.registrarGiroRuleta = async (vi) => {
             const s = (window._premiosVista || [])[vi]; if (!s) return;
-            const sel = document.getElementById('selGiro_' + vi); if (!sel) return;
-            let entrada;
-            if (sel.value === 'respaldo') { entrada = { premio: 'RESPALDO', descripcion: ruletaConfig.respaldo || 'Premio sorpresa' }; }
-            else {
-                const p = ruletaConfig.premios[parseInt(sel.value)]; if (!p) return;
-                if ((parseInt(p.restantes) || 0) <= 0) { mostrarToast('Ese premio ya no tiene cupo', 'error'); return; }
-                p.restantes = (parseInt(p.restantes) || 0) - 1;
-                entrada = { premio: p.nombre, descripcion: p.descripcion || p.nombre };
-                try { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', 'general'), { ruleta: ruletaConfig }, { merge: true }); } catch (e) { console.error(e); }
-            }
+            const entrada = { premio: (ruletaConfig.ganador || {}).nombre || 'PREMIO', descripcion: premioTextoGanador() };
             (ruletaRegistro[s.wp] = ruletaRegistro[s.wp] || []).push({ premio: entrada.premio, descripcion: entrada.descripcion, fecha: new Date().toLocaleDateString('es-MX'), estado: 'girado' });
             await persistirRuletaRegistro();
             try { await sincronizarHistorialesVIP(); } catch (e) {}
