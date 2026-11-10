@@ -654,6 +654,10 @@
                                     <span class="flex items-center gap-2.5"><span class="text-sm">🎡</span> Premios Ruleta</span>
                                     <span id="contadorPremios" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-[#1A222C] text-yellow-400">0</span>
                                 </button>
+                                                                <button type="button" id="btnNavAdminClientes" onclick="cambiarVistaAdmin('clientes')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white">
+                                    <span class="flex items-center gap-2.5"><span class="text-sm">👥</span> Clientes</span>
+                                    <span id="contadorClientes" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-[#1A222C] text-[#66FCF1]">0</span>
+                                </button>
                                 <button type="button" id="btnNavAdminInventario" onclick="cambiarVistaAdmin('inventario')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white">
                                     <span class="flex items-center gap-2.5"><span class="text-sm">📦</span> Mi Inventario</span>
                                     <span class="text-xs text-gray-500">›</span>
@@ -712,7 +716,7 @@
                 <main class="flex-1 p-4 md:p-6 lg:p-8 pb-24 min-w-0" style="background-image: radial-gradient(rgba(102, 252, 241, 0.05) 1px, transparent 1px); background-size: 24px 24px;">
                     
                     <!-- PANTALLA 1: TERMINAL DE VENTA Y RENOVACIÓN (Activa por defecto) -->
-                    <section id="vistaAdminVenta" class="max-w-5xl mx-auto">
+                    <section id="vistaAdminVenta" class="max-w-[1440px] mx-auto">
                         <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div>
                                 <h2 class="text-2xl font-black text-white uppercase tracking-wider neon-text-pink flex items-center gap-2">
@@ -726,9 +730,11 @@
                         </div>
 
                         <div class="bg-[#12161c] p-5 md:p-6 rounded-2xl neon-border shadow-xl border-t-4 border-t-[#F50057]">
-                            <form id="ventaForm" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <form id="ventaForm" class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
                                 
-                                <div class="flex flex-col md:col-span-2">
+                                <div class="bg-[#0B0C10]/50 border border-gray-800 rounded-2xl p-4 space-y-4">
+<p class="text-xs font-black uppercase tracking-widest text-[#66FCF1]">1 · Cliente</p>
+<div class="flex flex-col md:col-span-2">
                                     <label class="text-xs text-gray-400 mb-1 font-semibold uppercase">Nombre del Cliente</label>
                                     <input type="text" id="cliente" list="listaClientesNombres" required class="p-2.5 rounded-md text-sm font-bold" placeholder="Ej. Juan Pérez"><datalist id="listaClientesNombres"></datalist>
                                 </div>
@@ -737,17 +743,22 @@
                                     <label class="text-xs text-yellow-400 mb-1 font-bold uppercase">WhatsApp (A 10 dígitos)</label>
                                     <input type="tel" id="whatsapp" required class="p-2.5 rounded-md text-sm border-yellow-400 focus:border-yellow-400" placeholder="Ej. 9991234567">
                                 </div>
-
-                                <div class="flex flex-col">
-                                    <label class="text-xs text-gray-400 mb-1 font-semibold uppercase">Método de Pago</label>
-                                    <select id="pago" class="p-2.5 rounded-md text-sm font-bold">
-                                        <option value="Transferencia">Transferencia</option>
-                                        <option value="Efectivo">Efectivo</option>
-                                        <option value="Oxxo">Depósito Oxxo</option>
-                                    </select>
+<div id="clienteReconocidoBox" class="hidden md:col-span-2 bg-green-950/40 border border-green-500/50 rounded-md px-3 py-2 text-xs text-green-200"></div>
+<div class="bg-[#12161c] border border-gray-800 rounded-xl p-3">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">🕐 Últimas ventas de hoy</p>
+                                    <div id="ventasHoyPOS" class="space-y-1.5"></div>
+                                </div>
+<div class="flex flex-col md:col-span-2">
+                                    <label class="text-xs text-green-400 mb-1 font-bold uppercase">Cód. Referido (¿Quién lo invitó?)</label>
+                                    <input type="text" id="codigoReferidoInput" class="p-2.5 rounded-md text-sm border-green-500 focus:border-green-400 bg-[#0B0C10] font-mono text-green-300" placeholder="Ej. SL-1234A (Opcional)">
                                 </div>
 
-                                <div class="flex flex-col md:col-span-2">
+                                
+
+                                </div>
+<div class="bg-[#0B0C10]/50 border border-gray-800 rounded-2xl p-4 space-y-4">
+<p class="text-xs font-black uppercase tracking-widest text-[#66FCF1]">2 · Servicio y accesos</p>
+<div class="flex flex-col md:col-span-2">
                                     <label class="text-xs text-[#66FCF1] mb-1 font-bold uppercase">Servicio a Vender</label>
                                     <select id="servicio" required class="p-2.5 rounded-md text-sm font-bold bg-[#0B0C10] border-2 border-[#45A29E]"></select>
                                 </div>
@@ -763,7 +774,7 @@
                                 </div>
 
                                 <!-- GRUPO: ACCESOS (Para Streaming y Música) -->
-                                <div id="grupoAccesos" class="md:col-span-5 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                <div id="grupoAccesos" class="grid grid-cols-1 gap-4">
                                     <div class="flex flex-col md:col-span-2">
                                         <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Correo (Asignado al Cliente)</label>
                                         <input type="text" id="correoAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="ejemplo@correo.com">
@@ -786,30 +797,41 @@
                                 </div>
 
                                 <!-- Referidos System -->
-                                <div class="flex flex-col md:col-span-2">
-                                    <label class="text-xs text-green-400 mb-1 font-bold uppercase">Cód. Referido (¿Quién lo invitó?)</label>
-                                    <input type="text" id="codigoReferidoInput" class="p-2.5 rounded-md text-sm border-green-500 focus:border-green-400 bg-[#0B0C10] font-mono text-green-300" placeholder="Ej. SL-1234A (Opcional)">
-                                </div>
+                                
 
                                 <!-- GRUPO: ENLACE (Para IA y Gaming) -->
-                                <div id="grupoEnlace" class="hidden flex-col md:col-span-2">
+                                <div id="grupoEnlace" class="hidden flex-col">
                                     <label class="text-xs text-[#a855f7] mb-1 font-bold uppercase">Enlace de Activación (Opcional)</label>
                                     <input type="url" id="enlaceAsignado" class="p-2.5 rounded-md text-sm border-[#a855f7] focus:border-[#a855f7] bg-[#1A222C]" placeholder="https://...">
                                 </div>
+<div id="renovandoBanner" class="hidden md:col-span-2 bg-blue-950/50 border border-blue-500/60 rounded-md px-3 py-2 text-xs font-bold text-blue-200"></div>
+<div id="mapaPerfilesBox" class="hidden md:col-span-2 bg-[#1A222C] border border-[#a855f7]/50 rounded-md px-3 py-2 text-xs text-gray-200"></div>
 
                                 <div class="flex flex-col md:col-span-2">
                                     <label class="text-xs text-[#66FCF1] mb-1 font-bold uppercase">📝 Descripción / Indicaciones para el Ticket</label>
                                     <textarea id="descripcionTicket" rows="2" class="p-2.5 rounded-md text-sm bg-[#1A222C] border border-[#66FCF1]/40 resize-none" placeholder="Se rellena sola con la plantilla del producto; ajústala solo si esta venta tiene algo especial"></textarea>
                                 </div>
 
-                                <div id="renovandoBanner" class="hidden md:col-span-2 bg-blue-950/50 border border-blue-500/60 rounded-md px-3 py-2 text-xs font-bold text-blue-200"></div>
-                                <div id="clienteReconocidoBox" class="hidden md:col-span-2 bg-green-950/40 border border-green-500/50 rounded-md px-3 py-2 text-xs text-green-200"></div>
-                                <div id="mapaPerfilesBox" class="hidden md:col-span-2 bg-[#1A222C] border border-[#a855f7]/50 rounded-md px-3 py-2 text-xs text-gray-200"></div>
-                                <div id="resumenVentaVivo" class="md:col-span-2 bg-[#0B0C10] border border-gray-800 rounded-md px-3 py-2 text-xs font-mono text-gray-300">🧾 Resumen: elige un servicio para ver el resumen de la venta.</div>
+                                
+                                
+                                
+                                
 
-                                <div class="flex flex-col md:col-span-1 border-b md:border-b-0 border-gray-700 pb-2 md:pb-0"></div>
+                                
 
-                                <div class="flex flex-col"><label class="text-xs text-gray-400 mb-1 font-bold uppercase">Costo (editable)</label><input type="number" id="costo" step="0.01" class="p-2.5 rounded-md text-sm font-mono bg-[#0B0C10]"></div>
+                                </div>
+<div class="bg-[#0B0C10]/50 border border-gray-800 rounded-2xl p-4 space-y-4">
+<p class="text-xs font-black uppercase tracking-widest text-[#F50057]">3 · Cobro</p>
+<div class="flex flex-col">
+                                    <label class="text-xs text-gray-400 mb-1 font-semibold uppercase">Método de Pago</label>
+                                    <select id="pago" class="p-2.5 rounded-md text-sm font-bold">
+                                        <option value="Transferencia">Transferencia</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Oxxo">Depósito Oxxo</option>
+                                    </select>
+                                </div>
+<div id="resumenVentaVivo" class="md:col-span-2 bg-[#0B0C10] border border-gray-800 rounded-md px-3 py-2 text-xs font-mono text-gray-300">🧾 Resumen: elige un servicio para ver el resumen de la venta.</div>
+<div class="flex flex-col"><label class="text-xs text-gray-400 mb-1 font-bold uppercase">Costo (editable)</label><input type="number" id="costo" step="0.01" class="p-2.5 rounded-md text-sm font-mono bg-[#0B0C10]"></div>
 
                                 <div class="flex flex-col">
                                     <label class="text-xs text-[#F50057] mb-1 font-bold uppercase">Precio a Cobrar</label>
@@ -832,12 +854,20 @@
                                         </select>
                                     </div>
                                     <input type="date" id="fechaVencimientoManual" class="mt-2 w-full p-2 rounded-md text-xs bg-[#0B0C10] border border-gray-700 text-yellow-300">
-                                    <p class="text-[10px] text-gray-500 mt-1">Sin tope (18 meses, 45 días, 5 años) o elige la fecha exacta.</p>
+                                    <p class="text-[10px] text-gray-500 mt-1">Sin tope (18 meses, 45 días, 5 años) o elige la fecha exacta.</p><div class="flex flex-wrap gap-1.5 mt-2">
+                                        <button type="button" onclick="ponerVigenciaRapida(1, 'meses')" class="text-[10px] font-black px-2 py-1 rounded-md bg-[#1A222C] border border-yellow-500/60 text-yellow-300">1 MES</button>
+                                        <button type="button" onclick="ponerVigenciaRapida(3, 'meses')" class="text-[10px] font-black px-2 py-1 rounded-md bg-[#1A222C] border border-gray-700 text-gray-300">3 MESES</button>
+                                        <button type="button" onclick="ponerVigenciaRapida(6, 'meses')" class="text-[10px] font-black px-2 py-1 rounded-md bg-[#1A222C] border border-gray-700 text-gray-300">6 MESES</button>
+                                        <button type="button" onclick="ponerVigenciaRapida(1, 'anos')" class="text-[10px] font-black px-2 py-1 rounded-md bg-[#1A222C] border border-gray-700 text-gray-300">1 AÑO</button>
+                                    </div>
                                 </div>
 
-                                <div class="flex flex-col justify-end md:col-span-5 lg:col-span-2">
+                                
+                            <div class="flex flex-col justify-end md:col-span-5 lg:col-span-2">
                                     <button type="submit" class="pink-btn py-2.5 px-4 rounded-md font-black uppercase tracking-wider h-[42px] w-full shadow-[0_0_15px_rgba(245,0,87,0.4)]">+ Registrar Venta</button>
                                 </div>
+<label class="flex items-center gap-2 text-xs text-gray-300 font-bold cursor-pointer"><input type="checkbox" id="posEnviarTicket" checked class="accent-green-500 w-4 h-4"> Enviar ticket por WhatsApp al terminar</label>
+</div>
                             </form>
                         </div>
                     </section>
@@ -905,7 +935,54 @@
                         <div id="listaPremiosEntregados" class="space-y-2 mt-6"></div>
                     </section>
 
-                    <section id="vistaAdminInventario" class="hidden w-full">
+                                        <!-- PANTALLA: CENTRO DE CLIENTES 360° (v5) -->
+                    <section id="vistaAdminClientes" class="hidden w-full">
+                        <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-2xl font-black text-white uppercase tracking-wider neon-text-cyan flex items-center gap-2"><span>👥</span> Centro de Clientes 360°</h2>
+                                <p class="text-xs text-gray-400 mt-0.5">Tus clientes con su historial completo, sus estrellas y sus oportunidades VIP en un solo lugar.</p>
+                            </div>
+                            <input type="text" id="buscadorClientes" oninput="renderClientes()" placeholder="🔎 Buscar cliente o número…" class="p-2.5 rounded-md text-sm font-bold bg-[#0B0C10] border border-[#45A29E] w-full sm:w-72">
+                        </div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesTotal" class="text-2xl font-black text-white">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">👥 Clientes</p></div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesActivos" class="text-2xl font-black text-green-400">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">✅ Activos</p></div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesPorVencer" class="text-2xl font-black text-yellow-400">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">⏰ Por vencer (7 días)</p></div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesGiros" class="text-2xl font-black text-[#F50057]">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">🎡 Con giro pendiente</p></div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4">
+                                <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">🏆 Top clientes</p>
+                                <div id="topClientesLista" class="space-y-2"></div>
+                            </div>
+                            <div class="bg-[#12161c] border border-yellow-500/40 rounded-2xl p-4">
+                                <p class="text-xs font-black uppercase tracking-widest text-yellow-400 mb-3">⭐ Oportunidades VIP</p>
+                                <div id="oportunidadesVIPLista" class="space-y-2"></div>
+                            </div>
+                        </div>
+                        <div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead>
+                                        <tr>
+                                            <th class="p-3">Cliente</th>
+                                            <th class="p-3">WhatsApp</th>
+                                            <th class="p-3 text-center">Compras</th>
+                                            <th class="p-3">Total gastado</th>
+                                            <th class="p-3 text-center">Estrellas</th>
+                                            <th class="p-3">Último servicio</th>
+                                            <th class="p-3 text-center">Estado</th>
+                                            <th class="p-3 text-center min-w-[120px]">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaClientesCuerpo" class="divide-y divide-[#1F2833]"></tbody>
+                                </table>
+                            </div>
+                            <div id="clientesEmpty" class="p-8 text-center text-gray-500 hidden">Aún no hay clientes. Se crean solos con cada venta registrada. 🎉</div>
+                        </div>
+                    </section>
+
+<section id="vistaAdminInventario" class="hidden w-full">
                         <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                                 <h2 class="text-2xl font-black text-white uppercase tracking-wider neon-text-cyan flex items-center gap-2">
@@ -926,7 +1003,27 @@
                             </div>
                         </div>
 
-                        <div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
+                                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                            <div class="lg:col-span-2 bg-[#12161c] border border-[#1F2833] rounded-2xl p-4">
+                                <p class="text-[10px] font-black uppercase tracking-[.2em] text-gray-500 mb-3">💰 Ganancia potencial por categoría</p>
+                                <div id="invBarrasCategorias" class="space-y-2.5"></div>
+                            </div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4">
+                                <p class="text-[10px] font-black uppercase tracking-[.2em] text-gray-500 mb-2">📊 Salud financiera</p>
+                                <div id="invSaludFinanciera" class="text-[13px] text-gray-300 space-y-1"></div>
+                                <div class="flex flex-wrap gap-1.5 mt-3">
+                                    <button type="button" onclick="filtrarInventarioAlertas('sincosto')" class="text-[10px] font-black px-2 py-1.5 rounded-md bg-[#1A222C] border border-yellow-500/60 text-yellow-300">⚠️ Sin costo</button>
+                                    <button type="button" onclick="filtrarInventarioAlertas('bajomargen')" class="text-[10px] font-black px-2 py-1.5 rounded-md bg-[#1A222C] border border-orange-500/60 text-orange-300">📉 Margen bajo</button>
+                                    <button type="button" onclick="filtrarInventarioAlertas('todos')" class="text-[10px] font-black px-2 py-1.5 rounded-md bg-[#1A222C] border border-gray-600 text-gray-300">Ver todo</button>
+                                </div>
+                                <p id="invFiltroActivo" class="text-[10px] text-[#66FCF1] font-bold mt-2"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <input type="text" id="buscadorInventario" oninput="buscarEnInventario(this.value)" placeholder="🔎 Buscar producto, modalidad o proveedor…" class="p-2.5 rounded-md text-sm font-bold bg-[#0B0C10] border border-[#45A29E] w-full sm:w-96">
+                        </div>
+
+<div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-sm text-left">
                                     <thead>
@@ -940,6 +1037,7 @@
                                             <th class="p-3">Costo ($)</th>
                                             <th class="p-3">Precio ($)</th>
                                             <th class="p-3 text-[#66FCF1]">Margen ($)</th>
+                                            <th class="p-3">Rendimiento</th>
                                             <th class="p-3 text-center">Acciones</th>
                                         </tr>
                                     </thead>
@@ -955,6 +1053,22 @@
     </div>
 
     <datalist id="listaProveedores"></datalist>
+
+    <!-- Modal Ficha de Cliente 360° (v5) -->
+    <div id="modalFichaCliente" class="fixed inset-0 modal-bg z-[70] hidden flex items-center justify-center p-4">
+        <div class="bg-[#12161c] rounded-lg neon-border p-6 w-full max-w-lg shadow-2xl relative max-h-[92vh] overflow-y-auto overscroll-contain">
+            <button type="button" onclick="cerrarFichaCliente()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+            <input type="hidden" id="fichaClienteWp">
+            <div id="fichaClienteContenido"></div>
+            <div id="fichaConfirmEliminar" class="hidden mt-4 p-3 border border-red-500 rounded-lg bg-red-500/10">
+                <p class="text-xs text-red-300 font-bold">¿Eliminar la ficha VIP de este cliente? Se borra su código VIP, sus estrellas y su historial público. <span class="text-white">Sus ventas se quedan guardadas</span> para tu contabilidad.</p>
+                <div class="flex gap-2 mt-3">
+                    <button type="button" onclick="document.getElementById('fichaConfirmEliminar').classList.add('hidden')" class="flex-1 bg-transparent border border-gray-600 text-gray-400 py-2 rounded-md font-bold text-xs">Cancelar</button>
+                    <button type="button" onclick="eliminarClienteConfirmado()" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded-md font-black uppercase text-xs">Sí, eliminar ficha</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Premio Fidelidad -->
     <div id="modalPremio" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
@@ -1423,6 +1537,8 @@
         let premiosPendientes = {};
         let ruletaRegistro = {};
         let estrellasExtra = {};
+        let clientesBloqueados = {};
+        let clientesEliminados = {};
         let ruletaConfig = null;
         let directorioVIPPublico = {};
         let codigoVIPConsultadoActual = '';
@@ -1777,18 +1893,21 @@
             const vInv = document.getElementById('vistaAdminInventario');
             const vPorV = document.getElementById('vistaAdminPorVencer');
             const vPrem = document.getElementById('vistaAdminPremios');
+            const vCli = document.getElementById('vistaAdminClientes');
 
             const bVenta = document.getElementById('btnNavAdminVenta');
             const bHist = document.getElementById('btnNavAdminHistorial');
             const bInv = document.getElementById('btnNavAdminInventario');
             const bPorV = document.getElementById('btnNavAdminPorVencer');
             const bPrem = document.getElementById('btnNavAdminPremios');
+            const bCli = document.getElementById('btnNavAdminClientes');
 
             if (vVenta) vVenta.classList.add('hidden');
             if (vHist) vHist.classList.add('hidden');
             if (vInv) vInv.classList.add('hidden');
             if (vPorV) vPorV.classList.add('hidden');
             if (vPrem) vPrem.classList.add('hidden');
+            if (vCli) vCli.classList.add('hidden');
 
             const claseInactiva = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white";
             if (bVenta) bVenta.className = claseInactiva;
@@ -1796,6 +1915,7 @@
             if (bInv) bInv.className = claseInactiva;
             if (bPorV) bPorV.className = claseInactiva;
             if (bPrem) bPrem.className = claseInactiva;
+            if (bCli) bCli.className = claseInactiva;
 
             if (vista === 'historial') {
                 if (vHist) vHist.classList.remove('hidden');
@@ -1808,6 +1928,10 @@
                 if (vPrem) vPrem.classList.remove('hidden');
                 if (bPrem) bPrem.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-yellow-500/60 text-white shadow-lg";
                 try { renderPremios(); } catch (e) {}
+            } else if (vista === 'clientes') {
+                if (vCli) vCli.classList.remove('hidden');
+                if (bCli) bCli.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]";
+                try { renderClientes(); } catch (e) {}
             } else if (vista === 'inventario') {
                 if (vInv) vInv.classList.remove('hidden');
                 if (bInv) bInv.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]";
@@ -2026,6 +2150,7 @@
                 ]);
 
                 todosLosWhatsApps.forEach(wp => {
+                    if (wp && clientesEliminados[wp] !== undefined) return;
                     if (wp && !codigosReferidos[wp]) {
                         codigosReferidos[wp] = generarCodigoUnico();
                         huboNuevoCodigo = true;
@@ -2047,7 +2172,8 @@
                         nombre: nombreCompleto,
                         puntos: puntos,
                         premios: premiosPendientes[wp] || 0,
-                        extra: estrellasExtra[wp] || 0
+                        extra: estrellasExtra[wp] || 0,
+                        bloqueado: clientesBloqueados[wp] === true
                     };
                 }
 
@@ -2081,6 +2207,8 @@
                     premiosPendientes = d.premiosPendientes || {};
                     ruletaRegistro = d.ruletaRegistro || {};
                     estrellasExtra = d.estrellasExtra || {};
+                    clientesBloqueados = d.clientesBloqueados || {};
+                    clientesEliminados = d.clientesEliminados || {};
                     // Migración (modelo nuevo, puntos 8-10): quien quedó con 5 estrellas y SIN giro creado
                     // conserva sus 5 estrellas BRILLANDO y se le crea su giro pendiente; ya nadie se reinicia solo.
                     let migroPremio = false;
@@ -2226,6 +2354,17 @@
             errBox.classList.add('hidden');
             resBox.classList.remove('hidden');
             codigoVIPConsultadoActual = raw;
+
+            if (datosSocio.bloqueado) {
+                document.getElementById('vipNombreCliente').textContent = `👋 ¡Hola, ${datosSocio.nombre}!`;
+                document.getElementById('vipEstrellasContenedor').innerHTML = '<span class="text-sm text-gray-400 font-bold">⏸️ Código pausado</span>';
+                document.getElementById('vipTextoProgreso').innerHTML = 'Tu código VIP está <b>pausado temporalmente</b>. Escríbenos por WhatsApp y lo revisamos contigo. 🙌';
+                const btnBlq = document.getElementById('btnReclamarPremioVIP'); if (btnBlq) btnBlq.classList.add('hidden');
+                const btnRul = document.getElementById('btnRuletaVIP'); if (btnRul) { btnRul.classList.add('hidden'); btnRul.classList.remove('flex'); }
+                const boxRul = document.getElementById('vipRuletaBox'); if (boxRul) boxRul.classList.add('hidden');
+                const boxHistBlq = document.getElementById('vipHistorialBox'); if (boxHistBlq) boxHistBlq.classList.add('hidden');
+                return;
+            }
 
             const puntos = Math.min(Math.max(parseInt(datosSocio.puntos) || 0, 0), 5);
             const faltan = 5 - puntos;
@@ -3176,7 +3315,10 @@
             const serv = servicioSelect ? servicioSelect.value : ''; const mod = modalidadSelect ? modalidadSelect.value : '';
             const precio = parseFloat(precioInput.value) || 0; const costo = parseFloat(document.getElementById('costo').value) || 0;
             if (!serv) { el.textContent = '🧾 Resumen: elige un servicio para ver el resumen de la venta.'; return; }
-            el.innerHTML = `🧾 <b>${serv}</b>${mod ? ` · ${mod}` : ''} · Precio <b>$${precio.toFixed(2)}</b> · Costo $${costo.toFixed(2)} · Ganancia <b class="${precio - costo < 0 ? 'text-red-400' : 'text-green-400'}">$${(precio - costo).toFixed(2)}</b>${precio - costo < 0 ? ' ⚠️ ¡BAJO EL COSTO!' : ''}`;
+            const _gan = precio - costo; const _pct = precio > 0 ? Math.round(_gan / precio * 100) : 0;
+            let _vipTxt = '';
+            try { const _colaR = (document.getElementById('whatsapp').value || '').replace(/\D/g, '').slice(-10); let _pts = null; if (_colaR.length === 10) { for (const _kR of Object.keys(fidelidadClientes)) { if (String(_kR).replace(/\D/g, '').slice(-10) === _colaR) { _pts = obtenerPuntosFidelidad(_kR); break; } } if (_pts === null) { const _vR = ventas.find(v => v && String(v.whatsapp || '').replace(/\D/g, '').slice(-10) === _colaR); if (_vR) _pts = obtenerPuntosFidelidad(_vR.whatsapp); } } if (_pts !== null && _pts !== undefined) { if (_pts >= 5) { _vipTxt = ' · ⭐ Ya tiene sus 5★: esta compra suma +1 extra para su siguiente vuelta'; } else if (_pts + 1 === 5) { _vipTxt = ' · ⭐🎡 ¡ESTA VENTA COMPLETA SUS 5 ESTRELLAS Y GANA GIRO!'; } else { _vipTxt = ` · ⭐ Pasará a ${'★'.repeat(_pts + 1)}${'☆'.repeat(4 - _pts)} (${_pts + 1} de 5)`; } } } catch (e) {}
+            el.innerHTML = `🧾 <b>${serv}</b>${mod ? ` · ${mod}` : ''} · Precio <b>$${precio.toFixed(2)}</b> · Costo $${costo.toFixed(2)} · Ganancia <b class="${precio - costo < 0 ? 'text-red-400' : 'text-green-400'}">$${(precio - costo).toFixed(2)} (${_pct}%)</b>${precio - costo < 0 ? ' ⚠️ ¡BAJO EL COSTO!' : ''}${_vipTxt}`;
         };
 
         function sugerirDuracionDesdeTextoPOS() {
@@ -3302,10 +3444,194 @@
                 // NUEVA IMPLEMENTACIÓN · 4.7: limpiar renovación/borrador y ofrecer el ticket en 1 clic
                 window._renovandoDesde = null; try { localStorage.removeItem('slmx_pos_borrador'); } catch (e) {}
                 const bRenFin = document.getElementById('renovandoBanner'); if (bRenFin) bRenFin.classList.add('hidden');
-                if (!premioActivado) { try { enviarTicket(folioNuevo); } catch (e) {} }
+                if (!premioActivado && (!document.getElementById('posEnviarTicket') || document.getElementById('posEnviarTicket').checked)) { try { enviarTicket(folioNuevo); } catch (e) {} }
             } catch (err) { mostrarToast("❌ Error al guardar en la nube", "error"); console.error(err);}
         };
         window.cerrarModalPremio = () => { document.getElementById('modalPremio').classList.add('hidden'); };
+
+
+        // ===== ACTUALIZACIÓN CRM v5 · Centro de Clientes 360°, Cabina Pro e Inventario Premium =====
+        async function guardarMetadataClientes() {
+            if (!currentUserId) return;
+            await setDoc(doc(db, 'artifacts', appIdentifier, 'users', currentUserId, 'metadata', 'global'), { fidelidadClientes: fidelidadClientes, codigosReferidos: codigosReferidos, premiosPendientes: premiosPendientes, estrellasExtra: estrellasExtra, ruletaRegistro: ruletaRegistro, clientesBloqueados: clientesBloqueados, clientesEliminados: clientesEliminados }, { merge: true });
+        }
+
+        function datosClientesCRM() {
+            const mapa = {};
+            const asegurar = (wp) => { if (!mapa[wp]) mapa[wp] = { wp: wp, nombre: '', compras: 0, total: 0, ventasList: [], ultima: null }; return mapa[wp]; };
+            ventas.filter(v => v && v.whatsapp).forEach(v => { const c = asegurar(v.whatsapp); c.ventasList.push(v); if (v.reembolsado !== true) { c.compras++; c.total += parseFloat(v.precio) || 0; } });
+            Object.keys(codigosReferidos).forEach(wp => asegurar(wp));
+            Object.keys(fidelidadClientes).forEach(wp => asegurar(wp));
+            const ahora = Date.now();
+            Object.values(mapa).forEach(c => {
+                c.ventasList.sort((a, b) => (fechaVentaADate(b.fecha) || 0) - (fechaVentaADate(a.fecha) || 0));
+                c.ultima = c.ventasList.find(v => v.reembolsado !== true) || c.ventasList[0] || null;
+                c.nombre = (c.ultima && c.ultima.cliente) || 'Socio VIP';
+                c.estrellas = obtenerPuntosFidelidad(c.wp);
+                c.giros = premiosPendientes[c.wp] || 0;
+                c.codigo = codigosReferidos[c.wp] || '';
+                c.bloqueado = clientesBloqueados[c.wp] === true;
+                const vig = c.ventasList.filter(v => v.reembolsado !== true && v.vencimientoTimestamp).sort((a, b) => b.vencimientoTimestamp - a.vencimientoTimestamp)[0];
+                c.venceTs = vig ? vig.vencimientoTimestamp : null;
+                c.estado = !c.venceTs ? 'Sin vigencia' : (c.venceTs > ahora + 7 * 864e5 ? 'Activo' : (c.venceTs >= ahora ? 'Por vencer' : 'Vencido'));
+            });
+            return Object.values(mapa).filter(c => {
+                const elim = clientesEliminados[c.wp];
+                if (elim !== undefined) { const maxFolio = Math.max(0, ...c.ventasList.map(v => parseInt(String(v.folio || '0').replace('V-', '')) || 0)); if (maxFolio <= elim) return false; }
+                return c.compras > 0 || c.codigo;
+            });
+        }
+
+        function estrellasHTMLCliente(n) { return '★'.repeat(Math.min(Math.max(n || 0, 0), 5)) + '☆'.repeat(5 - Math.min(Math.max(n || 0, 0), 5)); }
+
+        window.renderClientes = () => {
+            const tbody = document.getElementById('tablaClientesCuerpo'); if (!tbody) return;
+            const lista = datosClientesCRM();
+            const setKpi = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            setKpi('kpiClientesTotal', lista.length);
+            setKpi('kpiClientesActivos', lista.filter(c => c.estado === 'Activo').length);
+            setKpi('kpiClientesPorVencer', lista.filter(c => c.estado === 'Por vencer').length);
+            setKpi('kpiClientesGiros', lista.filter(c => c.giros > 0).length);
+            setKpi('contadorClientes', lista.length);
+            const top = [...lista].sort((a, b) => b.total - a.total).slice(0, 5);
+            const topEl = document.getElementById('topClientesLista');
+            if (topEl) topEl.innerHTML = top.length ? top.map((c, i) => `<button type="button" onclick="abrirFichaCliente('${c.wp}')" class="w-full flex items-center gap-2.5 bg-[#0B0C10] border border-gray-800 rounded-xl px-3 py-2 text-left hover:border-[#66FCF1]/60"><span class="text-base">${['🥇','🥈','🥉','4️⃣','5️⃣'][i] || '·'}</span><span class="flex-1 min-w-0"><span class="block text-[13px] font-bold text-white truncate">${escaparTextoActividad(c.nombre)}</span><span class="block text-[10px] text-gray-500">${c.compras} compra(s) · <span class="text-yellow-400">${estrellasHTMLCliente(c.estrellas)}</span></span></span><span class="text-[13px] font-mono font-black text-[#66FCF1]">$${c.total.toFixed(2)}</span></button>`).join('') : '<p class="text-xs text-gray-500">Todavía no hay clientes con compras.</p>';
+            const opor = lista.filter(c => c.giros > 0 || (c.estrellas === 4 && c.giros === 0));
+            const opoEl = document.getElementById('oportunidadesVIPLista');
+            if (opoEl) opoEl.innerHTML = opor.length ? opor.map(c => `<button type="button" onclick="abrirFichaCliente('${c.wp}')" class="w-full flex items-center gap-2.5 bg-[#0B0C10] border border-yellow-500/30 rounded-xl px-3 py-2 text-left hover:border-yellow-400"><span class="text-base">${c.giros > 0 ? '🎡' : '⭐'}</span><span class="flex-1 min-w-0"><span class="block text-[13px] font-bold text-white truncate">${escaparTextoActividad(c.nombre)}</span><span class="block text-[10px] text-yellow-300">${c.giros > 0 ? `Tiene ${c.giros} giro(s) sin reclamar` : 'Le falta 1 estrella para su giro'}</span></span><span class="text-[10px] font-black text-yellow-400">VER →</span></button>`).join('') : '<p class="text-xs text-gray-500">Nadie está a 1 estrella ni tiene giros pendientes. 🎉</p>';
+            const q = (document.getElementById('buscadorClientes')?.value || '').trim().toLowerCase();
+            const filas = lista.filter(c => !q || c.nombre.toLowerCase().includes(q) || String(c.wp).includes(q)).sort((a, b) => (fechaVentaADate(b.ultima?.fecha) || 0) - (fechaVentaADate(a.ultima?.fecha) || 0));
+            const pill = { 'Activo': 'bg-green-900/40 text-green-300 border-green-600/60', 'Por vencer': 'bg-yellow-900/40 text-yellow-300 border-yellow-600/60', 'Vencido': 'bg-red-900/40 text-red-300 border-red-600/60', 'Sin vigencia': 'bg-gray-800 text-gray-400 border-gray-600' };
+            tbody.innerHTML = filas.map(c => `<tr class="hover:bg-[#1A222C]">
+                <td class="p-3"><p class="font-bold text-white leading-tight">${escaparTextoActividad(c.nombre)}${c.bloqueado ? ' <span class="text-[10px] text-red-400 font-black">⏸️ BLOQUEADO</span>' : ''}</p><p class="text-[10px] text-gray-500 font-mono">${c.codigo || 'Sin código VIP'}</p></td>
+                <td class="p-3 font-mono text-xs text-gray-300">${c.wp}</td>
+                <td class="p-3 text-center font-black text-white">${c.compras}</td>
+                <td class="p-3 font-mono font-bold text-[#66FCF1]">$${c.total.toFixed(2)}</td>
+                <td class="p-3 text-center whitespace-nowrap"><span class="text-yellow-400 tracking-wider">${estrellasHTMLCliente(c.estrellas)}</span>${c.giros > 0 ? `<span class="block text-[10px] font-black text-[#F50057]">🎡 ${c.giros} giro(s)</span>` : ''}</td>
+                <td class="p-3 text-xs text-gray-300">${c.ultima ? `${escaparTextoActividad(c.ultima.servicio || '')}<br><span class="text-gray-500">${c.ultima.fecha || ''}</span>` : '—'}</td>
+                <td class="p-3 text-center"><span class="text-[10px] px-2 py-0.5 rounded border font-bold ${pill[c.estado] || pill['Sin vigencia']}">${c.estado}</span></td>
+                <td class="p-3"><div class="flex justify-center gap-1.5">
+                    <button type="button" onclick="abrirFichaCliente('${c.wp}')" class="bg-[#1F2833] border border-[#66FCF1] hover:bg-[#66FCF1] hover:text-[#0B0C10] text-[#66FCF1] px-2 py-1.5 rounded shadow text-xs" title="Ver ficha 360°">👁️</button>
+                    <button type="button" onclick="abrirFichaCliente('${c.wp}')" class="bg-[#1F2833] border border-[#a855f7] hover:bg-[#a855f7] hover:text-white text-[#a855f7] px-2 py-1.5 rounded shadow text-xs" title="Editar (desde su ficha)">✏️</button>
+                    <a href="https://wa.me/52${String(c.wp).replace(/\D/g, '').slice(-10)}" target="_blank" rel="noopener" class="bg-green-600 hover:bg-green-500 text-white px-2 py-1.5 rounded shadow text-xs" title="Abrir WhatsApp">💬</a>
+                    <button type="button" onclick="eliminarClienteDesdeTabla('${c.wp}')" class="bg-[#1F2833] border border-red-500 hover:bg-red-600 hover:text-white text-red-400 px-2 py-1.5 rounded shadow text-xs" title="Eliminar ficha VIP">🗑️</button>
+                </div></td></tr>`).join('');
+            const vacio = document.getElementById('clientesEmpty');
+            if (vacio) vacio.classList.toggle('hidden', lista.length > 0);
+        };
+
+        window.abrirFichaCliente = (wp) => {
+            const lista = datosClientesCRM();
+            const c = lista.find(x => x.wp === wp); if (!c) return;
+            document.getElementById('fichaClienteWp').value = wp;
+            document.getElementById('fichaConfirmEliminar').classList.add('hidden');
+            const hist = c.ventasList.map(v => `<div class="flex items-center gap-2 bg-[#0B0C10] border border-gray-800 rounded-lg px-3 py-2">
+                <div class="flex-1 min-w-0"><p class="text-xs font-bold text-white truncate">${escaparTextoActividad(v.servicio || '')} <span class="text-gray-400 font-semibold">· ${escaparTextoActividad(v.modalidad || '')}</span>${v.reembolsado === true ? ' <span class="text-red-400 font-black">REEMBOLSADA</span>' : ''}</p>
+                <p class="text-[10px] text-gray-500 font-mono">${v.folio || ''} · ${v.fecha || ''}${v.fechaVencimiento ? ` · vence ${v.fechaVencimiento}` : ''}</p></div>
+                <span class="text-xs font-mono font-black text-[#66FCF1]">$${(parseFloat(v.precio) || 0).toFixed(2)}</span>
+                <button type="button" onclick="cerrarFichaCliente(); abrirModalEditarVenta('${v.folio}')" class="bg-[#1F2833] border border-[#66FCF1] text-[#66FCF1] px-2 py-1 rounded text-[11px]" title="Editar esta venta">✏️</button>
+            </div>`).join('');
+            document.getElementById('fichaClienteContenido').innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-[#66FCF1] text-[#0B0C10] font-black text-lg flex items-center justify-center shrink-0">${escaparTextoActividad((c.nombre || 'S').trim().charAt(0).toUpperCase() || 'S')}</div>
+                    <div class="min-w-0">
+                        <h3 class="text-lg font-black text-white leading-tight truncate">${escaparTextoActividad(c.nombre)}${c.bloqueado ? ' <span class="text-[10px] text-red-400 font-black align-middle">⏸️ CÓDIGO BLOQUEADO</span>' : ''}</h3>
+                        <p class="text-xs text-gray-400 font-mono">📱 ${c.wp} · Código VIP: <b class="text-green-300">${c.codigo || 'Sin asignar'}</b></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 mb-4">
+                    <div class="bg-[#0B0C10] border border-gray-800 rounded-xl p-2.5 text-center"><p class="text-base font-black text-white">${c.compras}</p><p class="text-[9px] text-gray-500 uppercase font-bold">Compras</p></div>
+                    <div class="bg-[#0B0C10] border border-gray-800 rounded-xl p-2.5 text-center"><p class="text-base font-black text-[#66FCF1]">$${c.total.toFixed(0)}</p><p class="text-[9px] text-gray-500 uppercase font-bold">Gastado</p></div>
+                    <div class="bg-[#0B0C10] border border-gray-800 rounded-xl p-2.5 text-center"><p class="text-base text-yellow-400 tracking-tight">${estrellasHTMLCliente(c.estrellas)}</p><p class="text-[9px] text-gray-500 uppercase font-bold">Estrellas</p></div>
+                    <div class="bg-[#0B0C10] border border-gray-800 rounded-xl p-2.5 text-center"><p class="text-base font-black text-[#F50057]">${c.giros}</p><p class="text-[9px] text-gray-500 uppercase font-bold">Giros 🎡</p></div>
+                </div>
+                <p class="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-2">🧾 Su historial de compras</p>
+                <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1">${hist || '<p class="text-xs text-gray-500">Sin compras registradas.</p>'}</div>
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <a href="https://wa.me/52${String(c.wp).replace(/\D/g, '').slice(-10)}" target="_blank" rel="noopener" class="bg-green-600 hover:bg-green-500 text-white py-2.5 rounded-md font-black uppercase text-xs text-center">💬 WhatsApp</a>
+                    <button type="button" onclick="cerrarFichaCliente(); cambiarVistaAdmin('venta'); setTimeout(() => { const w = document.getElementById('whatsapp'); if (w) { w.value = '${c.wp}'; w.dispatchEvent(new Event('input')); } }, 60);" class="bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-md font-black uppercase text-xs">🛒 Venderle / Renovar</button>
+                    <button type="button" onclick="regalarEstrellaCliente()" class="bg-[#1A222C] border border-yellow-400 text-yellow-300 py-2.5 rounded-md font-black uppercase text-xs">⭐ Regalar estrella</button>
+                    <button type="button" onclick="darGiroCliente()" class="bg-[#1A222C] border border-[#F50057] text-[#F50057] py-2.5 rounded-md font-black uppercase text-xs">🎡 Dar giro</button>
+                    <button type="button" onclick="toggleBloqueoCliente()" class="bg-[#1A222C] border border-gray-500 text-gray-200 py-2.5 rounded-md font-black uppercase text-xs">${c.bloqueado ? '▶️ Desbloquear código' : '⏸️ Bloquear código'}</button>
+                    <button type="button" onclick="document.getElementById('fichaConfirmEliminar').classList.remove('hidden')" class="bg-[#1A222C] border border-red-500 text-red-400 py-2.5 rounded-md font-black uppercase text-xs">🗑️ Eliminar cliente</button>
+                </div>`;
+            document.getElementById('modalFichaCliente').classList.remove('hidden');
+        };
+        window.cerrarFichaCliente = () => { document.getElementById('modalFichaCliente').classList.add('hidden'); };
+        window.eliminarClienteDesdeTabla = (wp) => { abrirFichaCliente(wp); const cf = document.getElementById('fichaConfirmEliminar'); if (cf) cf.classList.remove('hidden'); };
+
+        window.regalarEstrellaCliente = async () => {
+            const wp = document.getElementById('fichaClienteWp').value; if (!wp) return;
+            const r = sumarEstrellaFidelidad(wp);
+            await guardarMetadataClientes();
+            await sincronizarEspejoVIPPublico();
+            mostrarToast(r.completoAhora ? '⭐🎡 ¡Completó sus 5 estrellas y ganó un giro!' : `⭐ Estrella regalada: ahora tiene ${r.pts} de 5`, 'success');
+            abrirFichaCliente(wp); renderClientes();
+        };
+        window.darGiroCliente = async () => {
+            const wp = document.getElementById('fichaClienteWp').value; if (!wp) return;
+            premiosPendientes[wp] = (premiosPendientes[wp] || 0) + 1;
+            if ((fidelidadClientes[wp] ?? obtenerPuntosFidelidad(wp)) < 5) fidelidadClientes[wp] = 5;
+            await guardarMetadataClientes();
+            await sincronizarEspejoVIPPublico();
+            mostrarToast('🎡 Giro agregado: ya puede girar la Ruleta VIP', 'success');
+            abrirFichaCliente(wp); renderClientes();
+        };
+        window.toggleBloqueoCliente = async () => {
+            const wp = document.getElementById('fichaClienteWp').value; if (!wp) return;
+            clientesBloqueados[wp] = !(clientesBloqueados[wp] === true);
+            await guardarMetadataClientes();
+            await sincronizarEspejoVIPPublico();
+            mostrarToast(clientesBloqueados[wp] ? '⏸️ Código VIP bloqueado: ya no puede consultar ni girar' : '▶️ Código VIP desbloqueado', 'success');
+            abrirFichaCliente(wp); renderClientes();
+        };
+        window.eliminarClienteConfirmado = async () => {
+            const wp = document.getElementById('fichaClienteWp').value; if (!wp) return;
+            const codigo = codigosReferidos[wp];
+            clientesEliminados[wp] = Math.max(0, ...ventas.filter(v => v && v.whatsapp === wp).map(v => parseInt(String(v.folio || '0').replace('V-', '')) || 0));
+            delete fidelidadClientes[wp]; delete premiosPendientes[wp]; delete estrellasExtra[wp]; delete ruletaRegistro[wp]; delete clientesBloqueados[wp]; delete codigosReferidos[wp];
+            await guardarMetadataClientes();
+            await sincronizarEspejoVIPPublico();
+            if (codigo) { try { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', `historial_${codigo}`), { compras: [], ruleta: { giros: 0, premios: [] }, actualizado: new Date().toISOString() }); } catch (e) {} }
+            mostrarToast('🗑️ Ficha VIP eliminada (sus ventas se conservaron)', 'success');
+            cerrarFichaCliente(); renderClientes();
+        };
+
+        // Cabina Pro: últimas ventas de hoy + vigencia rápida
+        window.renderVentasHoyPOS = () => {
+            const box = document.getElementById('ventasHoyPOS'); if (!box) return;
+            const hoy = new Date(); const fHoy = `${hoy.getDate().toString().padStart(2, '0')}/${(hoy.getMonth() + 1).toString().padStart(2, '0')}/${hoy.getFullYear()}`;
+            const deHoy = ventas.filter(v => v && v.fecha === fHoy).slice(0, 5);
+            box.innerHTML = deHoy.length ? deHoy.map(v => `<p class="flex justify-between gap-2 bg-[#0B0C10] border border-gray-800 rounded-lg px-2.5 py-1.5"><span class="text-gray-300 truncate">${escaparTextoActividad(v.cliente || '')} · ${escaparTextoActividad(v.servicio || '')}</span><b class="text-white shrink-0">$${(parseFloat(v.precio) || 0).toFixed(0)}</b></p>`).join('') : '<p class="text-[11px] text-gray-600">Aún no hay ventas hoy. ¡A vender! 🚀</p>';
+        };
+        window.ponerVigenciaRapida = (cantidad, unidad) => {
+            const cEl = document.getElementById('tiempoCantidad'); const uEl = document.getElementById('tiempoUnidad'); const fEl = document.getElementById('fechaVencimientoManual');
+            if (cEl) cEl.value = cantidad;
+            if (uEl) uEl.value = unidad;
+            if (fEl) fEl.value = '';
+            try { actualizarResumenPOS(); } catch (e) {}
+        };
+
+        // Inventario Command Premium: panel de mando
+        window.renderPanelInventarioPremium = () => {
+            const barras = document.getElementById('invBarrasCategorias'); const salud = document.getElementById('invSaludFinanciera');
+            if (!barras || !salud) return;
+            const porCat = {}; let inversion = 0, ventaTotal = 0, numMods = 0, sinCosto = 0, bajoMargen = 0;
+            Object.values(catalogo).forEach(d => { if (!d || !d.mods) return; const cat = d.cat || 'Otros'; Object.values(d.mods).forEach(m => { const c = parseFloat(m.c) || 0, p = parseFloat(m.p) || 0; porCat[cat] = (porCat[cat] || 0) + (p - c); inversion += c; ventaTotal += p; numMods++; if (c === 0) sinCosto++; if (p > 0 && (p - c) / p < 0.2) bajoMargen++; }); });
+            const cats = Object.entries(porCat).sort((a, b) => b[1] - a[1]);
+            const max = Math.max(1, ...cats.map(x => x[1]));
+            const grads = ['linear-gradient(90deg,#0e7490,#66FCF1)', 'linear-gradient(90deg,#7c3aed,#c084fc)', 'linear-gradient(90deg,#be185d,#F50057)', 'linear-gradient(90deg,#b8860b,#f5d67b)', 'linear-gradient(90deg,#15803d,#4ade80)'];
+            barras.innerHTML = cats.length ? cats.slice(0, 6).map(([cat, gan], i) => `<div><div class="flex justify-between text-[11.5px]"><span class="text-gray-300 font-bold">${escaparTextoActividad(cat)}</span><b class="text-[#66FCF1]">$${gan.toFixed(0)}</b></div><div style="height:7px;border-radius:99px;background:rgba(255,255,255,.07);margin-top:3px"><div style="width:${Math.max(3, Math.round(gan / max * 100))}%;height:100%;border-radius:99px;background:${grads[i % grads.length]}"></div></div></div>`).join('') : '<p class="text-xs text-gray-500">Sin productos todavía.</p>';
+            const margenProm = ventaTotal > 0 ? Math.round((ventaTotal - inversion) / ventaTotal * 100) : 0;
+            salud.innerHTML = `<p>Margen promedio <b class="text-yellow-400 text-base">${margenProm}%</b> · ${numMods} paquetes</p><p>Inversión total <b class="text-white">$${inversion.toFixed(0)}</b></p><p>Retorno si vende todo <b class="text-green-400">+$${(ventaTotal - inversion).toFixed(0)}</b></p>${(sinCosto || bajoMargen) ? `<p class="text-yellow-400 text-xs font-bold pt-1">⚠️ ${sinCosto} sin costo · ${bajoMargen} con margen bajo</p>` : '<p class="text-green-400 text-xs font-bold pt-1">✅ Catálogo sano</p>'}`;
+        };
+        window.buscarEnInventario = (q) => { window._filtroInventario = (q || '').trim().toLowerCase(); renderizarTablaInventario(); };
+        window.filtrarInventarioAlertas = (tipo) => {
+            window._filtroInventarioEspecial = tipo === 'todos' ? '' : tipo;
+            const lbl = document.getElementById('invFiltroActivo');
+            if (lbl) lbl.textContent = tipo === 'sincosto' ? '⚠️ Mostrando solo productos SIN costo capturado' : (tipo === 'bajomargen' ? '📉 Mostrando solo productos con margen menor al 20%' : '');
+            renderizarTablaInventario();
+        };
 
         window.renderPorVencer = () => {
             const cont = document.getElementById('listaPorVencer');
@@ -3334,6 +3660,8 @@
         };
 
         function renderTablaVentas() {
+            try { renderClientes(); } catch (e) {}
+            try { renderVentasHoyPOS(); } catch (e) {}
             try { const dlN = document.getElementById('listaClientesNombres'); if (dlN) { const nombres = [...new Set(ventas.map(v => (v.cliente || '').trim()).filter(Boolean))]; dlN.innerHTML = nombres.map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join(''); } } catch (e) {}
             try { renderPorVencer(); } catch (e) {}
             const tbody = document.getElementById('tablaCuerpo'); tbody.innerHTML = ''; document.getElementById('emptyState').style.display = ventas.length > 0 ? 'none' : 'block'; document.getElementById('contadorVentas').textContent = `${ventas.length} Ventas`;
@@ -3364,6 +3692,7 @@
         }
 
         function renderizarTablaInventario() {
+            try { renderPanelInventarioPremium(); } catch (e) {}
             const tbody = document.getElementById('tablaInventarioCuerpo'); tbody.innerHTML = ''; const ordenados = Object.keys(catalogo).sort((a, b) => { const catA = catalogo[a]?.cat || ''; const catB = catalogo[b]?.cat || ''; return catA.localeCompare(catB); });
             ordenados.forEach(servicio => { 
                 const datos = catalogo[servicio]; if(!datos || !datos.mods) return; 
@@ -3383,10 +3712,17 @@
                 if (badge === 'agotado') badgeCell = '<span class="text-[10px] px-2 py-0.5 rounded bg-gray-800 text-red-400 border border-red-500 font-bold">⛔ Agotado</span>';
 
                 const servEnc = encodeURIComponent(servicio);
-                for (const [modalidad, precios] of Object.entries(datos.mods)) { 
+                for (const [modalidad, precios] of Object.entries(datos.mods)) {
+                    const _qInv = (window._filtroInventario || ''); const _espInv = window._filtroInventarioEspecial || '';
+                    if (_espInv === 'sincosto' && (precios.c || 0) !== 0) continue;
+                    if (_espInv === 'bajomargen' && !((precios.p || 0) > 0 && ((precios.p || 0) - (precios.c || 0)) / (precios.p || 1) < 0.2)) continue;
+                    if (_qInv && !(`${servicio} ${modalidad} ${precios.prov || ''}`.toLowerCase().includes(_qInv))) continue;
+                    const _pctR = (precios.p || 0) > 0 ? Math.round(((precios.p || 0) - (precios.c || 0)) / (precios.p || 1) * 100) : 0;
+                    const _nivelR = Math.max(0, Math.min(5, Math.round(_pctR / 20)));
+                    const _dotsR = '●'.repeat(_nivelR) + '○'.repeat(5 - _nivelR); 
                     const modEnc = encodeURIComponent(modalidad);
                     const margen = (precios.p || 0) - (precios.c || 0); 
-                    tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 text-xs text-gray-400 whitespace-nowrap">${datos.cat || 'Otros'}</td><td class="p-3 text-center flex justify-center">${imgMini}</td><td class="p-3 font-bold ${(datos.cat || '').includes('COMBOS') ? 'neon-text-purple' : 'neon-text-pink'}">${servicio}</td><td class="p-3 whitespace-nowrap">${badgeCell}</td><td class="p-3 text-xs text-gray-300">${modalidad}</td><td class="p-3 text-xs text-[#66FCF1] uppercase font-bold">${precios.prov || 'Sin asignar'}</td><td class="p-3 font-mono text-gray-500">$${(precios.c || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-white">$${(precios.p || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-[#66FCF1]">$${margen.toFixed(2)}</td><td class="p-3 flex justify-center gap-3"><button onclick="abrirModalEditar(decodeURIComponent('${servEnc}'), decodeURIComponent('${modEnc}'))" class="text-[#66FCF1] hover:text-white"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg></button><button onclick="eliminarProducto(decodeURIComponent('${servEnc}'), decodeURIComponent('${modEnc}'))" class="text-[#F50057] hover:text-red-400"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td></tr>`; 
+                    tbody.innerHTML += `<tr class="hover:bg-[#1A222C]"><td class="p-3 text-xs text-gray-400 whitespace-nowrap">${datos.cat || 'Otros'}</td><td class="p-3 text-center flex justify-center">${imgMini}</td><td class="p-3 font-bold ${(datos.cat || '').includes('COMBOS') ? 'neon-text-purple' : 'neon-text-pink'}">${servicio}</td><td class="p-3 whitespace-nowrap">${badgeCell}</td><td class="p-3 text-xs text-gray-300">${modalidad}</td><td class="p-3 text-xs text-[#66FCF1] uppercase font-bold">${precios.prov || 'Sin asignar'}</td><td class="p-3 font-mono text-gray-500">$${(precios.c || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-white">$${(precios.p || 0).toFixed(2)}</td><td class="p-3 font-mono font-bold text-[#66FCF1]">$${margen.toFixed(2)}</td><td class="p-3 whitespace-nowrap">${(precios.c || 0) === 0 ? '<span class="text-yellow-400 text-[11px] font-bold">⚠️ sin costo</span>' : `<span class="${_pctR >= 30 ? 'text-green-400' : (_pctR >= 15 ? 'text-yellow-400' : 'text-red-400')} text-[11px] tracking-[.2em]">${_dotsR}</span> <span class="text-[11px] text-gray-400">${_pctR}%</span>`}</td><td class="p-3 flex justify-center gap-3"><button onclick="abrirModalEditar(decodeURIComponent('${servEnc}'), decodeURIComponent('${modEnc}'))" class="text-[#66FCF1] hover:text-white"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg></button><button onclick="eliminarProducto(decodeURIComponent('${servEnc}'), decodeURIComponent('${modEnc}'))" class="text-[#F50057] hover:text-red-400"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></td></tr>`; 
                 } 
             });
         }
