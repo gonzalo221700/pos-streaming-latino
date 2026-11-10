@@ -654,10 +654,7 @@
                                     <span class="flex items-center gap-2.5"><span class="text-sm">🎡</span> Premios Ruleta</span>
                                     <span id="contadorPremios" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-[#1A222C] text-yellow-400">0</span>
                                 </button>
-                                                                <button type="button" id="btnNavAdminClientes" onclick="cambiarVistaAdmin('clientes')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white">
-                                    <span class="flex items-center gap-2.5"><span class="text-sm">👥</span> Clientes</span>
-                                    <span id="contadorClientes" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-[#1A222C] text-[#66FCF1]">0</span>
-                                </button>
+                                                                
                                 <button type="button" id="btnNavAdminInventario" onclick="cambiarVistaAdmin('inventario')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-gray-300 hover:border-[#66FCF1]/50 hover:text-white">
                                     <span class="flex items-center gap-2.5"><span class="text-sm">📦</span> Mi Inventario</span>
                                     <span class="text-xs text-gray-500">›</span>
@@ -879,7 +876,7 @@
                                 <h2 class="text-2xl font-black text-white uppercase tracking-wider neon-text-cyan flex items-center gap-2">
                                     <span>📊</span> Base de Datos de Ventas
                                 </h2>
-                                <p class="text-xs text-gray-400 mt-0.5">Control de clientes activos, tiempos restantes, garantías y envío de tickets por WhatsApp.</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Control de clientes activos, tiempos restantes, garantías y envío de tickets por WhatsApp. Con un toque, la vista Por cliente trae su historial completo.</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <button type="button" onclick="exportarExcelVentas()" class="bg-[#1A222C] hover:bg-gray-700 text-[#66FCF1] text-xs font-bold px-4 py-2 rounded-xl border border-[#66FCF1]/50 transition shadow">
@@ -891,7 +888,41 @@
                             </div>
                         </div>
 
-                        <div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
+                                                <div class="bg-[#12161c] rounded-2xl neon-border mb-4 overflow-hidden">
+                            <button type="button" onclick="document.getElementById('panelResumenClientes').classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-3 text-left">
+                                <span class="text-xs font-black uppercase tracking-widest text-[#66FCF1]">👥 Resumen de clientes</span>
+                                <span class="text-gray-500 text-xs font-black">▾ mostrar / ocultar</span>
+                            </button>
+                            <div id="panelResumenClientes" class="px-4 pb-4">
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesTotal" class="text-2xl font-black text-white">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">👥 Clientes</p></div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesActivos" class="text-2xl font-black text-green-400">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">✅ Activos</p></div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesPorVencer" class="text-2xl font-black text-yellow-400">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">⏰ Por vencer (7 días)</p></div>
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesGiros" class="text-2xl font-black text-[#F50057]">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">🎡 Con giro pendiente</p></div>
+                        </div>
+                                <div class="mt-4"><div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4">
+                                <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">🏆 Top clientes</p>
+                                <div id="topClientesLista" class="space-y-2"></div>
+                            </div>
+                            <div class="bg-[#12161c] border border-yellow-500/40 rounded-2xl p-4">
+                                <p class="text-xs font-black uppercase tracking-widest text-yellow-400 mb-3">⭐ Oportunidades VIP</p>
+                                <div id="oportunidadesVIPLista" class="space-y-2"></div>
+                            </div>
+                        </div></div>
+                                <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <p class="text-[11px] text-gray-500 font-bold">Busca un cliente para ver su ficha 360° (historial, estrellas, giros, bloquear o eliminar):</p>
+                                    <input type="text" id="buscadorClientes" oninput="renderClientes()" placeholder="🔎 Buscar cliente o número…" class="p-2.5 rounded-md text-sm font-bold bg-[#0B0C10] border border-[#45A29E] w-full sm:w-72">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 mb-4">
+                            <button type="button" id="btnModoVenta" onclick="cambiarModoHistorial('venta')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-[#F50057] text-white shadow-[0_0_12px_rgba(245,0,87,0.35)]">📊 Por venta</button>
+                            <button type="button" id="btnModoCliente" onclick="cambiarModoHistorial('cliente')" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-[#1A222C] border border-gray-700 text-gray-300">👥 Por cliente</button>
+                        </div>
+
+<div id="historialModoVenta"><div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
                             <div class="overflow-x-auto">
                                 <table id="tablaVentas" class="w-full text-sm text-left">
                                     <thead>
@@ -911,6 +942,30 @@
                                 </table>
                             </div>
                             <div id="emptyState" class="p-8 text-center text-gray-500">Aún no hay ventas registradas. ¡Tu negocio empieza aquí!</div>
+                        </div>
+                    </div>
+
+                        <div id="historialModoCliente" class="hidden">
+                            <div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead>
+                                        <tr>
+                                            <th class="p-3">Cliente</th>
+                                            <th class="p-3">WhatsApp</th>
+                                            <th class="p-3 text-center">Compras</th>
+                                            <th class="p-3">Total gastado</th>
+                                            <th class="p-3 text-center">Estrellas</th>
+                                            <th class="p-3">Último servicio</th>
+                                            <th class="p-3 text-center">Estado</th>
+                                            <th class="p-3 text-center min-w-[120px]">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaClientesCuerpo" class="divide-y divide-[#1F2833]"></tbody>
+                                </table>
+                            </div>
+                            <div id="clientesEmpty" class="p-8 text-center text-gray-500 hidden">Aún no hay clientes. Se crean solos con cada venta registrada. 🎉</div>
+                        </div>
                         </div>
                     </section>
 
@@ -936,51 +991,7 @@
                     </section>
 
                                         <!-- PANTALLA: CENTRO DE CLIENTES 360° (v5) -->
-                    <section id="vistaAdminClientes" class="hidden w-full">
-                        <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div>
-                                <h2 class="text-2xl font-black text-white uppercase tracking-wider neon-text-cyan flex items-center gap-2"><span>👥</span> Centro de Clientes 360°</h2>
-                                <p class="text-xs text-gray-400 mt-0.5">Tus clientes con su historial completo, sus estrellas y sus oportunidades VIP en un solo lugar.</p>
-                            </div>
-                            <input type="text" id="buscadorClientes" oninput="renderClientes()" placeholder="🔎 Buscar cliente o número…" class="p-2.5 rounded-md text-sm font-bold bg-[#0B0C10] border border-[#45A29E] w-full sm:w-72">
-                        </div>
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesTotal" class="text-2xl font-black text-white">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">👥 Clientes</p></div>
-                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesActivos" class="text-2xl font-black text-green-400">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">✅ Activos</p></div>
-                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesPorVencer" class="text-2xl font-black text-yellow-400">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">⏰ Por vencer (7 días)</p></div>
-                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4 text-center"><p id="kpiClientesGiros" class="text-2xl font-black text-[#F50057]">0</p><p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-0.5">🎡 Con giro pendiente</p></div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                            <div class="bg-[#12161c] border border-[#1F2833] rounded-2xl p-4">
-                                <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">🏆 Top clientes</p>
-                                <div id="topClientesLista" class="space-y-2"></div>
-                            </div>
-                            <div class="bg-[#12161c] border border-yellow-500/40 rounded-2xl p-4">
-                                <p class="text-xs font-black uppercase tracking-widest text-yellow-400 mb-3">⭐ Oportunidades VIP</p>
-                                <div id="oportunidadesVIPLista" class="space-y-2"></div>
-                            </div>
-                        </div>
-                        <div class="bg-[#12161c] rounded-2xl shadow-xl overflow-hidden neon-border">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-sm text-left">
-                                    <thead>
-                                        <tr>
-                                            <th class="p-3">Cliente</th>
-                                            <th class="p-3">WhatsApp</th>
-                                            <th class="p-3 text-center">Compras</th>
-                                            <th class="p-3">Total gastado</th>
-                                            <th class="p-3 text-center">Estrellas</th>
-                                            <th class="p-3">Último servicio</th>
-                                            <th class="p-3 text-center">Estado</th>
-                                            <th class="p-3 text-center min-w-[120px]">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tablaClientesCuerpo" class="divide-y divide-[#1F2833]"></tbody>
-                                </table>
-                            </div>
-                            <div id="clientesEmpty" class="p-8 text-center text-gray-500 hidden">Aún no hay clientes. Se crean solos con cada venta registrada. 🎉</div>
-                        </div>
-                    </section>
+                    
 
 <section id="vistaAdminInventario" class="hidden w-full">
                         <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1929,8 +1940,10 @@
                 if (bPrem) bPrem.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-yellow-500/60 text-white shadow-lg";
                 try { renderPremios(); } catch (e) {}
             } else if (vista === 'clientes') {
-                if (vCli) vCli.classList.remove('hidden');
-                if (bCli) bCli.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]";
+                // v6 (fusión): ya no hay pestaña de Clientes; vive dentro del Historial
+                if (vHist) vHist.classList.remove('hidden');
+                if (bHist) bHist.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#1A222C] border-[#66FCF1] text-white shadow-[0_0_12px_rgba(102,252,241,0.25)]";
+                try { cambiarModoHistorial('cliente'); } catch (e) {}
                 try { renderClientes(); } catch (e) {}
             } else if (vista === 'inventario') {
                 if (vInv) vInv.classList.remove('hidden');
@@ -3595,6 +3608,18 @@
             if (codigo) { try { await setDoc(doc(db, 'artifacts', appIdentifier, 'public', 'data', 'config', `historial_${codigo}`), { compras: [], ruleta: { giros: 0, premios: [] }, actualizado: new Date().toISOString() }); } catch (e) {} }
             mostrarToast('🗑️ Ficha VIP eliminada (sus ventas se conservaron)', 'success');
             cerrarFichaCliente(); renderClientes();
+        };
+
+        // v6 (fusión): interruptor Por venta / Por cliente dentro del Historial
+        window.cambiarModoHistorial = (modo) => {
+            const mv = document.getElementById('historialModoVenta'); const mc = document.getElementById('historialModoCliente');
+            const bv = document.getElementById('btnModoVenta'); const bc = document.getElementById('btnModoCliente');
+            const esCliente = modo === 'cliente';
+            if (mv) mv.classList.toggle('hidden', esCliente);
+            if (mc) mc.classList.toggle('hidden', !esCliente);
+            if (bv) bv.className = 'px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider ' + (!esCliente ? 'bg-[#F50057] text-white shadow-[0_0_12px_rgba(245,0,87,0.35)]' : 'bg-[#1A222C] border border-gray-700 text-gray-300');
+            if (bc) bc.className = 'px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider ' + (esCliente ? 'bg-[#66FCF1] text-[#0B0C10] shadow-[0_0_12px_rgba(102,252,241,0.35)]' : 'bg-[#1A222C] border border-gray-700 text-gray-300');
+            if (esCliente) { try { renderClientes(); } catch (e) {} }
         };
 
         // Cabina Pro: últimas ventas de hoy + vigencia rápida
