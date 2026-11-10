@@ -240,6 +240,15 @@
         .ruleta-etiqueta { position:absolute; inset:0; pointer-events:none; }
         .ruleta-etiqueta span { position:absolute; left:50%; top:9px; transform:translateX(-50%); width:96px; text-align:center; font-weight:900; font-size:11px; letter-spacing:.02em; color:#fff; text-transform:uppercase; text-shadow:0 1px 4px rgba(0,0,0,.65); line-height:1.05; }
     </style>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "9cdc1c14-5f1b-4b8e-9a7c-6271eb002c4e",
+    });
+  });
+</script>
 </head>
 <body class="min-h-screen relative">
 
@@ -2600,6 +2609,10 @@
                             <span class="flex items-center gap-2.5"><span class="text-sm">⭐</span> Mis Estrellas VIP</span>
                             <span class="text-xs text-yellow-500">›</span>
                         </button>
+                        <button onclick="mostrarAvisoPush()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all border bg-[#0B0C10]/60 border-gray-800/80 text-[#66FCF1] hover:border-[#66FCF1]/60">
+                            <span class="flex items-center gap-2.5"><span class="text-sm">🔔</span> Avisos y novedades</span>
+                            <span class="text-xs text-[#66FCF1]">›</span>
+                        </button>
                     </div>
                 </div>
                 <div>
@@ -3610,6 +3623,37 @@
             cerrarFichaCliente(); renderClientes();
         };
 
+        // v7 (OneSignal): aviso propio de notificaciones push
+        window.mostrarAvisoPush = () => { const a = document.getElementById('avisoPush'); if (a) a.classList.remove('hidden'); };
+        window.cerrarAvisoPush = () => {
+            const a = document.getElementById('avisoPush'); if (a) a.classList.add('hidden');
+            try { localStorage.setItem('slmx_push_dismissed', String(Date.now())); } catch (e) {}
+        };
+        window.aceptarNotificaciones = async () => {
+            try {
+                const OS = window.OneSignal;
+                if (OS) {
+                    if (OS.User && OS.User.PushSubscription && OS.User.PushSubscription.optIn) await OS.User.PushSubscription.optIn();
+                    else if (OS.Notifications && OS.Notifications.requestPermission) await OS.Notifications.requestPermission();
+                }
+                const a = document.getElementById('avisoPush'); if (a) a.classList.add('hidden');
+                try { localStorage.setItem('slmx_push_subscribed', '1'); } catch (e) {}
+                const t = document.getElementById('toastPush'); if (t) { t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 4000); }
+            } catch (e) { window.cerrarAvisoPush(); }
+        };
+        // Mostrar el aviso 8 s después de entrar (solo tienda pública, solo si aún no decidió)
+        setTimeout(() => {
+            try {
+                const admin = document.getElementById('adminPanel');
+                if (admin && !admin.classList.contains('hidden')) return;
+                if (typeof Notification !== 'undefined' && Notification.permission !== 'default') return;
+                if (localStorage.getItem('slmx_push_subscribed') === '1') return;
+                const d = parseInt(localStorage.getItem('slmx_push_dismissed') || '0', 10);
+                if (d && (Date.now() - d) < 7 * 24 * 60 * 60 * 1000) return;
+                window.mostrarAvisoPush();
+            } catch (e) {}
+        }, 8000);
+
         // v6 (fusión): interruptor Por venta / Por cliente dentro del Historial
         window.cambiarModoHistorial = (modo) => {
             const mv = document.getElementById('historialModoVenta'); const mc = document.getElementById('historialModoCliente');
@@ -4614,5 +4658,22 @@
         })();
 
     </script>
+    <div id="avisoPush" class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-[380px] z-[80]">
+        <div class="bg-[#12161c] border-2 border-[#66FCF1]/50 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-4">
+            <div class="flex gap-3 items-start">
+                <div class="text-3xl leading-none">🔔</div>
+                <div class="flex-1">
+                    <p class="font-black text-base leading-snug">¿Te avisamos cuando lleguen nuevos productos?</p>
+                    <p class="text-xs text-gray-400 mt-1 leading-relaxed">Solo te escribimos cuando hay algo nuevo o una promo. Sin spam.</p>
+                </div>
+                <button type="button" onclick="cerrarAvisoPush()" class="text-gray-500 font-black text-xl leading-none px-1">×</button>
+            </div>
+            <div class="flex gap-2 mt-3">
+                <button type="button" onclick="aceptarNotificaciones()" class="flex-1 bg-[#66FCF1] text-[#0B0C10] font-black text-sm rounded-xl py-2.5">✅ Sí, avísame</button>
+                <button type="button" onclick="cerrarAvisoPush()" class="flex-1 bg-[#1A222C] border border-gray-700 text-gray-200 font-bold text-sm rounded-xl py-2.5">Ahora no</button>
+            </div>
+        </div>
+    </div>
+    <div id="toastPush" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[80] bg-[#12161c] border border-[#FACC15] text-sm font-bold rounded-full px-5 py-3 shadow-2xl whitespace-nowrap">🔔 ¡Listo! Ya recibirás nuestros avisos</div>
 </body>
 </html>
